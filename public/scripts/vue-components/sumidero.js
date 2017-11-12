@@ -2,9 +2,9 @@
 
 var vTemplateSumidero = function () {
     return `
-    <div class="box">
+    <div class="box" id="sumidero-section">
         <div v-if="! errors">
-            <div v-for="post in posts">
+            <div class="sumidero-post" v-for="post in posts">
                 <sumidero-post v-bind:post="post"></sumidero-post>
                 <hr>
             </div>
