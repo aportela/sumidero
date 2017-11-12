@@ -9,6 +9,7 @@
                 'siteUrl' => "http://localhost",
                 'production' => false,
                 'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
+                'foolsJokeDate' => ((new \Datetime())->format('m-d') == "12-28" || (new \Datetime())->format('m-d') == "04-01") // heh heh
             ],
             // Renderer settings
             'renderer' => [
