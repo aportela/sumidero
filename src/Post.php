@@ -71,7 +71,8 @@
                     "created" => $redditPost->{"data"}->{"created"},
                     "sub" => $redditPost->{"data"}->{"subreddit_name_prefixed"},
                     "tags" => getRandomTags(3),
-                    "votes" => (rand(1, 2000) * 2 - 2000)
+                    "votes" => (rand(1, 2000) * 2 - 2000),
+                    "comments" => rand(0, 4)
                 );
                 shuffle($users);
             }
