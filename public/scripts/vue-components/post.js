@@ -50,14 +50,14 @@ const vueSumideroPostTemplate = function () {
             <div class="tags has-addons">
               <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
               <span class="tag is-dark">on</span>
-              <a href="#" class="tag is-info">{{ post.sub }}</a>
+              <a v-bind:href="post.sub | getSubPath" class="tag is-info">{{ post.sub }}</a>
             </div>
           </div>
           <div class="control" v-for="tag in post.tags">
               <div class="tags has-addons">
                 <span class="tag is-dark"><i class="fa fa-tag"></i></span>
                 <span class="tag is-dark">tag</span>
-                <a href="#" class="tag is-light">{{ tag }}</a>
+                <a v-bind:href="'/#/t/' + tag" class="tag is-light">{{ tag }}</a>
               </div>
           </div>
           <div class="control">
@@ -126,6 +126,9 @@ const post = Vue.component('sumidero-post', {
           return ("is-danger");
         }
       }
+    },
+    getSubPath(redditSub) {
+      return (redditSub.replace("r/", "/#/s/"));
     },
     formatDateAgo(timestamp) {
       return (moment.unix(timestamp).toNow());

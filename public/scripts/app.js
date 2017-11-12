@@ -9,7 +9,30 @@ const bus = new Vue();
  * vue-router route definitions
  */
 const routes = [
-    { path: '/sumidero', name: 'sumidero', component: sumidero },
+    {
+        path: '/s',
+        name: 'allSubs',
+        component: sumideroPosts,
+        children: [
+            {
+                path: ':sub',
+                name: 'customSub',
+                component: sumideroPosts
+            }
+        ]
+    },
+    {
+        path: '/t',
+        name: 'allTags',
+        component: sumideroPosts,
+        children: [
+            {
+                path: ':tag',
+                name: 'customTab',
+                component: sumideroPosts
+            }
+        ]
+    },
 ];
 
 /**
@@ -84,7 +107,7 @@ const app = new Vue({
         });
     },
     created: function () {
-        this.$router.push({ name: 'sumidero' });
+        this.$router.push({ name: 'allSubs' });
         NProgress.configure({ showSpinner: false });
         bus.$on("startProgress", function () {
             NProgress.start();
