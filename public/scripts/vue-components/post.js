@@ -5,14 +5,15 @@ const vueSumideroPostTemplate = function () {
         <p class="image is-64x64">
           <img class="user-avatar" v-bind:src="post.user.avatar">
         </p>
+        <br>
         <p class="has-text-centered">
-          <br>
-          <span class="icon" v-bind:class="post.votes | getThermoTempClass">
-            <i class="fa fa-2x" v-bind:class="post.votes | getThermoFillClass" aria-hidden="true"></i>
-          </span>
-          <br>
+          <span class="icon" v-bind:class="post.votes | getThermoTempClass"><i class="fa fa-3x" v-bind:class="post.votes | getThermoFillClass" aria-hidden="true"></i></span>
+        </p>
+        <p class="has-text-centered">
           <span class="tag has-text-weight-bold" v-bind:class="post.votes | getVotesClass">{{ post.votes }} votes</span>
-          <br>
+        </p>
+
+        <p class="has-text-centered">
           <a title="upvote"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>
           <a title="downvote"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></a>
         </p>
@@ -44,39 +45,29 @@ const vueSumideroPostTemplate = function () {
           </blockquote>
         </div>
         <div class="is-clearfix"></div>
-        <nav class="level is-mobile">
-          <div class="level-left">
-            <div class="level-item">
-              <div class="tags has-addons">
-                <span class="tag is-dark">on</span>
-                <span class="tag is-info">{{ post.sub }}</span>
-              </div>
+        <div class="field is-grouped is-grouped-multiline">
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
+              <span class="tag is-dark">on</span>
+              <a href="#" class="tag is-info">{{ post.sub }}</a>
             </div>
-            <div class="level-item">
-              <div class="field is-grouped is-grouped-multiline">
-                <div class="control" v-for="tag in post.tags">
-                  <div class="tags has-addons">
-                    <span class="tag is-dark">tag</span>
-                    <span class="tag is-light">{{ tag }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="level-item">
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-dark">votes</span>
-                  <span class="tag is-warning">{{ post.votes }}</span>
-                  <span class="icon" v-bind:class="post.votes | getThermoTempClass"></span>
-                </div>
-              </div>
-            </div>
-            <a class="level-item" title="upvote"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>
-            <a class="level-item" title="downvote"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></a>
-            <a class="level-item" title="comment"><span class="icon is-small has-text-dark"><i class="fa fa-comment"></i></span></a>
-            <a class="level-item" title="love"><span class="icon is-small has-text-danger"><i class="fa fa-heart"></i></span></a>
           </div>
-        </nav>
+          <div class="control" v-for="tag in post.tags">
+              <div class="tags has-addons">
+                <span class="tag is-dark"><i class="fa fa-tag"></i></span>
+                <span class="tag is-dark">tag</span>
+                <a href="#" class="tag is-light">{{ tag }}</a>
+              </div>
+          </div>
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-dark"><i class="fa fa-comment"></i></span>
+              <a href="#" class="tag is-dark">comments</a>
+              <span class="tag is-warning">{{ post.comments }}</span>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="media-right">
           <button class="delete"></button>
@@ -92,7 +83,7 @@ const post = Vue.component('sumidero-post', {
       loading: false
     });
   }, props: ['post'],
-  create: function() {
+  create: function () {
     bus.$emit("incProgress");
   },
   filters: {
