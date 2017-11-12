@@ -29,14 +29,17 @@ var sumidero = Vue.component('sumidero-component', {
     created: function () {
         var self = this;
         self.loading = true;
+        bus.$emit("incProgress");
         sumideroAPI.getPosts(function (response) {
             if (response.ok) {
                 self.posts = response.body.posts;
                 self.loading = false;
+                bus.$emit("endProgress");
             } else {
                 self.errors = true;
                 self.apiError = response.getApiErrorData();
                 self.loading = false;
+                bus.$emit("endProgress");
             }
         });
     },

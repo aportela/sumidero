@@ -92,6 +92,9 @@ const post = Vue.component('sumidero-post', {
       loading: false
     });
   }, props: ['post'],
+  create: function() {
+    bus.$emit("incProgress");
+  },
   filters: {
     getThermoFillClass(votes) {
       var v = Math.abs(votes);
