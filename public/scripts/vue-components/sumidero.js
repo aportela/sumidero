@@ -2,24 +2,15 @@
 
 var vTemplateSumidero = function () {
     return `
-    <section class="hero is-fullheight is-light is-bold" v-if="! loading">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-vcentered">
-                    <div class="column is-4 is-offset-4">
-                        <h1 class="title has-text-centered">Sumidero</h1>
-                        <h2 class="subtitle is-6 has-text-centered">success!</h2>
-                        <p class="has-text-centered">
-                            <a href="https://github.com/aportela/sumidero"><span class="icon is-small"><i class="fa fa-github"></i></span>Project page</a> | <a href="mailto:766f6964+github@gmail.com">by alex</a>
-                        </p>
-                    </div>
-                </div>
+    <div class="box">
+        <div v-if="! errors">
+            <div v-for="post in posts">
+                <sumidero-post v-bind:post="post"></sumidero-post>
+                <hr>
             </div>
         </div>
-        <footer class="footer" v-if="errors">
-            <sumidero-api-error-component v-bind:apiError="apiError"></sumidero-api-error-component>
-        </footer>
-    </section>
+        <sumidero-api-error-component v-else v-bind:apiError="apiError"></sumidero-api-error-component>
+    </div>
     `;
 }
 
@@ -32,13 +23,15 @@ var sumidero = Vue.component('sumidero-component', {
             loading: false,
             errors: false,
             apiError: null,
+            posts: []
         });
     },
     created: function () {
         var self = this;
         self.loading = true;
-        this.poll(function (response) {
+        sumideroAPI.getPosts(function (response) {
             if (response.ok) {
+                self.posts = response.body.posts;
                 self.loading = false;
             } else {
                 self.errors = true;
