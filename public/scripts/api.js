@@ -14,5 +14,15 @@ const sumideroAPI = {
                 callback(response);
             }
         );
+    },
+    getPosts: function(callback) {
+        Vue.http.get(siteUrl + "/api/posts").then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
     }
 };
