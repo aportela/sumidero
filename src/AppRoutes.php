@@ -26,7 +26,7 @@
     $app->post('/api/post/scrap', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton GET '/api/post/scrap' route");
         $data = (new \Sumidero\Scraper())->scrap($request->getParam("url", ""));
-        return $response->withJson(['title' => $data["title"], 'image' => $data["image"], 'body' => trim($data["article"]->textContent) ], 200);
+        return $response->withJson(['title' => $data["title"], 'image' => $data["image"], 'body' => $data["article"]->textContent ? trim($data["article"]->textContent): null ], 200);
     })->add(new \Sumidero\Middleware\APIExceptionCatcher);
 
 ?>
