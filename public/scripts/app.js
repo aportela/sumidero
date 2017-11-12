@@ -85,6 +85,16 @@ const app = new Vue({
     },
     created: function () {
         this.$router.push({ name: 'sumidero' });
+        NProgress.configure({ showSpinner: false });
+        bus.$on("startProgress", function () {
+            NProgress.start();
+        });
+        bus.$on("incProgress", function () {
+            NProgress.inc();
+        });
+        bus.$on("endProgress", function () {
+            NProgress.done();
+        });
     }
 }).$mount('#app');
 
