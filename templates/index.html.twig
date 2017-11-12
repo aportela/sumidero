@@ -107,11 +107,21 @@
                     <div class="level-item">
                         <a class="button is-link" href="/#/t">top</a>
                     </div>
+                    <div class="level-item">
+                        <div class="field">
+                            <div class="control">
+                                <label class="checkbox">
+                                <input type="checkbox" v-model="compact">
+                                Compact view
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </nav>
             <transition name="fade">
                 <!-- component matched by the route will render here -->
-                <router-view></router-view>
+                <router-view v-bind:compact="compact"></router-view>
             </transition>
         </div>
 

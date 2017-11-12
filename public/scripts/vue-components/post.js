@@ -6,14 +6,13 @@ const vueSumideroPostTemplate = function () {
           <img class="user-avatar" v-bind:src="post.user.avatar">
         </p>
         <br>
-        <p class="has-text-centered">
+        <p class="has-text-centered" v-if="! compact">
           <span class="icon" v-bind:class="post.votes | getThermoTempClass"><i class="fa fa-3x" v-bind:class="post.votes | getThermoFillClass" aria-hidden="true"></i></span>
         </p>
-        <p class="has-text-centered">
+        <p class="has-text-centered" v-if="! compact">
           <span class="tag has-text-weight-bold" v-bind:class="post.votes | getVotesClass">{{ post.votes }} votes</span>
         </p>
-
-        <p class="has-text-centered">
+        <p class="has-text-centered" v-if="! compact">
           <a title="upvote"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>
           <a title="downvote"><i class="fa fa-thumbs-o-down" aria-hidden="true"></i></a>
         </p>
@@ -23,7 +22,7 @@ const vueSumideroPostTemplate = function () {
           <a v-bind:href="post.url">{{ post.title }}</a> <small>({{ post.domain }})</small>
           <br>by <strong>{{ post.user.fullname }}</strong> <small><a href="#">@{{ post.user.name }}</a> {{ post.created | formatDateAgo }}</small>
         </p>
-        <p>
+        <p v-if="! compact">
           <img class="post-thumbnail is-pulled-left" v-if="post.thumbnail && post.thumbnail != 'self'" v-bind:src="post.thumbnail">
           <img src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left" v-else>
           <span class="">{{ post.body }}</span>
@@ -82,7 +81,7 @@ const post = Vue.component('sumidero-post', {
     return ({
       loading: false
     });
-  }, props: ['post'],
+  }, props: ['post', 'compact'],
   created: function () {
     bus.$emit("incProgress");
   },

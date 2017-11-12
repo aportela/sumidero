@@ -109,6 +109,7 @@ const app = new Vue({
     data: function () {
         return ({
             loading: false,
+            compact: false
         });
     },
     created: function () {

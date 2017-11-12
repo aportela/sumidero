@@ -21,7 +21,7 @@ var vTemplateSumideroPosts = function () {
         </div>
         <div v-if="! errors">
             <div v-if="! loading" class="sumidero-post" v-for="post in posts">
-                <sumidero-post v-bind:post="post"></sumidero-post>
+                <sumidero-post v-bind:post="post" v-bind:compact="compact"></sumidero-post>
                 <hr>
             </div>
         </div>
@@ -42,7 +42,7 @@ var sumideroPosts = Vue.component('sumidero-posts', {
             posts: []
         });
     },
-    props: ['sub', 'tags'],
+    props: ['sub', 'tags', 'compact'],
     watch: {
         '$route'(to, from) {
             this.loadItems();
