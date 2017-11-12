@@ -24,8 +24,8 @@ const vueSumideroPostTemplate = function () {
           <br>by <strong>{{ post.user.fullname }}</strong> <small><a href="#">@{{ post.user.name }}</a> {{ post.created | formatDateAgo }}</small>
         </p>
         <p>
-          <img class="post-thumbnail is-pulled-left" v-if="post.thumbnail != 'self'" v-bind:src="post.thumbnail">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="post-thumbnail is-pulled-left" v-else>
+          <img class="post-thumbnail is-pulled-left" v-if="post.thumbnail && post.thumbnail != 'self'" v-bind:src="post.thumbnail">
+          <img src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left" v-else>
           <span class="">{{ post.body }}</span>
         </p>
         <div class="" v-if="false">
@@ -83,7 +83,7 @@ const post = Vue.component('sumidero-post', {
       loading: false
     });
   }, props: ['post'],
-  create: function () {
+  created: function () {
     bus.$emit("incProgress");
   },
   filters: {

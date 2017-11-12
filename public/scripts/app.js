@@ -33,6 +33,11 @@ const routes = [
             }
         ]
     },
+    {
+        path: '/add-post/',
+        name: 'addPost',
+        component: sumideroAddPost
+    }
 ];
 
 /**
@@ -107,7 +112,7 @@ const app = new Vue({
         });
     },
     created: function () {
-        this.$router.push({ name: 'allSubs' });
+        //this.$router.push({ name: 'allSubs' });
         NProgress.configure({ showSpinner: false });
         bus.$on("startProgress", function () {
             NProgress.start();
