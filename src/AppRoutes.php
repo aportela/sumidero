@@ -20,7 +20,13 @@
     $app->get('/api/posts', function (Request $request, Response $response, array $args) {
         $this->logger->info("Slim-Skeleton GET '/api/posts' route");
         $results = \Sumidero\Post::search(null, 1, 16, array(), "");
-        return $response->withJson(['success' => true, 'posts' => $results ], 200);
+        return $response->withJson(['posts' => $results ], 200);
+    })->add(new \Sumidero\Middleware\APIExceptionCatcher);
+
+    $app->post('/api/post/scrap', function (Request $request, Response $response, array $args) {
+        $this->logger->info("Slim-Skeleton GET '/api/post/scrap' route");
+        $data = (new \Sumidero\Scraper())->scrap($request->getParam("url", ""));
+        return $response->withJson(['title' => $data["title"], 'image' => $data["image"], 'body' => trim($data["article"]->textContent) ], 200);
     })->add(new \Sumidero\Middleware\APIExceptionCatcher);
 
 ?>
