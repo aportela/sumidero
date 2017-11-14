@@ -14,6 +14,8 @@
         }
     }
 
+    $settings = require __DIR__ . '/../src/configuration.php';
+
     require __DIR__ . '/../vendor/autoload.php';
 
     session_start();
