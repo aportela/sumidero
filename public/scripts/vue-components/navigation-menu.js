@@ -4,8 +4,12 @@ var vTemplateNavigationMenu = function () {
     return `
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a class="navbar-item" href="https://bulma.io">
-                <img src="https://bulma.io/images/bulma-logo.png" alt="Bulma: a modern CSS framework based on Flexbox" width="112" height="28">
+            <a class="navbar-item is-uppercase has-text-weight-bold" href="https://github.com/aportela/sumidero">
+                <span class="icon">
+                    <i class="fa fa-github"></i>
+                </span>
+
+                SUMIDERO
             </a>
         </div>
         <div class="navbar-menu">
