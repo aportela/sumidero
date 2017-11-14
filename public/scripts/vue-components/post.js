@@ -3,7 +3,7 @@ const vueSumideroPostTemplate = function () {
     <article class="media">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img class="user-avatar" v-bind:src="post.user.avatar">
+          <img class="user-avatar lozad" v-bind:data-src="post.user.avatar">
         </p>
         <br>
         <p class="has-text-centered" v-if="! compact">
@@ -23,8 +23,8 @@ const vueSumideroPostTemplate = function () {
           <br>by <strong>{{ post.user.fullname }}</strong> <small><a href="#">@{{ post.user.name }}</a> {{ post.created | formatDateAgo }}</small>
         </p>
         <p v-if="! compact">
-          <img class="post-thumbnail is-pulled-left" v-if="post.thumbnail && post.thumbnail != 'self'" v-bind:src="post.thumbnail">
-          <img src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left" v-else>
+          <img class="post-thumbnail is-pulled-left lozad" v-if="post.thumbnail && post.thumbnail != 'self'" v-bind:data-src="post.thumbnail">
+          <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left lozad" v-else>
           <span class="">{{ post.body }}</span>
         </p>
         <div class="" v-if="false">
