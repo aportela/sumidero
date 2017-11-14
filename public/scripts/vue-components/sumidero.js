@@ -51,6 +51,9 @@ var sumideroPosts = Vue.component('sumidero-posts', {
     created: function () {
         this.loadItems();
     },
+    updated: function() {
+        imageLazyLoadObserver.observe();
+    },
     methods: {
         poll: function (callback) {
             var self = this;
