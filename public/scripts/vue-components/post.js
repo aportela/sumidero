@@ -3,7 +3,7 @@ const vueSumideroPostTemplate = function () {
     <article class="media">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img class="user-avatar lozad" v-bind:data-src="post.user.avatar">
+          <img class="user-avatar lozad" v-bind:data-src="post.userAvatar">
         </p>
         <br>
         <p class="has-text-centered" v-if="! compact">
@@ -20,10 +20,10 @@ const vueSumideroPostTemplate = function () {
       <div class="media-content">
         <p class="post-header">
           <a v-bind:href="post.url">{{ post.title }}</a> <small>({{ post.domain }})</small>
-          <br>by <strong>{{ post.user.fullname }}</strong> <small><a href="#">@{{ post.user.name }}</a> {{ post.created | formatDateAgo }}</small>
+          <br>by <strong>{{ post.userFullName }}</strong> <small><a href="#">@{{ post.userName }}</a> {{ post.created | formatDateAgo }}</small>
         </p>
         <p v-if="! compact">
-          <img class="post-thumbnail is-pulled-left lozad" v-if="post.thumbnail && post.thumbnail != 'self'" v-bind:data-src="post.thumbnail">
+          <img class="post-thumbnail is-pulled-left lozad" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="post.thumbnail">
           <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left lozad" v-else>
           <span class="">{{ post.body }}</span>
         </p>
@@ -49,7 +49,7 @@ const vueSumideroPostTemplate = function () {
             <div class="tags has-addons">
               <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
               <span class="tag is-dark">on</span>
-              <a v-bind:href="post.sub | getSubPath" class="tag is-info">{{ post.sub }}</a>
+              <a v-bind:href="'/r/' + post.sub" class="tag is-info">{{ post.sub }}</a>
             </div>
           </div>
           <div class="control" v-for="tag in post.tags">
@@ -130,7 +130,7 @@ const post = Vue.component('sumidero-post', {
       return (redditSub.replace("r/", "/#/s/"));
     },
     formatDateAgo(timestamp) {
-      return (moment.unix(timestamp).toNow());
+      return (moment.unix(timestamp).fromNow());
     }
   }
 });
