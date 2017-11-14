@@ -63,7 +63,10 @@ const sumideroAddPost = Vue.component('sumidero-add-post', {
             loading: false
         });
     },
-    create: function () {
+    created: function () {
+    },
+    updated: function() {
+        imageLazyLoadObserver.observe();
     },
     methods: {
         isUrl: function () {
@@ -74,9 +77,10 @@ const sumideroAddPost = Vue.component('sumidero-add-post', {
                 var self = this;
                 self.loading = true;
                 var params = {
-                    url: this.titleUrl
+                    url: this.titleUrl,
+                    externalUrl: this.titleUrl
                 };
-                Vue.http.post(siteUrl + "/api/post/scrap", params).then(
+                Vue.http.post(siteUrl + "/api/post/add", params).then(
                     response => {
                         if (response.body.title) {
                             self.previewPost.title = response.body.title;
