@@ -84,41 +84,23 @@
     </head>
     <body>
         <div id="app" class="container">
+
+            <sumidero-navigation-menu-component v-bind:logged="false"></sumidero-navigation-menu-component>
             <section class="hero">
                 <div class="hero-body">
                     <p class="title is-1 has-text-centered">Sumidero</i></p>
                     <p class="subtitle is-7 has-text-centered">I ASSURE YOU; WE'RE OPEN</i></p>
                 </div>
             </section>
-            <nav class="level">
-                <div class="level-left">
-                    <div class="level-item">
-                        <a class="button is-warning" href="/#/add-post">add post</a>
-                    </div>
-                    <div class="level-item">
-                        <a class="button is-warning" href="/#/t/custom-tag">tag</a>
-                    </div>
-                    <div class="level-item">
-                        <a class="button is-success" href="/#/s/custom-sub">sub</a>
-                    </div>
-                    <div class="level-item">
-                        <a class="button is-info" href="/#/s">latest</a>
-                    </div>
-                    <div class="level-item">
-                        <a class="button is-link" href="/#/t">top</a>
-                    </div>
-                    <div class="level-item">
-                        <div class="field">
-                            <div class="control">
-                                <label class="checkbox">
-                                <input type="checkbox" v-model="compact">
-                                Compact view
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                    <input type="checkbox" v-model="compact">
+                    Compact view
+                    </label>
                 </div>
-            </nav>
+            </div>
+
             <transition name="fade">
                 <!-- component matched by the route will render here -->
                 <router-view v-bind:compact="compact"></router-view>
@@ -167,6 +149,7 @@
 
         <!-- app section -->
         <script src="scripts/vue-components/api-error.js"></script>
+        <script src="scripts/vue-components/navigation-menu.js"></script>
         <script src="scripts/vue-components/sumidero.js"></script>
         <script src="scripts/vue-components/post.js"></script>
         <script src="scripts/vue-components/add-post.js"></script>
