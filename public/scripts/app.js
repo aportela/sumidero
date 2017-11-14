@@ -1,5 +1,10 @@
 "use strict";
 
+const imageLazyLoadObserver = lozad(); // lazy loads elements with default selector as '.lozad'
+if (imageLazyLoadObserver) {
+    imageLazyLoadObserver.observe();
+}
+
 /**
  * global object for events between vuejs components
  */
