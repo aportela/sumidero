@@ -28,14 +28,26 @@ var vTemplateNavigationMenu = function () {
                     <span>add post</span>
                 </a>
                 <div class="navbar-item">
-                    <div class="control has-icons-left" v-bind:class="searching ? 'is-loading': ''">
-                        <input class="input" type="text" :disabled="searching" placeholder="search" v-model="searchText" v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
-                        <span class="icon is-small is-left">
-                            <i class="fa fa-search"></i>
-                        </span>
+                    <div class="field has-addons">
+                        <div class="control has-icons-left" v-bind:class="searching ? 'is-loading': ''">
+                            <input class="input" type="text" :disabled="searching" placeholder="search" v-model="searchText" v-on:keyup.esc="abortInstantSearch();" v-on:keyup="instantSearch();">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                        <p class="control has-icons-left" v-if="showLimitSearch">
+                            <span class="select">
+                                <select>
+                                    <option>limit search to /s/news</option>
+                                    <option>search on all subs</option>
+                                </select>
+                            </span>
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-filter"></i>
+                            </span>
+                        </p>
                     </div>
                 </div>
-
             </div>
             <div class="navbar-end">
                 <div class="navbar-item has-dropdown is-hoverable" v-if="logged">
@@ -96,6 +108,7 @@ var navigationMenu = Vue.component('sumidero-navigation-menu-component', {
             searchText: null,
             searchTimeout: null,
             searching: false,
+            showLimitSearch: true,
             userName: "aportela",
             subs: [
                 {
