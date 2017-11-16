@@ -11,6 +11,12 @@
                 'localVendorAssets' => true, // use local vendor assets (vs remote cdn)
                 'foolsJokeDate' => ((new \Datetime())->format('m-d') == "12-28" || (new \Datetime())->format('m-d') == "04-01") // heh heh
             ],
+            // database settings
+            'database' => [
+                'connectionString' => sprintf("sqlite:%s", dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "sumidero.sqlite3"),
+                'username' => '',
+                'password' => ''
+            ],
             // Renderer settings
             'renderer' => [
                 'template_path' => __DIR__ . '/../templates',
