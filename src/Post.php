@@ -33,17 +33,17 @@
 
         public function add($dbh) {
             $params = array(
-                (new \Sumidero\DataBase\DBParam())->str(":id", $this->id),
-                (new \Sumidero\DataBase\DBParam())->str(":original_poster_id", $this->originalPoster->id),
-                (new \Sumidero\DataBase\DBParam())->str(":permalink", $this->permaLink),
-                (new \Sumidero\DataBase\DBParam())->str(":domain", $this->domain),
-                (new \Sumidero\DataBase\DBParam())->str(":external_url", $this->externalUrl),
-                (new \Sumidero\DataBase\DBParam())->str(":sub", $this->sub),
-                (new \Sumidero\DataBase\DBParam())->int(":votes", (rand(1, 2000) * 2 - 2000)),
-                (new \Sumidero\DataBase\DBParam())->int(":comments", rand(0, 16)),
-                (new \Sumidero\DataBase\DBParam())->str(":title", $this->title),
-                (new \Sumidero\DataBase\DBParam())->str(":body", $this->body),
-                (new \Sumidero\DataBase\DBParam())->str(":thumbnail", $this->thumbnail),
+                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                (new \Sumidero\Database\DBParam())->str(":original_poster_id", $this->originalPoster->id),
+                (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink),
+                (new \Sumidero\Database\DBParam())->str(":domain", $this->domain),
+                (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl),
+                (new \Sumidero\Database\DBParam())->str(":sub", $this->sub),
+                (new \Sumidero\Database\DBParam())->int(":votes", (rand(1, 2000) * 2 - 2000)),
+                (new \Sumidero\Database\DBParam())->int(":comments", rand(0, 16)),
+                (new \Sumidero\Database\DBParam())->str(":title", $this->title),
+                (new \Sumidero\Database\DBParam())->str(":body", $this->body),
+                (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail),
             );
             $query = '
                 INSERT INTO POST

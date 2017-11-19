@@ -59,12 +59,12 @@
 
         public function add($dbh) {
             $params = array(
-                (new \Sumidero\DataBase\DBParam())->str(":id", $this->id),
-                (new \Sumidero\DataBase\DBParam())->str(":email", $this->email),
-                (new \Sumidero\DataBase\DBParam())->str(":password_hash", password_hash("secret", PASSWORD_DEFAULT)),
-                (new \Sumidero\DataBase\DBParam())->str(":name", $this->name),
-                (new \Sumidero\DataBase\DBParam())->str(":full_name", $this->fullName),
-                (new \Sumidero\DataBase\DBParam())->str(":avatar_url", $this->avatar)
+                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                (new \Sumidero\Database\DBParam())->str(":email", $this->email),
+                (new \Sumidero\Database\DBParam())->str(":password_hash", password_hash("secret", PASSWORD_DEFAULT)),
+                (new \Sumidero\Database\DBParam())->str(":name", $this->name),
+                (new \Sumidero\Database\DBParam())->str(":full_name", $this->fullName),
+                (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatar)
             );
             $query = '
                 INSERT INTO USER
