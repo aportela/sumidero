@@ -18,12 +18,7 @@
 
     session_start();
 
-    $settings = require __DIR__ . '/../src/AppSettings.php';
-
-    $app = (new \Sumidero\App($settings))->get();
-
-    require __DIR__ . '/../src/AppDependencies.php';
-    require __DIR__ . '/../src/AppRoutes.php';
+    $app = (new \Sumidero\App())->get();
 
     $app->run();
 
