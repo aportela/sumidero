@@ -6,9 +6,7 @@
 
     echo "Sumidero installer" . PHP_EOL;
 
-    $settings = require dirname(__DIR__) . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "AppSettings.php";
-
-    $app = (new \Sumidero\App($settings))->get();
+    $app = (new \Sumidero\App())->get();
 
     $actualVersion = 0;
     $v = new \Sumidero\Database\Version(new \Sumidero\Database\DB());
