@@ -5,6 +5,13 @@
     namespace Sumidero\Middleware;
 
     class APIExceptionCatcher {
+
+        private $container;
+
+        public function __construct($container) {
+            $this->container = $container;
+        }
+
         /**
          * Example middleware invokable class
          *
@@ -17,15 +24,21 @@
         public function __invoke($request, $response, $next)
         {
             try {
+                $this->container["apiLogger"]->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+                $this->container["apiLogger"]->debug($request->getBody());
                 $response = $next($request, $response);
                 return $response;
             } catch (\Sumidero\Exception\InvalidParamsException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson(['invalidOrMissingParams' => array($e->getMessage())], 400);
             } catch (\Sumidero\Exception\NotFoundException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
             } catch (\Sumidero\Exception\AccessDenied $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
             } catch (\Throwable $e) {
+                $this->container["apiLogger"]->error("Exception caught: " . $e->getMessage());
                 return $response->withJson(['exceptionDetails' => $e->getMessage()], 500);
             }
         }
