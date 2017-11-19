@@ -9,7 +9,8 @@ var vTemplateApiError = function () {
         <div class="message-body">
             <div class="content">
                 <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
-                <h2>Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiError.response.status }} - {{ apiError.response.statusText }})</h2>
+                <h2 v-if="apiError.response.status != 0">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ apiError.response.status }} - {{ apiError.response.statusText }})</h2>
+                <h2 v-else>Uh oh! ...can't connect, server unreachable</h2>
                 <p v-if="! visibleDetails"><a href="#" v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
                 <div v-if="visibleDetails">
                     <hr>
