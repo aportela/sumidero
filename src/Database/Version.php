@@ -2,7 +2,7 @@
 
       declare(strict_types=1);
 
-      namespace Foobar\Database;
+      namespace Sumidero\Database;
 
       class Version {
 
@@ -57,7 +57,7 @@
             )
         );
 
-        public function __construct (\Foobar\Database\DB $dbh) {
+        public function __construct (\Sumidero\Database\DB $dbh) {
             $this->dbh = $dbh;
         }
 
@@ -69,13 +69,13 @@
             if ($results && count($results) == 1) {
                 return($results[0]->num);
             } else {
-                throw new \Foobar\Exception\NotFoundException("invalid database version");
+                throw new \Sumidero\Exception\NotFoundException("invalid database version");
             }
         }
 
         private function set(float $number) {
             $params = array(
-                (new \Foobar\Database\DBParam())->float(":num", $number)
+                (new \Sumidero\Database\DBParam())->float(":num", $number)
             );
             $query = '
                 INSERT INTO VERSION
