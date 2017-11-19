@@ -23,10 +23,20 @@
             ],
             // Monolog settings
             'logger' => [
-                'name' => 'slim-app',
-                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
-                'level' => \Monolog\Logger::DEBUG,
+                'name' => 'sumidero-app',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/default.log',
+                'level' => \Monolog\Logger::DEBUG
             ],
+            'databaseLogger' => [
+                'name' => 'sumidero-db',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/database.log',
+                'level' => \Monolog\Logger::DEBUG
+            ],
+            'apiLogger' => [
+                'name' => 'sumidero-api',
+                'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/api.log',
+                'level' => \Monolog\Logger::DEBUG
+            ]
         ],
     ];
 ?>
