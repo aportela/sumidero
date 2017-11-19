@@ -5,7 +5,7 @@
       namespace Sumidero\Database;
 
       /**
-       * Simple PDO Database Param Warapper
+       * Simple PDO Database Param Wrapper
        */
       class DBParam {
 
@@ -70,6 +70,21 @@
                   $this->name = $name;
                   $this->value = $value;
                   $this->type = \PDO::PARAM_INT;
+                  return($this);
+            }
+
+            /**
+             * set FLOAT param
+             *
+             * @param $name string
+             * @param $value int
+             *
+             * @return \Sumidero\Database\DBParam
+             */
+            public function float(string $name, float $value): \Sumidero\Database\DBParam {
+                  $this->name = $name;
+                  $this->value = $value;
+                  $this->type = \PDO::PARAM_STR;
                   return($this);
             }
 
