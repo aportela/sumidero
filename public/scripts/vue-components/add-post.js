@@ -76,6 +76,7 @@ const sumideroAddPost = Vue.component('sumidero-add-post', {
             if (this.isUrl(this.title)) {
                 var self = this;
                 self.loading = true;
+                self.errors = false;
                 var params = {
                     url: this.titleUrl,
                     externalUrl: this.titleUrl
