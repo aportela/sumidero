@@ -23,7 +23,7 @@
         }
 
         public static function getRandom() {
-            $id = \Sumidero\UUID::generate(true);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $users = array(
                 new \Sumidero\User(
                     $id,
@@ -36,11 +36,11 @@
             // get random users from placeholder api
             $jsonResult = json_decode(file_get_contents("https://randomuser.me/api/?page=1&results=8&inc=name,picture"));
             foreach($jsonResult->{"results"} as $e) {
-                $id = \Sumidero\UUID::generate(true);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                 $users[] =
                 new \Sumidero\User(
                     $id,
-                    sprintf("%s@myserver.org", $id),
+                    sprintf("%s@myserver.org", $e->name->first),
                     sprintf("%s-%s", str_replace(" ", "_", $e->name->first . $e->name->last), $id),
                     $e->name->first . " " . $e->name->last,
                     $e->picture->large

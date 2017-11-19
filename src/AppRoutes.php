@@ -36,7 +36,7 @@
                 shuffle($subReddits);
                 $data = (new \Sumidero\Scraper())->scrap($externalUrl);
                 $post = new \Sumidero\Post(
-                    \Sumidero\UUID::generate(true),
+                    $id = (\Ramsey\Uuid\Uuid::uuid4())->toString(),
                     $user,
                     $externalUrl . uniqid(),
                     parse_url($externalUrl, PHP_URL_HOST),
