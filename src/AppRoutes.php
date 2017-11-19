@@ -50,7 +50,6 @@
             }
             return $response->withJson(['id' => $post->id, 'title' => $post->title, 'image' => $post->thumbnail, 'body' => $post->body ], 200);
         });
-
     })->add(new \Sumidero\Middleware\APIExceptionCatcher($this->app->getContainer()));
 
 ?>
