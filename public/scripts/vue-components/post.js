@@ -1,5 +1,8 @@
-const vueSumideroPostTemplate = function () {
-  return `
+var post = (function () {
+  "use strict";
+
+  var template = function () {
+    return `
     <article class="media">
       <figure class="media-left">
         <p class="image is-64x64">
@@ -73,64 +76,67 @@ const vueSumideroPostTemplate = function () {
       </div>
     </article>
     `;
-};
+  };
 
-const post = Vue.component('sumidero-post', {
-  template: vueSumideroPostTemplate(),
-  data: function () {
-    return ({
-      loading: false
-    });
-  }, props: ['post', 'compact'],
-  created: function () {
-    bus.$emit("incProgress");
-  },
-  filters: {
-    getThermoFillClass(votes) {
-      var v = Math.abs(votes);
-      if (v == 0) {
-        return ("fa-thermometer-empty");
-      } else if (v > 0 && v <= 100) {
-        return ("fa-thermometer-quarter");
-      } else if (v > 100 && v <= 500) {
-        return ("fa-thermometer-half");
-      } else if (v > 500 && v <= 1000) {
-        return ("fa-thermometer-three-quarters");
-      } else if (v > 1000) {
-        return ("fa-thermometer-full");
-      } else {
-        return ("fa-thermometer-empty");
-      }
+  var module = Vue.component('sumidero-post', {
+    template: template(),
+    data: function () {
+      return ({
+        loading: false
+      });
+    }, props: ['post', 'compact'],
+    created: function () {
+      bus.$emit("incProgress");
     },
-    getThermoTempClass(votes) {
-      var v = Math.abs(votes);
-      if (v == 0) {
-        return ("");
-      } else {
-        if (votes > 0) {
-          return ("has-text-success");
+    filters: {
+      getThermoFillClass(votes) {
+        var v = Math.abs(votes);
+        if (v == 0) {
+          return ("fa-thermometer-empty");
+        } else if (v > 0 && v <= 100) {
+          return ("fa-thermometer-quarter");
+        } else if (v > 100 && v <= 500) {
+          return ("fa-thermometer-half");
+        } else if (v > 500 && v <= 1000) {
+          return ("fa-thermometer-three-quarters");
+        } else if (v > 1000) {
+          return ("fa-thermometer-full");
         } else {
-          return ("has-text-danger");
+          return ("fa-thermometer-empty");
         }
-      }
-    },
-    getVotesClass(votes) {
-      var v = Math.abs(votes);
-      if (v == 0) {
-        return ("");
-      } else {
-        if (votes > 0) {
-          return ("is-success");
+      },
+      getThermoTempClass(votes) {
+        var v = Math.abs(votes);
+        if (v == 0) {
+          return ("");
         } else {
-          return ("is-danger");
+          if (votes > 0) {
+            return ("has-text-success");
+          } else {
+            return ("has-text-danger");
+          }
         }
+      },
+      getVotesClass(votes) {
+        var v = Math.abs(votes);
+        if (v == 0) {
+          return ("");
+        } else {
+          if (votes > 0) {
+            return ("is-success");
+          } else {
+            return ("is-danger");
+          }
+        }
+      },
+      getSubPath(redditSub) {
+        return (redditSub.replace("r/", "/#/s/"));
+      },
+      formatDateAgo(timestamp) {
+        return (moment.unix(timestamp).fromNow());
       }
-    },
-    getSubPath(redditSub) {
-      return (redditSub.replace("r/", "/#/s/"));
-    },
-    formatDateAgo(timestamp) {
-      return (moment.unix(timestamp).fromNow());
     }
-  }
-});
+  });
+
+  return (module);
+})();

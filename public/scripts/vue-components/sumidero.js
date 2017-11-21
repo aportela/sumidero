@@ -1,7 +1,8 @@
-"use strict";
+var sumideroPosts = (function () {
+    "use strict";
 
-var vTemplateSumideroPosts = function () {
-    return `
+    var template = function () {
+        return `
     <div class="box" id="sumidero-posts">
         <div class="tags has-addons" v-if="this.$route.params.sub">
             <span class="tag is-dark">
@@ -28,57 +29,60 @@ var vTemplateSumideroPosts = function () {
         <sumidero-api-error-component v-else v-bind:apiError="apiError"></sumidero-api-error-component>
     </div>
     `;
-}
+    };
 
-var sumideroPosts = Vue.component('sumidero-posts', {
-    template: vTemplateSumideroPosts(),
-    created: function () {
-    },
-    data: function () {
-        return ({
-            loading: false,
-            errors: false,
-            apiError: null,
-            posts: []
-        });
-    },
-    props: ['sub', 'tags', 'compact'],
-    watch: {
-        '$route'(to, from) {
-            this.loadItems();
-        }
-    },
-    created: function () {
-        this.loadItems();
-    },
-    updated: function() {
-        imageLazyLoadObserver.observe();
-    },
-    methods: {
-        poll: function (callback) {
-            var self = this;
-            self.loading = true;
-            sumideroAPI.poll(function (response) {
-                self.loading = false;
-                callback(response);
+    var module = Vue.component('sumidero-posts', {
+        template: template(),
+        created: function () {
+        },
+        data: function () {
+            return ({
+                loading: false,
+                errors: false,
+                apiError: null,
+                posts: []
             });
         },
-        loadItems: function () {
-            var self = this;
-            self.loading = true;
-            bus.$emit("startProgress");
-            sumideroAPI.getPosts(function (response) {
-                if (response.ok) {
-                    self.posts = response.body.posts;
+        props: ['sub', 'tags', 'compact'],
+        watch: {
+            '$route'(to, from) {
+                this.loadItems();
+            }
+        },
+        created: function () {
+            this.loadItems();
+        },
+        updated: function () {
+            imageLazyLoadObserver.observe();
+        },
+        methods: {
+            poll: function (callback) {
+                var self = this;
+                self.loading = true;
+                sumideroAPI.poll(function (response) {
                     self.loading = false;
-                    bus.$emit("endProgress");
-                } else {
-                    self.errors = true;
-                    self.apiError = response.getApiErrorData();
-                    self.loading = false;
-                    bus.$emit("endProgress");
-                }
-            });
+                    callback(response);
+                });
+            },
+            loadItems: function () {
+                var self = this;
+                self.loading = true;
+                bus.$emit("startProgress");
+                sumideroAPI.getPosts(function (response) {
+                    if (response.ok) {
+                        self.posts = response.body.posts;
+                        self.loading = false;
+                        bus.$emit("endProgress");
+                    } else {
+                        self.errors = true;
+                        self.apiError = response.getApiErrorData();
+                        self.loading = false;
+                        bus.$emit("endProgress");
+                    }
+                });
+            }
         }
-    }
-});
+    });
+
+    return (module);
+})();

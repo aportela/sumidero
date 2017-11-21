@@ -1,7 +1,8 @@
-"use strict";
+var navigationMenu = (function () {
+    "use strict";
 
-var vTemplateNavigationMenu = function () {
-    return `
+    var template = function () {
+        return `
     <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item is-uppercase has-text-weight-bold" href="https://github.com/aportela/sumidero">
@@ -102,62 +103,65 @@ var vTemplateNavigationMenu = function () {
         </div>
     </nav>
     `;
-}
+    };
 
-/* navigation menu component */
-var navigationMenu = Vue.component('sumidero-navigation-menu-component', {
-    template: vTemplateNavigationMenu(),
-    data: function () {
-        return ({
-            searchText: null,
-            searchTimeout: null,
-            searching: false,
-            showLimitSearch: true,
-            userName: "aportela",
-            subs: [
-                {
-                    name: "/s/ (frontpage)",
-                    path: "/#/s/"
-                },
-                {
-                    name: "/s/news",
-                    path: "/#/s/news"
-                },
-                {
-                    name: "/s/television",
-                    path: "/#/s/television"
-                },
-                {
-                    name: "/s/games",
-                    path: "/#/s/games"
-                }
-            ]
-        });
-    },
-    props: [ 'logged' ],
-    methods: {
-        abortInstantSearch: function() {
-            this.searchText = null;
+    /* navigation menu component */
+    var module = Vue.component('sumidero-navigation-menu-component', {
+        template: template(),
+        data: function () {
+            return ({
+                searchText: null,
+                searchTimeout: null,
+                searching: false,
+                showLimitSearch: true,
+                userName: "aportela",
+                subs: [
+                    {
+                        name: "/s/ (frontpage)",
+                        path: "/#/s/"
+                    },
+                    {
+                        name: "/s/news",
+                        path: "/#/s/news"
+                    },
+                    {
+                        name: "/s/television",
+                        path: "/#/s/television"
+                    },
+                    {
+                        name: "/s/games",
+                        path: "/#/s/games"
+                    }
+                ]
+            });
         },
-        instantSearch: function() {
-            if (this.searchText) {
+        props: ['logged'],
+        methods: {
+            abortInstantSearch: function () {
+                this.searchText = null;
+            },
+            instantSearch: function () {
+                if (this.searchText) {
+                    var self = this;
+                    if (self.searchTimeout) {
+                        clearTimeout(self.searchTimeout);
+                    }
+                    self.searchTimeout = setTimeout(function () {
+                        self.search();
+                    }, 128);
+                } else {
+                    this.abortInstantSearch();
+                }
+            },
+            search: function () {
                 var self = this;
-                if (self.searchTimeout) {
-                    clearTimeout(self.searchTimeout);
-                }
-                self.searchTimeout = setTimeout(function () {
-                    self.search();
-                }, 128);
-            } else {
-                this.abortInstantSearch();
+                self.searching = true;
+                setTimeout(function () {
+                    self.searching = false;
+                }, 500);
             }
-        },
-        search: function() {
-            var self = this;
-            self.searching = true;
-            setTimeout(function () {
-                self.searching = false;
-            }, 500);
         }
-    }
-});
+    });
+
+    return (module);
+})();
