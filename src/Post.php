@@ -80,7 +80,7 @@
                 return($result);
             }
             foreach($redditData->{"data"}->{"children"} as $redditPost) {
-                $id = \Sumidero\UUID::generate(true);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                 $results[] = array(
                     "id" => $id,
                     "user" => $users[array_rand($users)], // author
