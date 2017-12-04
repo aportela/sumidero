@@ -17,7 +17,7 @@
         });
 
         $this->get('/posts', function (Request $request, Response $response, array $args) {
-            $data = \Sumidero\Post::search(null, 1, 16, array(), "random");
+            $data = \Sumidero\Post::search(new \Sumidero\Database\DB($this), 1, 16, array(), "random");
             return $response->withJson(['posts' => $data->results ], 200);
         });
 
@@ -27,7 +27,7 @@
         });
 
         $this->post('/post/add', function (Request $request, Response $response, array $args) {
-            $dbh = new \Sumidero\Database\DB();
+            $dbh = new \Sumidero\Database\DB($this);
             $user = \Sumidero\User::getRandom();
             $user->add($dbh);
             $externalUrl = $request->getParam("externalUrl", "");

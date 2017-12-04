@@ -8,8 +8,15 @@
 
     $app = (new \Sumidero\App())->get();
 
+    $missingExtensions = array_diff($app->getContainer()["settings"]["phpRequiredExtensions"], get_loaded_extensions());
+    if (count($missingExtensions) > 0) {
+        echo "Error: missing php extension/s: " . implode(", ", $missingExtensions) . PHP_EOL;
+        exit;
+    }
+
     $actualVersion = 0;
-    $v = new \Sumidero\Database\Version(new \Sumidero\Database\DB());
+    $container = $app->getContainer();
+    $v = new \Sumidero\Database\Version(new \Sumidero\Database\DB($container), $container->get("settings")['database']['type']);
     try {
         $actualVersion = $v->get();
     } catch (\Sumidero\Exception\NotFoundException $e) {
