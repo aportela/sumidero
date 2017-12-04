@@ -4,10 +4,73 @@
     use Slim\Http\Request;
     use Slim\Http\Response;
 
+    $this->app->group("/api", function() {
+
+        /* user */
+
+        $this->group("/user", function() {
+
+            $this->get('/poll', function (Request $request, Response $response, array $args) {
+                return $response->withJson(['sessionId' => session_id() ], 200);
+            });
+
+            $this->post('/signin', function (Request $request, Response $response, array $args) {
+                $u = new \Sumidero\User("", $request->getParam("email", ""), $request->getParam("password", ""));
+                if ($u->login(new \Sumidero\Database\DB($this))) {
+                    return $response->withJson(['logged' => true], 200);
+                } else {
+                    return $response->withJson(['logged' => false], 401);
+                }
+            });
+
+            $this->post('/signup', function (Request $request, Response $response, array $args) {
+                if ($this->get('settings')['common']['allowSignUp']) {
+                    $dbh = new \Sumidero\Database\DB($this);
+                    $u = new \Sumidero\User(
+                        "",
+                        $request->getParam("email", ""),
+                        $request->getParam("password", "")
+                    );
+                    $exists = false;
+                    try {
+                        $u->get($dbh);
+                        $exists = true;
+                    } catch (\Sumidero\Exception\NotFoundException $e) {
+                    }
+                    if ($exists) {
+                        return $response->withJson([], 409);
+                    } else {
+                        $u->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                        $u->add($dbh);
+                        return $response->withJson([], 200);
+                    }
+                } else {
+                    throw new \Sumidero\Exception\AccessDeniedException("");
+                }
+            });
+
+            $this->get('/signout', function (Request $request, Response $response, array $args) {
+                \Sumidero\User::logout();
+                return $response->withJson(['logged' => false], 200);
+            });
+        });
+
+        /* user */
+    })->add(new \Sumidero\Middleware\APIExceptionCatcher($this->app->getContainer()));
+
     $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+        $v = new \Sumidero\Database\Version(new \Sumidero\Database\DB($this), $this->get('settings')['database']['type']);
         return $this->view->render($response, 'index.html.twig', array(
-            'settings' => $this->settings["twigParams"]
+            'settings' => $this->settings["twigParams"],
+            'initialState' => json_encode(
+                array(
+                    "logged" => \Sumidero\User::isLogged(),
+                    'upgradeAvailable' => $v->hasUpgradeAvailable(),
+                    "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
+                    "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                )
+            )
         ));
     });
 
