@@ -1,78 +1,205 @@
 <?php
+
     declare(strict_types=1);
 
     namespace Sumidero;
 
     class User {
+
         public $id;
         public $email;
-        public $name;
-        public $fullName;
-        public $avatar;
+        public $password;
+        public $passwordHash;
 
-
-        public function __construct ($id, $email, $name, $fullName, $avatar) {
+        /**
+         * user constructor
+         *
+         * @param string $id
+         * @param string $email
+         * @param string $password
+         */
+	    public function __construct (string $id = "", string $email = "", string $password = "") {
             $this->id = $id;
             $this->email = $email;
-            $this->name = $name;
-            $this->fullName = $fullName;
-            $this->avatar = $avatar;
+            $this->password = $password;
         }
 
-        public function __destruct() {
+        public function __destruct() { }
+
+        /**
+         * helper for hashing password (predefined algorithm)
+         *
+         * @param string $password string the password to hash
+         */
+        private function passwordHash(string $password = "") {
+            return(password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)));
         }
 
-        public static function getRandom() {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $users = array(
-                new \Sumidero\User(
-                    $id,
-                    sprintf("%s@myserver.org", $id),
-                    sprintf("anonymous-%s", $id),
-                    "We are Anonymous, expect us",
-                    "https://cdn.shopify.com/s/files/1/2353/2439/products/guy_fawkes_mask.jpg?v=1508552916"
-                )
-            );
-            // get random users from placeholder api
-            $jsonResult = json_decode(file_get_contents("https://randomuser.me/api/?page=1&results=8&inc=name,picture"));
-            foreach($jsonResult->{"results"} as $e) {
-                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $users[] =
-                new \Sumidero\User(
-                    $id,
-                    sprintf("%s@myserver.org", $e->name->first),
-                    sprintf("%s-%s", str_replace(" ", "_", $e->name->first . $e->name->last), $id),
-                    $e->name->first . " " . $e->name->last,
-                    $e->picture->large
-                );
+        /**
+         * add new user
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         */
+        public function add(\Sumidero\Database\DB $dbh) {
+            if (! empty($this->id)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($this->password)) {
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                            (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                        );
+                        return($dbh->execute("INSERT INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
+                    } else {
+                        throw new \Sumidero\Exception\InvalidParamsException("password");
+                    }
+                } else {
+                    throw new \Sumidero\Exception\InvalidParamsException("email");
+                }
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
             }
-            shuffle($users);
-            $u = $users[array_rand($users)];
-            return(new \Sumidero\User(
-                $u->id,
-                $u->email,
-                $u->name,
-                $u->fullName,
-                $u->avatar
-            ));
         }
 
-        public function add($dbh) {
-            $params = array(
-                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                (new \Sumidero\Database\DBParam())->str(":email", $this->email),
-                (new \Sumidero\Database\DBParam())->str(":password_hash", password_hash("secret", PASSWORD_DEFAULT)),
-                (new \Sumidero\Database\DBParam())->str(":name", $this->name),
-                (new \Sumidero\Database\DBParam())->str(":full_name", $this->fullName),
-                (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatar)
-            );
-            $query = '
-                INSERT INTO USER
-                    (id, email, password_hash, name, full_name, avatar_url)
-                VALUES
-                (:id, :email, :password_hash, :name, :full_name, :avatar_url)
-            ';
-            return($dbh->execute($query, $params));
+        /**
+         * update user (email & hashed password fields)
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         */
+        public function update(\Sumidero\Database\DB $dbh) {
+            if (! empty($this->id)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($this->password)) {
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                            (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                        );
+                        return($dbh->execute(" UPDATE USER SET email = :email, password_hash = :password_hash WHERE id = :id ", $params));
+                    } else {
+                        throw new \Sumidero\Exception\InvalidParamsException("password");
+                    }
+                } else {
+                    throw new \Sumidero\Exception\InvalidParamsException("email");
+                }
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
+            }
         }
+
+        /**
+         * get user data (id, email, hashed password)
+         * id || email must be set
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         */
+        public function get(\Sumidero\Database\DB $dbh) {
+            $results = null;
+            if (! empty($this->id)) {
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE id = :id ", array(
+                    (new \Sumidero\Database\DBParam())->str(":id", $this->id)
+                ));
+            } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                $results = $dbh->query(" SELECT id, email, password_hash AS passwordHash FROM USER WHERE email = :email ", array(
+                    (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
+                ));
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("id,email");
+            }
+            if (count($results) == 1) {
+                $this->id = $results[0]->id;
+                $this->email = $results[0]->email;
+                $this->passwordHash = $results[0]->passwordHash;
+            } else {
+                throw new \Sumidero\Exception\NotFoundException("");
+            }
+        }
+
+        /**
+         * try login with specified credentials
+         * id || email & password must be set
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         *
+         * @return bool password match (true | false)
+         */
+        public function login(\Sumidero\Database\DB $dbh): bool {
+            if (! empty($this->password)) {
+                $this->get($dbh);
+                if (password_verify($this->password, $this->passwordHash)) {
+                    $_SESSION["userId"] = $this->id;
+                    $_SESSION["email"] = $this->email;
+                    return(true);
+                } else {
+                    return(false);
+                }
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("password");
+            }
+        }
+
+        /**
+         * logout (close session)
+         */
+        public static function logout() {
+            $_SESSION = array();
+            if (ini_get("session.use_cookies")) {
+                if (PHP_SAPI != 'cli') {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+                }
+            }
+            if (session_status() != PHP_SESSION_NONE) {
+                session_destroy();
+            }
+        }
+
+        /**
+         * check if user is logged
+         */
+        public static function isLogged() {
+            return(isset($_SESSION["userId"]));
+        }
+
+        /**
+         * return logged user id
+         *
+         * @return string userId || null
+         */
+        public static function getUserId() {
+            return(isset($_SESSION["userId"]) ? $_SESSION["userId"]: null);
+        }
+
+        /**
+         * set user credentials
+         * TODO: REMOVE
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         * @param string $password "secret :-)"
+         *
+         * @return bool
+         */
+        public function setCredentials(\Sumidero\Database\DB $dbh, string $password = ""): bool {
+            if (! empty($this->id)) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($password)) {
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":id", md5(mb_strtolower($this->email))),
+                            (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Sumidero\Database\DBParam())->str(":password_hash", password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)))
+                        );
+                        return($dbh->execute("REPLACE INTO USER (id, email, password_hash) VALUES(:id, :email, :password_hash)", $params));
+                    } else {
+                        throw new \Sumidero\Exception\InvalidParamsException("password");
+                    }
+                } else {
+                    throw new \Sumidero\Exception\InvalidParamsException("email");
+                }
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
+            }
+        }
+
     }
+
 ?>
