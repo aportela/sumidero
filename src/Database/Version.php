@@ -46,7 +46,9 @@
                         CREATE TABLE [USER] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
                             [email] VARCHAR(255) UNIQUE NOT NULL,
-                            [password_hash] VARCHAR(60) NOT NULL
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [nick] VARCHAR(255) UNIQUE NOT NULL,
+                            [avatar_url] VARCHAR(2048)
                         );
                     '
                 ),
@@ -75,7 +77,9 @@
                         CREATE TABLE [USER] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
                             [email] VARCHAR(255) UNIQUE NOT NULL,
-                            [password_hash] VARCHAR(60) NOT NULL
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [nick] VARCHAR(255) UNIQUE NOT NULL,
+                            [avatar_url] VARCHAR(2048)
                         );
                     '
                 ),
