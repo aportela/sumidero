@@ -3,6 +3,30 @@ var sumideroPosts = (function () {
 
     var template = function () {
         return `
+
+        <div id="app" class="container">
+            <sumidero-navigation-menu-component></sumidero-navigation-menu-component>
+            <section class="hero">
+                <div class="hero-body">
+                    <p class="title is-1 has-text-centered">Sumidero</i></p>
+                    <p class="subtitle is-7 has-text-centered">I ASSURE YOU; WE'RE OPEN</i></p>
+                </div>
+            </section>
+            <div class="field">
+                <div class="control">
+                    <label class="checkbox">
+                    <input type="checkbox" v-model="compact">
+                    Compact view
+                    </label>
+                </div>
+            </div>
+
+            <transition name="fade">
+                <!-- component matched by the route will render here -->
+                <router-view v-bind:compact="compact"></router-view>
+            </transition>
+        </div>
+<!--
     <div class="box" id="sumidero-posts">
         <div class="tags has-addons" v-if="this.$route.params.sub">
             <span class="tag is-dark">
@@ -28,6 +52,7 @@ var sumideroPosts = (function () {
         </div>
         <sumidero-api-error-component v-else v-bind:apiError="apiError"></sumidero-api-error-component>
     </div>
+    -->
     `;
     };
 
@@ -50,7 +75,7 @@ var sumideroPosts = (function () {
             }
         },
         created: function () {
-            this.loadItems();
+            //this.loadItems();
         },
         updated: function () {
             imageLazyLoadObserver.observe();
