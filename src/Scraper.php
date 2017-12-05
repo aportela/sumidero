@@ -15,9 +15,13 @@
         public function __destruct() {
         }
 
-        public function scrap(string $url) {
-            $html = file_get_contents($url);
-            return($this->readability->parse($html));
+        public function scrap(string $url = "") {
+            if (! empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+                $html = file_get_contents($url);
+                return($this->readability->parse($html));
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("url");
+            }
         }
     }
 
