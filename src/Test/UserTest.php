@@ -6,8 +6,7 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class UserTest extends \PHPUnit\Framework\TestCase
-    {
+    final class UserTest extends \PHPUnit\Framework\TestCase {
         static private $app = null;
         static private $container = null;
         static private $dbh = null;
@@ -98,7 +97,6 @@
             }
         }
 
-
         public function testAdd(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
@@ -145,6 +143,52 @@
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
             $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
+        }
+
+        public function testFindByEmailWithoutEmail(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            \Sumidero\User::findByEmail(self::$dbh, "");
+        }
+
+        public function testFindByEmailWithInvalidEmail(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            \Sumidero\User::findByEmail(self::$dbh, "invalid-email");
+        }
+
+        public function testFindByEmailWithNonExistentEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertNull(\Sumidero\User::findByEmail(self::$dbh, $id . "@server.com"));
+        }
+
+        public function testFindByEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u->add(self::$dbh);
+            $u2 = \Sumidero\User::findByEmail(self::$dbh, $u->email);
+            $this->assertNotNull($u2);
+            $this->assertEquals($u->id, $u2->id);
+        }
+
+        public function testFindByNickWithoutNick(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("nick");
+            \Sumidero\User::findByNick(self::$dbh, "");
+        }
+
+        public function testFindByNickWithNonExistentNick(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertNull(\Sumidero\User::findByNick(self::$dbh, $id));
+        }
+
+        public function testFindByNick(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u->add(self::$dbh);
+            $u2 = \Sumidero\User::findByNick(self::$dbh, $u->nick);
+            $this->assertNotNull($u2);
+            $this->assertEquals($u->id, $u2->id);
         }
 
         public function testGetWithoutIdOrEmail(): void {
