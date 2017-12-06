@@ -20,7 +20,7 @@
          * @param string $email
          * @param string $password
          */
-	    public function __construct (string $id = "", string $email = "", string $password = "", string $nick = "", string $avatarUrl) {
+	    public function __construct (string $id = "", string $email = "", string $password = "", string $nick = "", string $avatarUrl = "") {
             $this->id = $id;
             $this->email = $email;
             $this->password = $password;
@@ -120,6 +120,42 @@
         }
 
         /**
+         * get user data by email
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         * @param string $email user email
+         */
+        public static function findByEmail(\Sumidero\Database\DB $dbh, $email = "") {
+            $u = null;
+            try {
+                $u = new \Sumidero\User();
+                $u->email = $email;
+                $u->get($dbh);
+            } catch (\Sumidero\Exception\NotFoundException $e) {
+                $u = null;
+            }
+            return($u);
+        }
+
+        /**
+         * get user data by nick
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         * @param string $nick user nick
+         */
+        public static function findByNick(\Sumidero\Database\DB $dbh, string $nick = "") {
+            $u = null;
+            try {
+                $u = new \Sumidero\User();
+                $u->nick = $nick;
+                $u->get($dbh);
+            } catch (\Sumidero\Exception\NotFoundException $e) {
+                $u = null;
+            }
+            return($u);
+        }
+
+        /**
          * get user data (id, email, nick, avatar url & hashed password)
          * id || email must be set
          *
@@ -135,8 +171,12 @@
                 $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE email = :email ", array(
                     (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
+            } else if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
+                $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE nick = :nick ", array(
+                    (new \Sumidero\Database\DBParam())->str(":nick", mb_strtolower($this->nick))
+                ));
             } else {
-                throw new \Sumidero\Exception\InvalidParamsException("id,email");
+                throw new \Sumidero\Exception\InvalidParamsException("id,email,nick");
             }
             if (count($results) == 1) {
                 $this->id = $results[0]->id;
