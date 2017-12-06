@@ -30,10 +30,20 @@
                 return $response;
             } catch (\Sumidero\Exception\InvalidParamsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                return $response->withJson(['invalidOrMissingParams' => array($e->getMessage())], 400);
+                $fields = array();
+                if (mb_strpos(",", $e->getMessage) > 0) {
+                    $fields = explode(",", $e->getMessage());
+                } else {
+                    $fields[] = $e->getMessage();
+                }
+                return $response->withJson(['invalidOrMissingParams' => $fields], 400);
             } catch (\Sumidero\Exception\NotFoundException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
+                if (! empty($e->getMessage())) {
+                    return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
+                } else {
+                    return $response->withJson([], 404);
+                }
             } catch (\Sumidero\Exception\AccessDenied $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
