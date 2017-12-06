@@ -45,9 +45,9 @@
          * @param \Sumidero\Database\DB $dbh database handler
          */
         public function add(\Sumidero\Database\DB $dbh) {
-            if (! empty($this->id)) {
-                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                    if (! empty($this->nick)) {
+            if (! empty($this->id) && mb_strlen($this->id) == 36) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
+                    if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
                         if (! empty($this->password)) {
                             $params = array(
                                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
@@ -56,7 +56,11 @@
                                 (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
                             );
                             if (! empty($this->avatarUrl)) {
-                                $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
+                                if (mb_strlen($this->avatarUrl) <= 2048) {
+                                    $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
+                                } else {
+                                    throw new \Sumidero\Exception\InvalidParamsException("avatarUrl");
+                                }
                             } else {
                                 $params[] = (new \Sumidero\Database\DBParam())->null(":avatar_url");
                             }
@@ -81,9 +85,9 @@
          * @param \Sumidero\Database\DB $dbh database handler
          */
         public function update(\Sumidero\Database\DB $dbh) {
-            if (! empty($this->id)) {
-                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
-                    if (! empty($this->nick)) {
+            if (! empty($this->id) && mb_strlen($this->id) == 36) {
+                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
+                    if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
                         if (! empty($this->password)) {
                             $params = array(
                                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
@@ -92,7 +96,11 @@
                                 (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
                             );
                             if (! empty($this->avatarUrl)) {
-                                $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
+                                if (mb_strlen($this->avatarUrl) <= 2048) {
+                                    $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
+                                } else {
+                                    throw new \Sumidero\Exception\InvalidParamsException("avatarUrl");
+                                }
                             } else {
                                 $params[] = (new \Sumidero\Database\DBParam())->null(":avatar_url");
                             }
@@ -119,11 +127,11 @@
          */
         public function get(\Sumidero\Database\DB $dbh) {
             $results = null;
-            if (! empty($this->id)) {
+            if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE id = :id ", array(
                     (new \Sumidero\Database\DBParam())->str(":id", $this->id)
                 ));
-            } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+            } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
                 $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE email = :email ", array(
                     (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
                 ));
