@@ -56,17 +56,26 @@
                     '
                         CREATE TABLE [POST] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [original_poster_id] [id] VARCHAR(36) NOT NULL,
+                            [original_poster_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
                             [title] VARCHAR(128) NOT NULL,
-                            [body] VARCHAR(384) NOT NULL,
+                            [body] VARCHAR(384),
                             [permalink] VARCHAR(2048) UNIQUE NOT NULL,
-                            [domain] VARCHAR(64),
+                            [domain] VARCHAR(128),
                             [thumbnail] VARCHAR(2048),
                             [external_url] VARCHAR(2048),
                             [sub] VARCHAR(16),
-                            [votes] INTEGER NOT NULL DEFAULT 0,
-                            [comments] INTEGER NOT NULL DEFAULT 0
+                            [total_votes] INTEGER NOT NULL DEFAULT 0,
+                            [total_comments] INTEGER NOT NULL DEFAULT 0
+                        );
+                    '
+                ),
+                "1.03" => array(
+                    '
+                        CREATE TABLE [POST_TAG] (
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [tag_name] VARCHAR(16) NOT NULL,
+                            PRIMARY KEY([post_id], [tag_name])
                         );
                     '
                 )
@@ -87,17 +96,26 @@
                     '
                         CREATE TABLE [POST] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [original_poster_id] [id] VARCHAR(36) NOT NULL,
+                            [original_poster_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
                             [title] VARCHAR(128) NOT NULL,
-                            [body] VARCHAR(384) NOT NULL,
+                            [body] VARCHAR(384),
                             [permalink] VARCHAR(2048) UNIQUE NOT NULL,
-                            [domain] VARCHAR(64),
+                            [domain] VARCHAR(128),
                             [thumbnail] VARCHAR(2048),
                             [external_url] VARCHAR(2048),
                             [sub] VARCHAR(16),
-                            [votes] INTEGER NOT NULL DEFAULT 0,
-                            [comments] INTEGER NOT NULL DEFAULT 0
+                            [total_votes] INTEGER NOT NULL DEFAULT 0,
+                            [total_comments] INTEGER NOT NULL DEFAULT 0
+                        );
+                    '
+                ),
+                "1.03" => array(
+                    '
+                        CREATE TABLE [POST_TAG] (
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [tag_name] VARCHAR(16) NOT NULL,
+                            PRIMARY KEY([post_id], [tag_name])
                         );
                     '
                 )
