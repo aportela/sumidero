@@ -48,7 +48,7 @@
             $this->validateFields();
             $params = array(
                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                (new \Sumidero\Database\DBParam())->str(":original_poster_id", \Sumidero\UserSession::getUserId()),
+                (new \Sumidero\Database\DBParam())->str(":op_user_id", \Sumidero\UserSession::getUserId()),
                 (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink),
                 (new \Sumidero\Database\DBParam())->str(":title", $this->title),
             );
@@ -80,9 +80,9 @@
             }
             $query = '
                 INSERT INTO POST
-                    (id, original_poster_id, creation_date, permalink, domain, external_url, sub, total_votes, total_comments, title, body, thumbnail)
+                    (id, op_user_id, creation_date, permalink, domain, external_url, sub, total_votes, total_comments, title, body, thumbnail)
                 VALUES
-                    (:id, :original_poster_id, strftime("%s", "now"), :permalink, :domain, :external_url, :sub, 0, 0, :title, :body, :thumbnail)
+                    (:id, :op_user_id, strftime("%s", "now"), :permalink, :domain, :external_url, :sub, 0, 0, :title, :body, :thumbnail)
             ';
             if ($dbh->execute($query, $params)) {
                 if (count($this->tags) > 0) {
@@ -162,11 +162,11 @@
                     P.external_url AS externalUrl,
                     P.total_votes AS totalVotes,
                     P.total_comments AS totalComments,
-                    P.original_poster_id AS userId,
+                    P.op_user_id AS userId,
                     U.nick AS userNick,
                     U.avatar_url AS userAvatarUrl
                 FROM POST P
-                LEFT JOIN USER U ON U.id = P.original_poster_id
+                LEFT JOIN USER U ON U.id = P.op_user_id
                 %s
                 %s
                 LIMIT %d OFFSET %d
