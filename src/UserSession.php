@@ -60,6 +60,15 @@
             return(isset($_SESSION["nick"]) ? $_SESSION["nick"]: null);
         }
 
+        /**
+         * return logged user avatar url
+         *
+         * @return string avatar url || null
+         */
+        public static function getAvatarUrl() {
+            return(isset($_SESSION["avatarUrl"]) ? $_SESSION["avatarUrl"]: null);
+        }
+
     }
 
 ?>

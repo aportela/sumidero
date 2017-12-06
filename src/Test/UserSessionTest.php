@@ -104,5 +104,20 @@
             $this->assertEquals($u->nick, \Sumidero\UserSession::getNick());
         }
 
+        public function testGetAvatarWithoutSession(): void {
+            \Sumidero\User::logout();
+            $this->assertNull(\Sumidero\UserSession::getAvatarUrl());
+
+        }
+
+        public function testAvatarNick(): void {
+            \Sumidero\User::logout();
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "http://avat.ar");
+            $u->add(self::$dbh);
+            $u->login(self::$dbh);
+            $this->assertEquals($u->avatarUrl, \Sumidero\UserSession::getAvatarUrl());
+        }
+
     }
 ?>
