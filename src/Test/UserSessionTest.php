@@ -110,7 +110,7 @@
 
         }
 
-        public function testAvatarNick(): void {
+        public function testGetAvatar(): void {
             \Sumidero\User::logout();
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
             $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "http://avat.ar");
