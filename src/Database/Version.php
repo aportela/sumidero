@@ -56,7 +56,7 @@
                     '
                         CREATE TABLE [POST] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [original_poster_id] [id] VARCHAR(36),
+                            [op_user_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
                             [title] VARCHAR(128) NOT NULL,
                             [body] VARCHAR(384),
@@ -76,6 +76,17 @@
                             [post_id] VARCHAR(36) NOT NULL,
                             [tag_name] VARCHAR(16) NOT NULL,
                             PRIMARY KEY([post_id], [tag_name])
+                        );
+                    '
+                ),
+                "1.04" => array(
+                    '
+                        CREATE TABLE [POST_COMMENT] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [c_user_id] [id] VARCHAR(36),
+                            [creation_date] INTEGER NOT NULL,
+                            [body] VARCHAR(384)
                         );
                     '
                 )
@@ -96,7 +107,7 @@
                     '
                         CREATE TABLE [POST] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [original_poster_id] [id] VARCHAR(36),
+                            [op_user_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
                             [title] VARCHAR(128) NOT NULL,
                             [body] VARCHAR(384),
@@ -116,6 +127,17 @@
                             [post_id] VARCHAR(36) NOT NULL,
                             [tag_name] VARCHAR(16) NOT NULL,
                             PRIMARY KEY([post_id], [tag_name])
+                        );
+                    '
+                ),
+                "1.04" => array(
+                    '
+                        CREATE TABLE [POST_COMMENT] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [c_user_id] [id] VARCHAR(36),
+                            [creation_date] INTEGER NOT NULL,
+                            [body] VARCHAR(384)
                         );
                     '
                 )
