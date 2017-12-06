@@ -15,12 +15,15 @@
         public $thumbnail;
         public $totalVotes;
         public $totalComments;
+        public $tags;
 
-        public function __construct () { }
+        public function __construct () {
+            $this->tags = array();
+        }
 
         public function __destruct() { }
 
-        public function add(\Sumidero\Database\DB $dbh) {
+        private function validateFields() {
             if (empty($this->id)) {
                 throw new \Sumidero\Exception\InvalidParamsException("id");
             }
@@ -30,6 +33,19 @@
             if (empty($this->title)) {
                 throw new \Sumidero\Exception\InvalidParamsException("title");
             }
+            $totalTags = count($this->tags);
+            if ($totalTags > 0) {
+                for ($i = 0; $i < $totalTags; $i++) {
+                    $this->tags[$i] = mb_strtolower(trim($this->tags[$i]));
+                    if (empty($this->tags[$i])) {
+                        throw new \Sumidero\Exception\InvalidParamsException("tags");
+                    }
+                }
+            }
+        }
+
+        public function add(\Sumidero\Database\DB $dbh) {
+            $this->validateFields();
             $params = array(
                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
                 (new \Sumidero\Database\DBParam())->str(":original_poster_id", \Sumidero\UserSession::getUserId()),
@@ -68,7 +84,23 @@
                 VALUES
                     (:id, :original_poster_id, strftime("%s", "now"), :permalink, :domain, :external_url, :sub, 0, 0, :title, :body, :thumbnail)
             ';
-            return($dbh->execute($query, $params));
+            if ($dbh->execute($query, $params)) {
+                if (count($this->tags) > 0) {
+                    $query = " INSERT INTO POST_TAG (post_id, tag_name) VALUES (:post_id, :tag_name); ";
+                    foreach($this->tags as $tag) {
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":post_id", $this->id),
+                            (new \Sumidero\Database\DBParam())->str(":tag_name", $tag)
+                        );
+                        $dbh->execute($query, $params);
+                    }
+                    return(true);
+                } else {
+                    return(true);
+                }
+            } else {
+                return(false);
+            }
         }
 
         public static function search(\Sumidero\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
@@ -80,6 +112,10 @@
                 if (isset($filter["sub"]) && ! empty($filter["sub"])) {
                     $queryConditions[] = " P.sub LIKE :sub ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $filter["sub"]);
+                }
+                if (isset($filter["tag"]) && ! empty($filter["tag"])) {
+                    $queryConditions[] = " EXISTS ( SELECT PT.tag_name FROM POST_TAG PT WHERE PT.post_id = P.id AND PT.tag_name = :tag ) ";
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":tag", $filter["tag"]);
                 }
                 if (isset($filter["domain"]) && ! empty($filter["domain"])) {
                     $queryConditions[] = " P.domain LIKE :domain ";

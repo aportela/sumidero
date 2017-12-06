@@ -105,8 +105,36 @@
             $this->assertTrue($post->add(self::$dbh));
         }
 
+        public function testAddWithInvalidTags(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("tags");
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $post->tags = array("one", "", "three");
+            $post->add(self::$dbh);
+        }
+
+        public function testAddWithTags(): void {
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $post->tags = array("one", "two", "three");
+            $this->assertTrue($post->add(self::$dbh));
+        }
+
         public function testSearchWithSubFilter(): void {
             $this->assertInstanceOf("stdclass", \Sumidero\Post::search(self::$dbh, 1, 16, array("sub" => "test"), ""));
+        }
+
+        public function testSearchWithTagFilter(): void {
+            $this->assertInstanceOf("stdclass", \Sumidero\Post::search(self::$dbh, 1, 16, array("tag" => "test"), ""));
         }
 
         public function testSearchWithDomainFilter(): void {
@@ -126,7 +154,7 @@
         }
 
         public function testSearchWithAllFilters(): void {
-            $this->assertInstanceOf("stdclass", \Sumidero\Post::search(self::$dbh, 1, 16, array("sub" => "test", "domain" => "www.server.com", "title" => "test", "body" => "test"), ""));
+            $this->assertInstanceOf("stdclass", \Sumidero\Post::search(self::$dbh, 1, 16, array("sub" => "test", "tag" => "test", "domain" => "www.server.com", "title" => "test", "body" => "test"), ""));
         }
 
     }
