@@ -9,11 +9,11 @@ var navigationMenu = (function () {
                 <span class="icon">
                     <i class="fa fa-github"></i>
                 </span>
-
                 SUMIDERO
             </a>
         </div>
         <div class="navbar-menu">
+            <!--
             <div class="navbar-start">
                 <div class="navbar-item has-dropdown is-hoverable">
                     <a class="navbar-link">
@@ -54,51 +54,9 @@ var navigationMenu = (function () {
                     </div>
                 </div>
             </div>
+            -->
             <div class="navbar-end">
-                <div class="navbar-item has-dropdown is-hoverable" v-if="logged">
-                    <a class="navbar-link">
-                        <span class="icon">
-                            <i class="fa fa-user"></i>
-                        </span>
-                        <span>{{ userName }}</span>
-                    </a>
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            <span class="icon">
-                                <i class="fa fa-id-card-o"></i>
-                            </span>
-                            <span>my profile</span>
-                        </a>
-                        <a class="navbar-item">
-                            <span class="icon">
-                                <i class="fa fa-sign-out"></i>
-                            </span>
-                            <span>signout</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="navbar-item has-dropdown is-hoverable" v-else>
-                    <a class="navbar-link">
-                        <span class="icon">
-                            <i class="fa fa-user"></i>
-                        </span>
-                        <span>anonymous (not logged)</span>
-                    </a>
-                    <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            <span class="icon">
-                                <i class="fa fa-sign-in"></i>
-                            </span>
-                            <span>signin</span>
-                        </a>
-                        <a class="navbar-item">
-                            <span class="icon">
-                            <i class="fa fa-user-plus"></i>
-                            </span>
-                            <span>signup</span>
-                        </a>
-                    </div>
-                </div>
+                <sumidero-auth-menu-component></sumidero-auth-menu-component>
             </div>
         </div>
     </nav>
@@ -110,10 +68,13 @@ var navigationMenu = (function () {
         template: template(),
         data: function () {
             return ({
+                signUp: false,
                 searchText: null,
                 searchTimeout: null,
                 searching: false,
                 showLimitSearch: true,
+                logged: initialState.logged,
+                session: initialState.session,
                 userName: "aportela",
                 subs: [
                     {
@@ -135,7 +96,6 @@ var navigationMenu = (function () {
                 ]
             });
         },
-        props: ['logged'],
         methods: {
             abortInstantSearch: function () {
                 this.searchText = null;
@@ -159,6 +119,19 @@ var navigationMenu = (function () {
                 setTimeout(function () {
                     self.searching = false;
                 }, 500);
+            },
+            signOut: function() {
+                var self = this;
+                sumideroAPI.signOut(function(response) {
+                    if (response.ok) {
+                        self.$router.push({ path: '/signin' });
+                    } else {
+                        self.apiError = response.getApiErrorData();
+                        self.errors = true;
+                        self.loading = false;
+                        // TODO: show error
+                    }
+                });
             }
         }
     });
