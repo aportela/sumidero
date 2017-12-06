@@ -103,6 +103,49 @@
             }
         }
 
+        public function addComment(\Sumidero\Database\DB $dbh, $body) {
+            if (empty($this->id)) {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
+            }
+            if (empty($body)) {
+                throw new \Sumidero\Exception\InvalidParamsException("body");
+            }
+            $params = array(
+                (new \Sumidero\Database\DBParam())->str(":id", (\Ramsey\Uuid\Uuid::uuid4())->toString()),
+                (new \Sumidero\Database\DBParam())->str(":post_id", $this->id),
+                (new \Sumidero\Database\DBParam())->str(":c_user_id", \Sumidero\UserSession::getUserId()),
+                (new \Sumidero\Database\DBParam())->str(":body", $this->body),
+            );
+            $query = '
+                INSERT INTO POST_COMMENT
+                    (id, post_id, c_user_id, creation_date, body)
+                VALUES
+                    (:id, :post_id, :c_user_id, strftime("%s", "now"), :body)
+            ';
+            return($dbh->execute($query, $params));
+        }
+
+        public function delete(\Sumidero\Database\DB $dbh) {
+            if (empty($this->id)) {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
+            }
+            $params = array(
+                (new \Sumidero\Database\DBParam())->str(":id", $this->id)
+            );
+            $query = ' DELETE FROM POST_TAG WHERE post_id = :id ';
+            if ($dbh->execute($query, $params)) {
+                $query = ' DELETE FROM POST_COMMENT WHERE post_id = :id ';
+                if ($dbh->execute($query, $params)) {
+                    $query = ' DELETE FROM POST WHERE id = :id ';
+                    return($dbh->execute($query, $params));
+                } else {
+                    return(false);
+                }
+            } else {
+                return(false);
+            }
+        }
+
         public static function search(\Sumidero\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
             $results = array();
             $params = array();

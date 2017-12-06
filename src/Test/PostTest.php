@@ -95,16 +95,6 @@
             $post->add(self::$dbh);
         }
 
-        public function testAdd(): void {
-            $opUserId = $this->createUserAndLogin();
-            $post = new \Sumidero\Post();
-            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $post->opUserId = $opUserId;
-            $post->permaLink = "/s/test" . $opUserId;
-            $post->title = "post title from " . $opUserId;
-            $this->assertTrue($post->add(self::$dbh));
-        }
-
         public function testAddWithInvalidTags(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("tags");
@@ -118,6 +108,16 @@
             $post->add(self::$dbh);
         }
 
+        public function testAdd(): void {
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $this->assertTrue($post->add(self::$dbh));
+        }
+
         public function testAddWithTags(): void {
             $opUserId = $this->createUserAndLogin();
             $post = new \Sumidero\Post();
@@ -127,6 +127,48 @@
             $post->title = "post title from " . $opUserId;
             $post->tags = array("one", "two", "three");
             $this->assertTrue($post->add(self::$dbh));
+        }
+
+        public function testAddCommentWithoutBody(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("body");
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $post->add(self::$dbh);
+            $post->addComment(self::$dbh, "");
+        }
+
+        public function testAddComment(): void {
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $post->add(self::$dbh);
+            $this->assertTrue($post->addComment(self::$dbh, "test"));
+        }
+
+        public function testDeleteWithoutId(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("id");
+            $post = new \Sumidero\Post();
+            $post->delete(self::$dbh);
+        }
+
+        public function testDelete(): void {
+            $opUserId = $this->createUserAndLogin();
+            $post = new \Sumidero\Post();
+            $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $post->opUserId = $opUserId;
+            $post->permaLink = "/s/test" . $opUserId;
+            $post->title = "post title from " . $opUserId;
+            $post->add(self::$dbh);
+            $this->assertTrue($post->delete(self::$dbh));
         }
 
         public function testSearchWithSubFilter(): void {
