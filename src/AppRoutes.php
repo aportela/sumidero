@@ -157,7 +157,16 @@
         /* post */
 
         $this->get('/posts', function (Request $request, Response $response, array $args) {
-            $data = \Sumidero\Post::search(new \Sumidero\Database\DB($this), 1, 16, array(), "");
+            $data = \Sumidero\Post::search(
+                new \Sumidero\Database\DB($this),
+                1,
+                16,
+                array(
+                    "sub" => $request->getParam("sub", ""),
+                    "tag" => $request->getParam("tag", "")
+                ),
+                ""
+            );
             return $response->withJson(['posts' => $data->results ], 200);
         });
 
