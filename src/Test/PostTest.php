@@ -199,5 +199,9 @@
             $this->assertInstanceOf("stdclass", \Sumidero\Post::search(self::$dbh, 1, 16, array("sub" => "test", "tag" => "test", "domain" => "www.server.com", "title" => "test", "body" => "test"), ""));
         }
 
+        public function testSearchSubs(): void {
+            $this->assertNotNull(\Sumidero\Post::searchSubs(self::$dbh));
+        }
+
     }
 ?>
