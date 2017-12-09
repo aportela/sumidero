@@ -54,8 +54,41 @@ const sumideroAPI = {
             }
         );
     },
-    getPosts: function(callback) {
-        Vue.http.get("api/posts").then(
+    scrap: function(url, callback) {
+        var params = {
+            url: url
+        };
+        Vue.http.post("api/post/scrap", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    addPost: function (url, title, body, sub, tags, callback) {
+        var params = {
+            externalUrl: url,
+            title: title,
+            body: body,
+            sub: sub,
+            tags: tags
+        };
+        Vue.http.post("api/post/add", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
+    getPosts: function(timestamp, callback) {
+        var params = {
+            timestamp: timestamp
+        };
+        Vue.http.get("api/posts", params).then(
             response => {
                 callback(response);
             },
