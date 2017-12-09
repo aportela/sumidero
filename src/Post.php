@@ -207,9 +207,15 @@
                     P.total_comments AS totalComments,
                     P.op_user_id AS userId,
                     U.nick AS userNick,
-                    U.avatar_url AS userAvatarUrl
+                    U.avatar_url AS userAvatarUrl,
+                    T.tags
                 FROM POST P
                 LEFT JOIN USER U ON U.id = P.op_user_id
+                LEFT JOIN (
+                    SELECT PT.post_id, group_concat(PT.tag_name) AS tags
+					FROM POST_TAG PT
+					GROUP BY PT.post_id
+				) T ON T.post_id = P.id
                 %s
                 %s
                 LIMIT %d OFFSET %d
@@ -221,6 +227,16 @@
             );
             $data->results = $dbh->query($query, $params);
             return($data);
+        }
+
+        public static function searchSubs(\Sumidero\Database\DB $dbh): array {
+            $query = " SELECT DISTINCT(sub) FROM POST ";
+            $results = $dbh->query($query, array());
+            $subs = array();
+            foreach($results as $result) {
+                $subs[] = $result->sub;
+            }
+            return($subs);
         }
     }
 
