@@ -54,14 +54,14 @@ var post = (function () {
             <div class="tags has-addons">
               <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
               <span class="tag is-dark">on</span>
-              <a v-bind:href="'/r/' + post.sub" class="tag is-info">{{ post.sub }}</a>
+              <a v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: post.sub } })" class="tag is-info">{{ post.sub }}</a>
             </div>
           </div>
           <div class="control" v-for="tag in tags">
               <div class="tags has-addons">
                 <span class="tag is-dark"><i class="fa fa-tag"></i></span>
                 <span class="tag is-dark">tag</span>
-                <a v-bind:href="'/#/t/' + tag" class="tag is-light">{{ tag }}</a>
+                <a v-on:click.prevent="$router.push({ name: 'customTag', params: { tag: tag } })" class="tag is-light">{{ tag }}</a>
               </div>
           </div>
           <div class="control">
