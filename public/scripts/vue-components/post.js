@@ -24,7 +24,7 @@ var post = (function () {
       </figure>
       <div class="media-content">
         <p class="post-header">
-          <a v-bind:href="post.url">{{ post.title }}</a> <small>({{ post.domain }})</small>
+          <a v-bind:href="post.externalUrl">{{ post.title }}</a> <small>({{ post.domain }})</small>
           <br>by <strong>{{ post.userNick }}</strong> <small><a href="#">@{{ post.userNick }}</a> <span v-bind:title="post.created | formatDate">{{ post.created | formatDateAgo }}</span></small>
         </p>
         <p v-if="! compact">
