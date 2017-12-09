@@ -54,7 +54,7 @@ const sumideroAPI = {
             }
         );
     },
-    scrap: function(url, callback) {
+    scrap: function (url, callback) {
         var params = {
             url: url
         };
@@ -84,11 +84,13 @@ const sumideroAPI = {
             }
         );
     },
-    getPosts: function(timestamp, callback) {
+    getPosts: function (timestamp, sub, tag, callback) {
         var params = {
-            timestamp: timestamp
+            timestamp: timestamp,
+            sub: sub,
+            tag: tag
         };
-        Vue.http.get("api/posts", params).then(
+        Vue.http.get("api/posts", { params: params }).then(
             response => {
                 callback(response);
             },
