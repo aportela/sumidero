@@ -13,9 +13,8 @@ var navigationMenu = (function () {
             </a>
         </div>
         <div class="navbar-menu">
-            <!--
             <div class="navbar-start">
-                <div class="navbar-item has-dropdown is-hoverable">
+                <div class="navbar-item has-dropdown is-hoverable" v-if="subs.length > 0">
                     <a class="navbar-link">
                         <span class="icon">
                             <i class="fa fa-bookmark"></i>
@@ -23,10 +22,10 @@ var navigationMenu = (function () {
                         <span>subs</span>
                     </a>
                     <div class="navbar-dropdown">
-                        <a v-for="sub in subs" class="navbar-item" v-bind:href="sub.path">{{ sub.name }}</a>
+                        <a v-for="sub in subs" class="navbar-item" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
                     </div>
                 </div>
-                <a class="navbar-item" href="/#/add-post">
+                <a class="navbar-item">
                     <span class="icon">
                         <i class="fa fa-bullhorn"></i>
                     </span>
@@ -54,7 +53,6 @@ var navigationMenu = (function () {
                     </div>
                 </div>
             </div>
-            -->
             <div class="navbar-end">
                 <sumidero-auth-menu-component></sumidero-auth-menu-component>
             </div>
@@ -68,33 +66,22 @@ var navigationMenu = (function () {
         template: template(),
         data: function () {
             return ({
-                signUp: false,
                 searchText: null,
                 searchTimeout: null,
                 searching: false,
                 showLimitSearch: true,
                 logged: initialState.logged,
-                session: initialState.session,
-                userName: "aportela",
-                subs: [
-                    {
-                        name: "/s/ (frontpage)",
-                        path: "/#/s/"
-                    },
-                    {
-                        name: "/s/news",
-                        path: "/#/s/news"
-                    },
-                    {
-                        name: "/s/television",
-                        path: "/#/s/television"
-                    },
-                    {
-                        name: "/s/games",
-                        path: "/#/s/games"
-                    }
-                ]
+                session: initialState.session
             });
+        },
+        computed: {
+            subs: function() {
+                if (initialState.subs) {
+                    return(initialState.subs);
+                } else {
+                    return([]);
+                }
+            }
         },
         methods: {
             abortInstantSearch: function () {
