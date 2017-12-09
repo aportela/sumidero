@@ -121,6 +121,7 @@ var sumideroAddPost = (function () {
                         self.title = response.body.title ? response.body.title: null;
                         self.body = response.body.body ? response.body.body: null;
                         self.thumbnail = response.body.image? response.body.image : null;
+                        self.tagNames = response.body.suggestedTags && response.body.suggestedTags.length > 0 ? response.body.suggestedTags.join(","): null;
                     }
                     self.loading = false;
                 });

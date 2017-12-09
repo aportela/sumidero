@@ -117,11 +117,15 @@
         $this->group("/post", function() {
 
             $this->post('/scrap', function (Request $request, Response $response, array $args) {
-                $data = (new \Sumidero\Scraper())->scrap($request->getParam("url", ""));
+                $scraper = new \Sumidero\Scraper();
+                $url = $request->getParam("url", "");
+                $data = $scraper->scrap($url);
+                $tags = $scraper->getSuggestedTags($url);
                 return $response->withJson([
                     'title' => isset($data["title"]) ? $data["title"]: null,
                     'image' => isset($data["image"]) ? $data["image"]: null,
-                    'body' => isset($data["article"]) && $data["article"]->textContent ? trim($data["article"]->textContent): null
+                    'body' => isset($data["article"]) && $data["article"]->textContent ? trim($data["article"]->textContent): null,
+                    'suggestedTags' => $tags
                 ], 200);
             });
 

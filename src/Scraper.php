@@ -23,6 +23,18 @@
                 throw new \Sumidero\Exception\InvalidParamsException("url");
             }
         }
+
+        public function getSuggestedTags($url) {
+            $tags = array();
+            if (! empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+                switch(parse_url($url, PHP_URL_HOST)) {
+                    case "www.youtube.com":
+                        $tags[] = "youtube";
+                    break;
+                }
+            }
+            return($tags);
+        }
     }
 
 ?>
