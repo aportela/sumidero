@@ -31,7 +31,7 @@
             } catch (\Sumidero\Exception\InvalidParamsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 $fields = array();
-                if (mb_strpos(",", $e->getMessage) > 0) {
+                if (mb_strpos(",", $e->getMessage()) > 0) {
                     $fields = explode(",", $e->getMessage());
                 } else {
                     $fields[] = $e->getMessage();
