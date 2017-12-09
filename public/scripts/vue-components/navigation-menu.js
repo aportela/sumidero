@@ -4,7 +4,7 @@ var navigationMenu = (function () {
     var template = function () {
         return `
     <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
+        <div class="navbar-brand is-unselectable">
             <a class="navbar-item is-uppercase has-text-weight-bold" href="https://github.com/aportela/sumidero">
                 <span class="icon">
                     <i class="fa fa-github"></i>
@@ -15,18 +15,18 @@ var navigationMenu = (function () {
         <div class="navbar-menu">
             <div class="navbar-start">
                 <div class="navbar-item has-dropdown is-hoverable" v-if="subs.length > 0">
-                    <a class="navbar-link">
+                    <a class="navbar-link is-unselectable">
                         <span class="icon">
                             <i class="fa fa-bookmark"></i>
                         </span>
                         <span>subs</span>
                     </a>
                     <div class="navbar-dropdown">
-                        <a class="navbar-item" v-on:click.prevent="$router.push({ name: 'allSubs' })">/s (<strong>all subs</strong>)</a>
-                        <a v-for="sub in subs" class="navbar-item" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
+                        <a class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'allSubs' })">/s (<strong>all subs</strong>)</a>
+                        <a v-for="sub in subs" class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
                     </div>
                 </div>
-                <a class="navbar-item" v-on:click.prevent="$router.push({ name: 'addPost' })">
+                <a class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'addPost' })">
                     <span class="icon">
                         <i class="fa fa-bullhorn"></i>
                     </span>
@@ -41,7 +41,7 @@ var navigationMenu = (function () {
                             </span>
                         </div>
                         <p class="control has-icons-left" v-if="showLimitSearch">
-                            <span class="select">
+                            <span class="select is-unselectable">
                                 <select>
                                     <option v-if="this.$route.params.sub">limit search to /s/{{ this.$route.params.sub }}</option>
                                     <option>search on all subs</option>
