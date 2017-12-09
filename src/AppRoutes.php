@@ -120,10 +120,11 @@
                 $scraper = new \Sumidero\Scraper();
                 $url = $request->getParam("url", "");
                 $data = $scraper->scrap($url);
+                $embed = $scraper->embed($url);
                 $tags = $scraper->getSuggestedTags($url);
                 return $response->withJson([
-                    'title' => isset($data["title"]) ? $data["title"]: null,
-                    'image' => isset($data["image"]) ? $data["image"]: null,
+                    'title' => $embed->title, // isset($data["title"]) ? $data["title"]: null,
+                    'image' => $embed->image, // isset($data["image"]) ? $data["image"]: null,
                     'body' => isset($data["article"]) && $data["article"]->textContent ? trim($data["article"]->textContent): null,
                     'suggestedTags' => $tags
                 ], 200);
@@ -138,14 +139,16 @@
                 $post->tags = $request->getParam("tags", array());
                 $post->permaLink = uniqid();
                 if (! empty($externalUrl) && filter_var($externalUrl, FILTER_VALIDATE_URL)) {
-                    $data = (new \Sumidero\Scraper())->scrap($externalUrl);
+                    $scraper = new \Sumidero\Scraper();
+                    $data = $scraper->scrap($externalUrl);
+                    $embed = $scraper->embed($externalUrl);
                     $post->permaLink = $externalUrl . uniqid();
                     $post->externalUrl = $externalUrl;
                     $post->domain = parse_url($externalUrl, PHP_URL_HOST);
 
-                    $post->title  = $data["title"];
+                    $post->title  = $embed->title;
                     $post->body = $data["article"]->textContent ? substr(trim($data["article"]->textContent), 0, 384): "";
-                    $post->thumbnail = $data["image"] ? $data["image"]: "";
+                    $post->thumbnail = $embed->image;
                     $post->totalVotes = 0;
                     $post->totalComments = 0;
                 } else {
