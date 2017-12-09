@@ -14,27 +14,37 @@ const bus = new Vue();
  * vue-router route definitions
  */
 const routes = [
+    { path: '/upgrade', name: 'upgrade', component: upgrade },
+    { path: '/profile', name: 'profile', component: profile },
     {
-        path: '/s',
-        name: 'allSubs',
-        component: sumideroPosts,
+        path: '/',
+        name: 'root',
+        //component: sumideroPosts,
+        component: container,
         children: [
             {
-                path: ':sub',
-                name: 'customSub',
-                component: sumideroPosts
-            }
-        ]
-    },
-    {
-        path: '/t',
-        name: 'allTags',
-        component: sumideroPosts,
-        children: [
+                path: '/s',
+                name: 'allSubs',
+                component: sumideroPosts,
+                children: [
+                    {
+                        path: ':sub',
+                        name: 'customSub',
+                        component: sumideroPosts
+                    }
+                ],
+            },
             {
-                path: ':tag',
-                name: 'customTab',
-                component: sumideroPosts
+                path: '/t',
+                name: 'allTags',
+                component: sumideroPosts,
+                children: [
+                    {
+                        path: ':tag',
+                        name: 'customTag',
+                        component: sumideroPosts
+                    }
+                ]
             }
         ]
     },
@@ -118,17 +128,37 @@ const app = new Vue({
         });
     },
     created: function () {
-        //this.$router.push({ name: 'allSubs' });
+        var self = this;
+        if (!initialState.upgradeAvailable) {
+            if (!initialState.logged) {
+                //self.$router.push({ name: 'signin' });
+                self.$router.push({ name: 'allSubs' });
+            } else {
+                if (!self.$route.name) {
+                    self.$router.push({ name: 'allSubs' });
+                }
+            }
+        } else {
+            self.$router.push({ name: 'upgrade' });
+        }
+        /*
         NProgress.configure({ showSpinner: false });
         bus.$on("startProgress", function () {
-            NProgress.start();
+            //NProgress.start();
         });
         bus.$on("incProgress", function () {
-            NProgress.inc();
+            //NProgress.inc();
         });
         bus.$on("endProgress", function () {
-            NProgress.done();
+            //NProgress.done();
         });
+        */
     }
 }).$mount('#app');
 
+
+// prevent php session lost (TODO: better management, only poll if we are logged)
+setInterval(function () {
+    sumideroAPI.poll(function () { });
+    }, 300000 // 5 mins * 60 * 1000
+);
