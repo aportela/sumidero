@@ -22,6 +22,7 @@ var navigationMenu = (function () {
                         <span>subs</span>
                     </a>
                     <div class="navbar-dropdown">
+                        <a class="navbar-item" v-on:click.prevent="$router.push({ name: 'allSubs' })">/s (<strong>all subs</strong>)</a>
                         <a v-for="sub in subs" class="navbar-item" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
                     </div>
                 </div>
@@ -42,7 +43,7 @@ var navigationMenu = (function () {
                         <p class="control has-icons-left" v-if="showLimitSearch">
                             <span class="select">
                                 <select>
-                                    <option>limit search to /s/news</option>
+                                    <option v-if="this.$route.params.sub">limit search to /s/{{ this.$route.params.sub }}</option>
                                     <option>search on all subs</option>
                                 </select>
                             </span>
@@ -69,7 +70,6 @@ var navigationMenu = (function () {
                 searchText: null,
                 searchTimeout: null,
                 searching: false,
-                showLimitSearch: true,
                 logged: initialState.logged,
                 session: initialState.session
             });
@@ -81,6 +81,9 @@ var navigationMenu = (function () {
                 } else {
                     return([]);
                 }
+            },
+            showLimitSearch: function() {
+                return(this.$route.params.sub);
             }
         },
         methods: {
