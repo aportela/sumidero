@@ -15,13 +15,14 @@ const bus = new Vue();
  */
 const routes = [
     { path: '/upgrade', name: 'upgrade', component: upgrade },
-    { path: '/profile', name: 'profile', component: profile },
     {
         path: '/',
         name: 'root',
         //component: sumideroPosts,
         component: container,
         children: [
+            { path: '/profile', name: 'profile', component: profile },
+            { path: '/add_post', name: 'addPost', component: sumideroAddPost },
             {
                 path: '/s',
                 name: 'allSubs',

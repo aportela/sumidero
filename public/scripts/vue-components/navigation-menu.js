@@ -25,7 +25,7 @@ var navigationMenu = (function () {
                         <a v-for="sub in subs" class="navbar-item" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
                     </div>
                 </div>
-                <a class="navbar-item">
+                <a class="navbar-item" v-on:click.prevent="$router.push({ name: 'addPost' })">
                     <span class="icon">
                         <i class="fa fa-bullhorn"></i>
                     </span>
