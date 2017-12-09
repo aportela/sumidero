@@ -48,11 +48,6 @@ const routes = [
                 ]
             }
         ]
-    },
-    {
-        path: '/add-post/',
-        name: 'addPost',
-        component: sumideroAddPost
     }
 ];
 
