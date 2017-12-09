@@ -3,120 +3,139 @@ var sumideroAddPost = (function () {
 
     var template = function () {
         return `
-        <div>
-
-            <div class="field">
-                <label class="label">Title/URL</label>
-                <div class="control" v-bind:class="loading ? 'is-loading': ''">
-                    <input :disabled="loading" class="input loading" v-model="titleUrl" type="text" placeholder="Text input" required>
+            <form v-on:submit.prevent="add();">
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label class="label">Url (for external links)</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field has-addons">
+                            <div class="control is-expanded">
+                                <input :disabled="loading" class="input" v-model.trim="externalUrl" type="text" placeholder="https://...">
+                            </div>
+                            <div class="control">
+                                <a class="button is-info" :disabled="loading" v-bind:class="loading ? 'is-loading' : ''" v-on:click.prevent="scrap();">
+                                    <span class="icon"><i class="fa fa-globe"></i></span>
+                                    <span>Scrap</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="field">
-                <label class="label">Body (optional)</label>
-                <div class="control">
-                    <textarea :disabled="loading" class="textarea" v-model="body" placeholder="Textarea"></textarea>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label class="label">Title</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input :disabled="loading" class="input loading" v-model.trim="title" type="text" placeholder="type your new post title" required>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="field is-grouped">
-                <div class="control">
-                    <button :disabled="! titleUrl" class="button is-link" v-on:click.prevent="scrap();">Preview</button>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label class="label">Body (optional)</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <textarea :disabled="loading" class="textarea" v-model.trim="body" placeholder="type a small resume/body of your post"></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <hr>
-
-            <div v-if="! errors">
-                <sumidero-post v-if="showPreview" v-bind:post="previewPost"></sumidero-post>
-            </div>
-            <sumidero-api-error-component v-else v-bind:apiError="apiError"></sumidero-api-error-component>
-        </div>
-      `;
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label class="label">Sub</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input :disabled="loading" class="input loading" v-model.trim="sub" type="text" placeholder="type sub name" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        <label class="label">Tags (optional)</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input :disabled="loading" class="input loading" v-model.trim="tagNames" type="text" placeholder="type tag names (separated by commas)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" :disabled="! title" class="button is-primary" v-bind:class="loading ? 'loading' : ''">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        `;
     };
 
     var module = Vue.component('sumidero-add-post', {
         template: template(),
         data: function () {
             return ({
-                errors: false,
-                apiError: null,
-                isScraped: false,
-                titleUrl: null,
-                body: null,
-                showPreview: false,
-                previewPost: {
-                    comments: 0,
-                    thumbnail: null,
-                    created: 1510492766,
-                    domain: "independent.co.uk",
-                    sub: "/r/todayilearned",
-                    tags: ["news", "music", "movies"],
-                    votes: 120,
-                    body: null,
-                    title: null,
-                    user: {
-                        id: "1",
-                        avatar: "https://randomuser.me/api/portraits/men/13.jpg",
-                        fullname: "adam brar",
-                        name: "adambrar"
-                    }
-                },
+                loading: false,
+                title: null,
+                externalUrl: null,
                 title: null,
                 body: null,
-                loading: false
+                sub: null,
+                thumbnail: null,
+                tagNames: null
             });
         },
-        created: function () {
-        },
-        updated: function () {
-            imageLazyLoadObserver.observe();
+        computed: {
+            isValidUrl: function () {
+                return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://")) == 0);
+            }, tags: function() {
+                if (this.tagNames) {
+                    return(this.tagNames.split(",").map(function(item) {
+                        return(item.trim());
+                    }));
+                } else {
+                    return([]);
+                }
+            }
         },
         methods: {
-            isUrl: function () {
-                return (this.titleUrl.indexOf("http://") == 0 || this.titleUrl.indexOf("https://") == 0);
-            },
             scrap: function () {
-                if (this.isUrl(this.title)) {
-                    var self = this;
-                    self.loading = true;
-                    self.errors = false;
-                    var params = {
-                        url: this.titleUrl,
-                        externalUrl: this.titleUrl
-                    };
-                    Vue.http.post(siteUrl + "/api/post/add", params).then(
-                        response => {
-                            if (response.body.title) {
-                                self.previewPost.title = response.body.title;
-                            } else {
-                                self.previewPost.title = "unknown title";
-                            }
-                            if (response.body.body) {
-                                self.previewPost.body = response.body.body.length > 384 ? response.body.body.substring(0, 384).trim() + "..." : response.body.body;
-                            } else {
-                                self.previewPost.body = "unknown body";
-                            }
-                            if (response.body.image) {
-                                self.previewPost.thumbnail = response.body.image;
-                            } else {
-                                self.previewPost.thumbnail = null;
-                            }
-                            self.previewPost.domain = this.titleUrl.split('/')[2]
-                            self.loading = false;
-                            self.showPreview = true;
-                        },
-                        response => {
-                            self.errors = true;
-                            self.apiError = response.getApiErrorData();
-                            self.loading = false;
-                        }
-                    );
-                } else {
-                    this.previewPost.title = this.titleUrl;
-                    this.previewPost.body = this.body,
-                        this.previewPost.thumbnail = null;
-                    this.showPreview = true;
-                }
+                var self = this;
+                self.loading = true;
+                sumideroAPI.scrap(this.externalUrl, function(response) {
+                    if (response.ok) {
+                        self.title = response.body.title ? response.body.title: null;
+                        self.body = response.body.body ? response.body.body: null;
+                        self.thumbnail = response.body.image? response.body.image : null;
+                    }
+                    self.loading = false;
+                });
+            },
+            add: function() {
+                var self = this;
+                self.loading = true;
+                sumideroAPI.addPost(this.externalUrl, this.title, this.body, this.sub, this.tags, function(response) {
+                    self.loading = false;
+                    if (response.ok) {
+
+                    } else {
+
+                    }
+                });
             }
         }
     });
