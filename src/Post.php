@@ -44,6 +44,13 @@
             }
         }
 
+        private function existsExternalUrl(\Sumidero\Database\DB $dbh) {
+            $query = " SELECT id FROM POST WHERE external_url LIKE :external_url ";
+            $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+            $results = $dbh->query($query, $params);
+            return(count($results) > 0);
+        }
+
         public function add(\Sumidero\Database\DB $dbh) {
             $this->validateFields();
             $params = array(
@@ -54,8 +61,12 @@
             );
             if (! empty($this->externalUrl)) {
                 if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                    if (! $this->existsExternalUrl($dbh)) {
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                    } else {
+                        throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
+                    }
                 } else {
                     throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
                 }
