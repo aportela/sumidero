@@ -67,13 +67,14 @@ const sumideroAPI = {
             }
         );
     },
-    addPost: function (url, title, body, sub, tags, callback) {
+    addPost: function (url, title, body, sub, tags, thumbnail, callback) {
         var params = {
             externalUrl: url,
             title: title,
             body: body,
             sub: sub,
-            tags: tags
+            tags: tags,
+            thumbnail: thumbnail
         };
         Vue.http.post("api/post/add", params).then(
             response => {
