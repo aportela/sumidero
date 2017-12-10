@@ -58,8 +58,18 @@
             } else {
                 throw new \Sumidero\Exception\InvalidParamsException("url");
             }
-
         }
+
+        public static function getThumbnailUrls(\Sumidero\Database\DB $dbh): array {
+            $query = " SELECT DISTINCT(thumbnail) FROM POST WHERE thumbnail IS NOT NULL ORDER BY RANDOM() ";
+            $results = $dbh->query($query, array());
+            $thumbnails = array();
+            foreach($results as $result) {
+                $thumbnails[] = $result->thumbnail;
+            }
+            return($thumbnails);
+        }
+
     }
 
 ?>
