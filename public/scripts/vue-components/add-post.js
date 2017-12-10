@@ -9,16 +9,24 @@ var sumideroAddPost = (function () {
                         <label class="label">Url (for external links)</label>
                     </div>
                     <div class="field-body">
-                        <div class="field has-addons">
-                            <div class="control is-expanded">
-                                <input :disabled="loading" class="input" v-model.trim="externalUrl" type="text" placeholder="https://...">
+                        <div class="field is-expanded">
+                            <div class="field has-addons">
+                                <div class="control is-expanded" v-bind:class="urlExists ? 'has-icons-right': ''">
+                                    <input :disabled="loading" class="input" v-bind:class="urlExists ? 'is-danger': ''" v-model.trim="externalUrl" type="text" placeholder="https://...">
+                                    <span class="icon is-small is-right" v-if="urlExists">
+                                        <i class="fa fa-warning"></i>
+                                    </span>
+                                </div>
+
+                                <div class="control">
+                                    <a class="button is-info" :disabled="loading" v-bind:class="loading ? 'is-loading' : ''" v-on:click.prevent="scrap();">
+                                        <span class="icon"><i class="fa fa-globe"></i></span>
+                                        <span>Scrap</span>
+                                    </a>
+                                </div>
+
                             </div>
-                            <div class="control">
-                                <a class="button is-info" :disabled="loading" v-bind:class="loading ? 'is-loading' : ''" v-on:click.prevent="scrap();">
-                                    <span class="icon"><i class="fa fa-globe"></i></span>
-                                    <span>Scrap</span>
-                                </a>
-                            </div>
+                            <p v-if="urlExists" class="help is-danger">Link already exists</p>
                         </div>
                     </div>
                 </div>
@@ -72,6 +80,29 @@ var sumideroAddPost = (function () {
                 </div>
                 <div class="field is-horizontal">
                     <div class="field-label">
+                        <label class="label">Thumbnail</label>
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control">
+                                <input :disabled="loading" v-model.trim="thumbnail" class="input loading" type="text" placeholder="type thumbnail url">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal" v-if="thumbnail">
+                    <div class="field-label">
+                    </div>
+                    <div class="field-body">
+                        <div class="columns">
+                            <div class="column">
+                                <img v-bind:src="thumbnail" alt="Post thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
                     </div>
                     <div class="field-body">
                         <div class="field">
@@ -90,6 +121,7 @@ var sumideroAddPost = (function () {
         data: function () {
             return ({
                 loading: false,
+                apiError: null,
                 title: null,
                 externalUrl: null,
                 title: null,
@@ -110,18 +142,25 @@ var sumideroAddPost = (function () {
                 } else {
                     return([]);
                 }
+            },
+            urlExists: function() {
+                return(this.apiError && this.apiError.status == 409 && this.apiError.body.keyAlreadyExists == 'externalUrl');
             }
         },
         methods: {
             scrap: function () {
                 var self = this;
                 self.loading = true;
+                self.apiError = null;
                 sumideroAPI.scrap(this.externalUrl, function(response) {
                     if (response.ok) {
                         self.title = response.body.title ? response.body.title: null;
                         self.body = response.body.body ? response.body.body: null;
                         self.thumbnail = response.body.image? response.body.image : null;
                         self.tagNames = response.body.suggestedTags && response.body.suggestedTags.length > 0 ? response.body.suggestedTags.join(","): null;
+                        self.images = response.body.images;
+                    } else {
+                        self.apiError = response;
                     }
                     self.loading = false;
                 });
@@ -129,13 +168,13 @@ var sumideroAddPost = (function () {
             add: function() {
                 var self = this;
                 self.loading = true;
-                sumideroAPI.addPost(this.externalUrl, this.title, this.body, this.sub, this.tags, function(response) {
-                    self.loading = false;
+                self.apiError = null;
+                sumideroAPI.addPost(this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, function(response) {
                     if (response.ok) {
-
                     } else {
-
+                        self.apiError = response;
                     }
+                    self.loading = false;
                 });
             }
         }
