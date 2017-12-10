@@ -44,6 +44,13 @@
                 } else {
                     return $response->withJson([], 404);
                 }
+            } catch (\Sumidero\Exception\AlreadyExistsException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
+                if (! empty($e->getMessage())) {
+                    return $response->withJson(['keyAlreadyExists' => $e->getMessage()], 409);
+                } else {
+                    return $response->withJson([], 409);
+                }
             } catch (\Sumidero\Exception\AccessDenied $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
