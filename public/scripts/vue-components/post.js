@@ -6,7 +6,7 @@ var post = (function () {
     <article class="media">
       <figure class="media-left">
         <p class="image is-64x64">
-          <img class="user-avatar lozad" v-bind:data-src="post.userAvatarUrl">
+          <img class="user-avatar lozad" rel="noreferrer" v-bind:data-src="post.userAvatarUrl">
         </p>
         <br>
         <div v-if="allowVotes">
@@ -28,8 +28,8 @@ var post = (function () {
           <br>by <strong>{{ post.userNick }}</strong> <small><a href="#">@{{ post.userNick }}</a> <span v-bind:title="post.created | formatDate">{{ post.created | formatDateAgo }}</span></small>
         </p>
         <p v-if="! compact">
-          <img class="post-thumbnail is-pulled-left lozad" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="post.thumbnail">
-          <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" class="post-thumbnail is-pulled-left lozad" v-else>
+          <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="post.thumbnail">
+          <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
           <span class="">{{ post.body }}</span>
         </p>
         <div class="" v-if="false">
