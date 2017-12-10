@@ -28,7 +28,7 @@ var post = (function () {
           <br>by <strong>{{ post.userNick }}</strong> <small><a href="#">@{{ post.userNick }}</a> <span v-bind:title="post.created | formatDate">{{ post.created | formatDateAgo }}</span></small>
         </p>
         <p v-if="! compact">
-          <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="post.thumbnail">
+          <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="'/api/thumbnail?url=' + post.thumbnail">
           <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
           <span class="">{{ post.body }}</span>
         </p>
