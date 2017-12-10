@@ -134,26 +134,18 @@
                 $post = new \Sumidero\Post();
                 $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                 $post->opUserId = \Sumidero\UserSession::getUserId();
-                $externalUrl = $request->getParam("externalUrl", "");
+                $post->title = $request->getParam("title", "");
+                $post->body = $request->getParam("body", "");
                 $post->sub = $request->getParam("sub", "");
                 $post->tags = $request->getParam("tags", array());
                 $post->permaLink = uniqid();
+                $post->thumbnail = $request->getParam("thumbnail", "");
+                $post->totalVotes = 0;
+                $post->totalComments = 0;
+                $externalUrl = $request->getParam("externalUrl", "");
                 if (! empty($externalUrl) && filter_var($externalUrl, FILTER_VALIDATE_URL)) {
-                    $scraper = new \Sumidero\Scraper();
-                    $data = $scraper->scrap($externalUrl);
-                    $embed = $scraper->embed($externalUrl);
-                    $post->permaLink = $externalUrl . uniqid();
                     $post->externalUrl = $externalUrl;
                     $post->domain = parse_url($externalUrl, PHP_URL_HOST);
-
-                    $post->title  = $embed->title;
-                    $post->body = $data["article"]->textContent ? substr(trim($data["article"]->textContent), 0, 384): "";
-                    $post->thumbnail = $embed->image;
-                    $post->totalVotes = 0;
-                    $post->totalComments = 0;
-                } else {
-                    $post->title = $request->getParam("title", "");
-                    $post->body = $request->getParam("body", "");
                 }
                 $post->add(new \Sumidero\Database\DB($this));
                 return $response->withJson(['id' => $post->id, 'title' => $post->title, 'image' => $post->thumbnail, 'body' => $post->body ], 200);
