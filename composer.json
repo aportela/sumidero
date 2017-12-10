@@ -5,7 +5,8 @@
         "monolog/monolog": "^1.23",
         "andreskrey/readability.php": "^0.2.2",
         "ramsey/uuid": "^3.7",
-        "embed/embed": "^3.2"
+        "embed/embed": "^3.2",
+        "sybio/image-workshop": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.4"
