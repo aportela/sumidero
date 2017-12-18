@@ -85,11 +85,26 @@ const sumideroAPI = {
             }
         );
     },
+    getPost: function (permaLink, callback) {
+        var params = {
+            permaLink: permaLink
+        };
+        Vue.http.get("api/post/permalink/" + permaLink).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getPosts: function (timestamp, sub, tag, callback) {
         var params = {
             timestamp: timestamp,
             sub: sub,
-            tag: tag
+            tag: tag,
+            count: 128,
+            order: null
         };
         Vue.http.get("api/posts", { params: params }).then(
             response => {
