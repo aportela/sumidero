@@ -136,6 +136,65 @@
             return($dbh->execute($query, $params));
         }
 
+        public function get(\Sumidero\Database\DB $dbh) {
+            $params = array();
+            $whereConditions = null;
+            if (! empty($this->id)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":id", $this->id);
+                $whereConditions = " WHERE P.id = :id ";
+            } else if (! empty($this->permaLink)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink);
+                $whereConditions = " WHERE P.permalink = :permalink ";
+            } else  {
+                throw new \Sumidero\Exception\InvalidParamsException("id,permaLink");
+            }
+            $query = sprintf('
+                SELECT
+                    P.id,
+                    P.title,
+                    P.body,
+                    P.thumbnail,
+                    P.creation_date as created,
+                    P.sub,
+                    P.permalink AS permaLink,
+                    P.domain,
+                    P.external_url AS externalUrl,
+                    P.total_votes AS totalVotes,
+                    P.total_comments AS totalComments,
+                    P.op_user_id AS userId,
+                    U.nick AS userNick,
+                    U.avatar_url AS userAvatarUrl,
+                    T.tags
+                FROM POST P
+                LEFT JOIN USER U ON U.id = P.op_user_id
+                LEFT JOIN (
+                    SELECT PT.post_id, group_concat(PT.tag_name) AS tags
+                    FROM POST_TAG PT
+                    GROUP BY PT.post_id
+                ) T ON T.post_id = P.id
+                %s
+            ', $whereConditions);
+            $data = $dbh->query($query, $params);
+
+            if($data[0]) {
+                $this->id = $data[0]->id;
+                $this->title = $data[0]->title;
+                $this->thumbnail = $data[0]->thumbnail;
+                $this->created = $data[0]->created;
+                $this->sub = $data[0]->sub;
+                $this->permaLink = $data[0]->permaLink;
+                $this->domain = $data[0]->domain;
+                $this->externalUrl = $data[0]->externalUrl;
+                $this->totalVotes = $data[0]->totalVotes;
+                $this->totalComments = $data[0]->totalComments;
+                $this->opUserId = $data[0]->userId;
+                $this->tags = $data[0]->tags;
+                $this->userAvatarUrl = $data[0]->userAvatarUrl; // TODO
+            } else {
+                throw new \Sumidero\Exception\NotFoundException("");
+            }
+        }
+
         public function delete(\Sumidero\Database\DB $dbh) {
             if (empty($this->id)) {
                 throw new \Sumidero\Exception\InvalidParamsException("id");
