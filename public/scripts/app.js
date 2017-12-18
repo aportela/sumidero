@@ -24,6 +24,18 @@ const routes = [
             { path: '/profile', name: 'profile', component: profile },
             { path: '/add_post', name: 'addPost', component: sumideroAddPost },
             {
+                path: '/post',
+                name: 'viewPost',
+                component: postDetails,
+                children: [
+                    {
+                        path: ':permaLink',
+                        name: 'customPost',
+                        component: postDetails
+                    }
+                ]
+            },
+            {
                 path: '/s',
                 name: 'allSubs',
                 component: sumideroPosts,
