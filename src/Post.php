@@ -44,7 +44,7 @@
             }
         }
 
-        private function existsExternalUrl(\Sumidero\Database\DB $dbh) {
+        public function existsExternalUrl(\Sumidero\Database\DB $dbh) {
             $query = " SELECT id FROM POST WHERE external_url LIKE :external_url ";
             $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
             $results = $dbh->query($query, $params);
@@ -308,6 +308,17 @@
             }
             return($subs);
         }
+
+        public static function searchTags(\Sumidero\Database\DB $dbh): array {
+            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ";
+            $results = $dbh->query($query, array());
+            $tags = array();
+            foreach($results as $result) {
+                $tags[] = $result->tag;
+            }
+            return($tags);
+        }
+
     }
 
 ?>
