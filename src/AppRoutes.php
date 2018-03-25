@@ -20,6 +20,7 @@
                         "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
                     ),
                     "subs" => \Sumidero\Post::searchSubs($dbh),
+                    "tags" => \Sumidero\Post::searchTags($dbh),
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                     "allowSignUp" => $this->get('settings')['common']['allowSignUp']
@@ -137,6 +138,13 @@
                 return $response->withJson([ "post" => $post ], 200);
             });
 
+            $this->delete('/id/{id}', function (Request $request, Response $response, array $args) {
+                $post = new \Sumidero\Post();
+                $post->id = $args['id'];
+                $post->delete(new \Sumidero\Database\DB($this));
+                return $response->withJson([], 200);
+            });
+
             $this->get('/permalink/{permalink}', function (Request $request, Response $response, array $args) {
                 $post = new \Sumidero\Post();
                 $post->permaLink = $args['permalink'];
@@ -161,8 +169,28 @@
                     $post->externalUrl = $externalUrl;
                     $post->domain = parse_url($externalUrl, PHP_URL_HOST);
                 }
-                print_R($post); exit;
-                //$post->add(new \Sumidero\Database\DB($this));
+                $post->add(new \Sumidero\Database\DB($this));
+                return $response->withJson(['id' => $post->id, 'title' => $post->title, 'image' => $post->thumbnail, 'body' => $post->body ], 200);
+            });
+
+            $this->put('/update', function (Request $request, Response $response, array $args) {
+                $post = new \Sumidero\Post();
+                $post->id = $request->getParam("id", "");
+                $post->opUserId = \Sumidero\UserSession::getUserId();
+                $post->title = $request->getParam("title", "");
+                $post->body = $request->getParam("body", "");
+                $post->sub = $request->getParam("sub", "");
+                $post->tags = $request->getParam("tags", array());
+                $post->permaLink = mb_substr(preg_replace('/[^A-Za-z0-9-]+/', '-', mb_strtolower(uniqid() . " " .  $post->title)), 0, 2048);
+                $post->thumbnail = $request->getParam("thumbnail", "");
+                $post->totalVotes = 0;
+                $post->totalComments = 0;
+                $externalUrl = $request->getParam("externalUrl", "");
+                if (! empty($externalUrl) && filter_var($externalUrl, FILTER_VALIDATE_URL)) {
+                    $post->externalUrl = $externalUrl;
+                    $post->domain = parse_url($externalUrl, PHP_URL_HOST);
+                }
+                $post->update(new \Sumidero\Database\DB($this));
                 return $response->withJson(['id' => $post->id, 'title' => $post->title, 'image' => $post->thumbnail, 'body' => $post->body ], 200);
             });
 
@@ -177,7 +205,8 @@
                 intval($request->getParam("count", 16)),
                 array(
                     "sub" => $request->getParam("sub", ""),
-                    "tag" => $request->getParam("tag", "")
+                    "tag" => $request->getParam("tag", ""),
+                    "title" => $request->getParam("title", "")
                 ),
                 $request->getParam("order", "")
             );
