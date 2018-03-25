@@ -23,13 +23,14 @@ const routes = [
         children: [
             { path: '/profile', name: 'profile', component: profile },
             { path: '/add_post', name: 'addPost', component: sumideroAddPost },
+            { path: '/update_post/:permalink', name: 'updatePost', component: sumideroUpdatePost },
             {
                 path: '/post',
                 name: 'viewPost',
                 component: postDetails,
                 children: [
                     {
-                        path: ':permaLink',
+                        path: ':permalink',
                         name: 'customPost',
                         component: postDetails
                     }
