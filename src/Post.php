@@ -114,6 +114,72 @@
             }
         }
 
+        public function update(\Sumidero\Database\DB $dbh) {
+            $this->validateFields();
+            $params = array(
+                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink),
+                (new \Sumidero\Database\DBParam())->str(":title", $this->title),
+            );
+            if (! empty($this->externalUrl)) {
+                if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                } else {
+                    throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
+                }
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
+                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
+            }
+            if (! empty($this->sub)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $this->sub);
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":sub");
+            }
+            if (! empty($this->body)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":body", $this->body);
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":body");
+            }
+            if (! empty($this->thumbnail)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail);
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":thumbnail");
+            }
+            $query = '
+                UPDATE POST
+                    SET
+                        permalink = :permalink,
+                        domain = :domain,
+                        external_url = :external_url,
+                        sub = :sub,
+                        title = :title,
+                        body = :body,
+                        thumbnail = :thumbnail
+                WHERE id = :id
+            ';
+            if ($dbh->execute($query, $params)) {
+                if (count($this->tags) > 0) {
+                    $query = " DELETE FROM POST_TAG WHERE post_id = :post_id; ";
+                    $params = array(
+                        (new \Sumidero\Database\DBParam())->str(":post_id", $this->id),
+                    );
+                    $dbh->execute($query, $params);
+                    $query = " INSERT INTO POST_TAG (post_id, tag_name) VALUES (:post_id, :tag_name); ";
+                    foreach($this->tags as $tag) {
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":tag_name", $tag);
+                        $dbh->execute($query, $params);
+                    }
+                    return(true);
+                } else {
+                    return(true);
+                }
+            } else {
+                return(false);
+            }
+        }
+
         public function addComment(\Sumidero\Database\DB $dbh, $body) {
             if (empty($this->id)) {
                 throw new \Sumidero\Exception\InvalidParamsException("id");
@@ -179,6 +245,7 @@
             if($data[0]) {
                 $this->id = $data[0]->id;
                 $this->title = $data[0]->title;
+                $this->body = $data[0]->body;
                 $this->thumbnail = $data[0]->thumbnail;
                 $this->created = $data[0]->created;
                 $this->sub = $data[0]->sub;
@@ -300,7 +367,7 @@
         }
 
         public static function searchSubs(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(sub) FROM POST ";
+            $query = " SELECT DISTINCT(sub) FROM POST ORDER BY RANDOM()";
             $results = $dbh->query($query, array());
             $subs = array();
             foreach($results as $result) {
@@ -310,7 +377,7 @@
         }
 
         public static function searchTags(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ";
+            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ORDER BY RANDOM()";
             $results = $dbh->query($query, array());
             $tags = array();
             foreach($results as $result) {
