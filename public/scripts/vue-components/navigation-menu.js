@@ -26,6 +26,44 @@ var navigationMenu = (function () {
                         <a v-for="sub in subs" class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
                     </div>
                 </div>
+                <div class="navbar-item has-dropdown" v-bind:class="searchSubs && searchSubs.length > 0 && filteredSubs.length > 0 ? 'is-active' : ''">
+                    <div class="field has-addons">
+                        <div class="control has-icons-left" v-bind:class="searching ? 'is-loading': ''">
+                            <input class="input" type="text" :disabled="searching" placeholder="search" v-model="searchSubs">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="navbar-dropdown">
+                        <a v-for="sub in filteredSubs" class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'customSub', params: { sub: sub } })">/s/{{ sub }}</a>
+                    </div>
+                </div>
+                <div class="navbar-item has-dropdown is-hoverable" v-if="tags.length > 0">
+                    <a class="navbar-link is-unselectable">
+                        <span class="icon">
+                            <i class="fa fa-tag"></i>
+                        </span>
+                        <span>tags</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'allTags' })">/s (<strong>all tags</strong>)</a>
+                        <a v-for="tag in tags" class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'customTag', params: { tag: tag } })">/t/{{ tag }}</a>
+                    </div>
+                </div>
+                <div class="navbar-item has-dropdown" v-bind:class="searchTags && searchTags.length > 0 && filteredTags.length > 0 ? 'is-active' : ''">
+                    <div class="field has-addons">
+                        <div class="control has-icons-left" v-bind:class="searching ? 'is-loading': ''">
+                            <input class="input" type="text" :disabled="searching" placeholder="search" v-model="searchTags">
+                            <span class="icon is-small is-left">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="navbar-dropdown">
+                        <a v-for="tag in filteredTags" class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'customTag', params: { tag: tag } })">/t/{{ tag }}</a>
+                    </div>
+                </div>
                 <a class="navbar-item is-unselectable" v-on:click.prevent="$router.push({ name: 'addPost' })">
                     <span class="icon">
                         <i class="fa fa-bullhorn"></i>
@@ -68,6 +106,8 @@ var navigationMenu = (function () {
         data: function () {
             return ({
                 searchText: null,
+                searchSubs: null,
+                searchTags: null,
                 searchTimeout: null,
                 searching: false,
                 logged: initialState.logged,
@@ -75,15 +115,48 @@ var navigationMenu = (function () {
             });
         },
         computed: {
-            subs: function() {
+            subs: function () {
                 if (initialState.subs) {
-                    return(initialState.subs);
+                    return (initialState.subs);
                 } else {
-                    return([]);
+                    return ([]);
                 }
             },
-            showLimitSearch: function() {
-                return(this.$route.params.sub);
+            tags: function () {
+                if (initialState.tags) {
+                    return (initialState.tags);
+                } else {
+                    return ([]);
+                }
+            },
+            filteredSubs: function () {
+                if (this.searchSubs) {
+                    let subs = [];
+                    for (let i = 0; i < initialState.subs.length; i++) {
+                        if (initialState.subs[i].toLowerCase().indexOf(this.searchSubs.toLowerCase()) != -1) {
+                            subs.push(initialState.subs[i]);
+                        }
+                    }
+                    return (subs);
+                } else {
+                    return ([]);
+                }
+            },
+            filteredTags: function () {
+                if (this.searchTags) {
+                    let tags = [];
+                    for (let i = 0; i < initialState.tags.length; i++) {
+                        if (initialState.tags[i].toLowerCase().indexOf(this.searchTags.toLowerCase()) != -1) {
+                            tags.push(initialState.tags[i]);
+                        }
+                    }
+                    return (tags);
+                } else {
+                    return ([]);
+                }
+            },
+            showLimitSearch: function () {
+                return (this.$route.params.sub);
             }
         },
         methods: {
@@ -104,15 +177,11 @@ var navigationMenu = (function () {
                 }
             },
             search: function () {
-                var self = this;
-                self.searching = true;
-                setTimeout(function () {
-                    self.searching = false;
-                }, 500);
+                bus.$emit("searchByTitle", this.searchText);
             },
-            signOut: function() {
+            signOut: function () {
                 var self = this;
-                sumideroAPI.signOut(function(response) {
+                sumideroAPI.signOut(function (response) {
                     if (response.ok) {
                         self.$router.push({ path: '/signin' });
                     } else {
