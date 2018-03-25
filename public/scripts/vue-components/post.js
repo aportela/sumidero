@@ -32,24 +32,14 @@ var post = (function () {
           <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
           <span class="">{{ post.body }}</span>
         </p>
-        <div class="" v-if="false">
-          <p>Blahblah</p>
-          <img src="https://meta-s3-cdn.freetls.fastly.net/optimized/3X/1/1/11b0296fb74c088a7fc2c59fa4f0fba0096d8999_1_690x156.png">
-          <blockquote>
-            <pre>
-            // register
-            Vue.component('my-component', {
-            template: '<div>A custom component!</div>'
-            })
-            // create a root instance
-            new Vue({
-            el: '#example'
-            })
-            </pre>
-          </blockquote>
-        </div>
         <div class="is-clearfix"></div>
         <div class="field is-grouped is-grouped-multiline">
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-dark"><i class="fa fa-edit"></i></span>
+              <a v-on:click.prevent="$router.push({ name: 'updatePost', params: { permalink: post.permalink } })" class="tag is-info">update</a>
+            </div>
+          </div>
           <div class="control">
             <div class="tags has-addons">
               <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
@@ -74,7 +64,8 @@ var post = (function () {
         </div>
       </div>
       <div class="media-right">
-          <button class="delete"></button>
+          <a v-on:click.prevent="$router.push({ name: 'updatePost', params: { permalink: post.permalink } })"><span class="icon is-small"><i class="fa fa-pencil"></i></span></a>
+          <a v-on:click.prevent="deletePost(post.id)"><span class="icon is-small"><i class="fa fa-trash"></i></span></a>
       </div>
     </article>
     `;
@@ -85,7 +76,8 @@ var post = (function () {
     data: function () {
       return ({
         loading: false,
-        allowVotes: false
+        allowVotes: false,
+        confirmDelete: false
       });
     }, props: ['post', 'compact'],
     computed: {
@@ -149,6 +141,23 @@ var post = (function () {
       },
       formatDate(timestamp) {
         return (moment.unix(timestamp).format("dddd, MMMM Do YYYY, h:mm:ss a"));
+      }
+    }, methods: {
+      deletePost: function () {
+        var self = this;
+        this.loading = true;
+        console.log(this.post);
+        sumideroAPI.deletePost(this.post.id, function (response) {
+            self.loading = false;
+            if (response.ok) {
+            } else {
+                switch (response.status) {
+                    default:
+                        // TODO
+                    break;
+                }
+            }
+        });
       }
     }
   });
