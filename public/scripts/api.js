@@ -85,6 +85,25 @@ const sumideroAPI = {
             }
         );
     },
+    updatePost: function (id, url, title, body, sub, tags, thumbnail, callback) {
+        var params = {
+            id: id,
+            externalUrl: url,
+            title: title,
+            body: body,
+            sub: sub,
+            tags: tags,
+            thumbnail: thumbnail
+        };
+        Vue.http.put("api/post/update", params).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    },
     getPost: function (permaLink, callback) {
         var params = {
             permaLink: permaLink
@@ -98,15 +117,25 @@ const sumideroAPI = {
             }
         );
     },
-    getPosts: function (timestamp, sub, tag, callback) {
+    getPosts: function (timestamp, sub, tag, title, callback) {
         var params = {
             timestamp: timestamp,
             sub: sub,
             tag: tag,
-            count: 128,
+            count: 256,
+            title: title,
             order: null
         };
         Vue.http.get("api/posts", { params: params }).then(
+            response => {
+                callback(response);
+            },
+            response => {
+                callback(response);
+            }
+        );
+    }, deletePost: function (id, callback) {
+        Vue.http.delete("api/post/id/" + id).then(
             response => {
                 callback(response);
             },
