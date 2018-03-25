@@ -24,6 +24,7 @@ var container = (function () {
         template: template(),
         data: function () {
             return ({
+                compact: false
             });
         }
     });
