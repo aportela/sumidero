@@ -96,7 +96,7 @@ var sumideroAddPost = (function () {
                     <div class="field-body">
                         <div class="columns">
                             <div class="column">
-                                <img v-bind:src="thumbnail" alt="Post thumbnail">
+                                <img rel="noreferrer" v-bind:src="thumbnail" alt="Post thumbnail">
                             </div>
                         </div>
                     </div>
