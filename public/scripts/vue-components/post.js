@@ -30,7 +30,7 @@ var post = (function () {
         <p v-if="! compact">
           <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="'/api/thumbnail?url=' + post.thumbnail">
           <img data-src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
-          <span class="">{{ post.body }}</span>
+          <span class="" v-html="formattedBody"></span>
         </p>
         <div class="is-clearfix"></div>
         <div class="field is-grouped is-grouped-multiline">
@@ -81,11 +81,18 @@ var post = (function () {
       });
     }, props: ['post', 'compact'],
     computed: {
-      tags: function() {
+      tags: function () {
         if (this.post.tags) {
-          return(this.post.tags.split(","));
+          return (this.post.tags.split(","));
         } else {
-          return([]);
+          return ([]);
+        }
+      },
+      formattedBody: function () {
+        if (this.post.body) {
+          return (this.post.body.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+        } else {
+          return (null);
         }
       }
     },
@@ -148,15 +155,15 @@ var post = (function () {
         this.loading = true;
         console.log(this.post);
         sumideroAPI.deletePost(this.post.id, function (response) {
-            self.loading = false;
-            if (response.ok) {
-            } else {
-                switch (response.status) {
-                    default:
-                        // TODO
-                    break;
-                }
+          self.loading = false;
+          if (response.ok) {
+          } else {
+            switch (response.status) {
+              default:
+                // TODO
+                break;
             }
+          }
         });
       }
     }
