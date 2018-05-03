@@ -19,6 +19,7 @@
                         "nick" => \Sumidero\UserSession::getNick(),
                         "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
                     ),
+                    "siteUrl" => $this->get('settings')['common']['siteUrl'],
                     "subs" => \Sumidero\Post::searchSubs($dbh),
                     "tags" => \Sumidero\Post::searchTags($dbh),
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
