@@ -8,7 +8,9 @@ const sumideroAPI = {
     poll: function (callback) {
         Vue.http.get("api/user/poll").then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
                 callback(response);
@@ -23,10 +25,14 @@ const sumideroAPI = {
         }
         Vue.http.post("api/user/signup", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -37,20 +43,28 @@ const sumideroAPI = {
         }
         Vue.http.post("api/user/signin", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
     signOut: function (callback) {
         Vue.http.get("api/user/signout").then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -60,10 +74,14 @@ const sumideroAPI = {
         };
         Vue.http.post("api/post/scrap", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -78,10 +96,14 @@ const sumideroAPI = {
         };
         Vue.http.post("api/post/add", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -97,10 +119,14 @@ const sumideroAPI = {
         };
         Vue.http.put("api/post/update", params).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -110,10 +136,14 @@ const sumideroAPI = {
         };
         Vue.http.get("api/post/permalink/" + permaLink).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     },
@@ -128,19 +158,27 @@ const sumideroAPI = {
         };
         Vue.http.get("api/posts", { params: params }).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     }, deletePost: function (id, callback) {
         Vue.http.delete("api/post/id/" + id).then(
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             },
             response => {
-                callback(response);
+                if (callback && typeof callback === "function") {
+                    callback(response);
+                }
             }
         );
     }
