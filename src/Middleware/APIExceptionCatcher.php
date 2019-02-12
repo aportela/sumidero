@@ -30,28 +30,20 @@
                 return $response;
             } catch (\Sumidero\Exception\InvalidParamsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                $fields = array();
-                if (mb_strpos(",", $e->getMessage()) > 0) {
-                    $fields = explode(",", $e->getMessage());
-                } else {
-                    $fields[] = $e->getMessage();
-                }
-                return $response->withJson(['invalidOrMissingParams' => $fields], 400);
-            } catch (\Sumidero\Exception\NotFoundException $e) {
-                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                if (! empty($e->getMessage())) {
-                    return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
-                } else {
-                    return $response->withJson([], 404);
-                }
+                return $response->withJson(['invalidOrMissingParams' => explode(",", $e->getMessage())], 400);
             } catch (\Sumidero\Exception\AlreadyExistsException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
-                if (! empty($e->getMessage())) {
-                    return $response->withJson(['keyAlreadyExists' => $e->getMessage()], 409);
-                } else {
-                    return $response->withJson([], 409);
-                }
-            } catch (\Sumidero\Exception\AccessDenied $e) {
+                return $response->withJson(['invalidParams' => explode(",", $e->getMessage())], 409);
+            } catch (\Sumidero\Exception\NotFoundException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
+                return $response->withJson(['keyNotFound' => $e->getMessage()], 404);
+            } catch (\Sumidero\Exception\DeletedException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
+                return $response->withJson(['keyDeleted' => $e->getMessage()], 410);
+            } catch (\Sumidero\Exception\UnauthorizedException $e) {
+                $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
+                return $response->withJson([], 401);
+            } catch (\Sumidero\Exception\AccessDeniedException $e) {
                 $this->container["apiLogger"]->debug("Exception caught: " . $e->getMessage());
                 return $response->withJson([], 403);
             } catch (\Throwable $e) {
