@@ -24,18 +24,6 @@
                 '
                     PRAGMA journal_mode=WAL;
                 '
-            ),
-            "PDO_MARIADB" => array(
-                    '
-                    CREATE TABLE `VERSION` (
-                        `num`	FLOAT NOT NULL UNIQUE,
-                        `date`	TIMESTAMP NOT NULL,
-                        PRIMARY KEY(`num`)
-                    );
-                ',
-                '
-                    INSERT INTO `VERSION` VALUES ("1.00", utc_timestamp);
-                '
             )
         );
 
@@ -89,55 +77,18 @@
                             [body] VARCHAR(384)
                         );
                     '
-                )
-            ),
-            "PDO_MARIADB" => array(
-                "1.01" => array(
+                ),
+                "1.05" => array(
+                    '
+                        DROP TABLE [USER]
+                    ',
                     '
                         CREATE TABLE [USER] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
                             [email] VARCHAR(255) UNIQUE NOT NULL,
                             [password_hash] VARCHAR(60) NOT NULL,
-                            [nick] VARCHAR(255) UNIQUE NOT NULL,
-                            [avatar_url] VARCHAR(2048)
-                        );
-                    '
-                ),
-                "1.02" => array(
-                    '
-                        CREATE TABLE [POST] (
-                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [op_user_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
-                            [title] VARCHAR(128) NOT NULL,
-                            [body] VARCHAR(384),
-                            [permalink] VARCHAR(2048) UNIQUE NOT NULL,
-                            [domain] VARCHAR(128),
-                            [thumbnail] VARCHAR(2048),
-                            [external_url] VARCHAR(2048),
-                            [sub] VARCHAR(16),
-                            [total_votes] INTEGER NOT NULL DEFAULT 0,
-                            [total_comments] INTEGER NOT NULL DEFAULT 0
-                        );
-                    '
-                ),
-                "1.03" => array(
-                    '
-                        CREATE TABLE [POST_TAG] (
-                            [post_id] VARCHAR(36) NOT NULL,
-                            [tag_name] VARCHAR(16) NOT NULL,
-                            PRIMARY KEY([post_id], [tag_name])
-                        );
-                    '
-                ),
-                "1.04" => array(
-                    '
-                        CREATE TABLE [POST_COMMENT] (
-                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
-                            [post_id] VARCHAR(36) NOT NULL,
-                            [c_user_id] [id] VARCHAR(36),
-                            [creation_date] INTEGER NOT NULL,
-                            [body] VARCHAR(384)
+                            [deletion_date] INTEGER
                         );
                     '
                 )

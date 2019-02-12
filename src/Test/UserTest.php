@@ -6,49 +6,14 @@
 
     require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "vendor" . DIRECTORY_SEPARATOR . "autoload.php";
 
-    final class UserTest extends \PHPUnit\Framework\TestCase {
-        static private $app = null;
-        static private $container = null;
-        static private $dbh = null;
-
-        /**
-         * Called once just like normal constructor
-         */
-        public static function setUpBeforeClass () {
-            self::$app = (new \Sumidero\App())->get();
-            self::$container = self::$app->getContainer();
-            self::$dbh = new \Sumidero\Database\DB(self::$container);
-        }
-
-        /**
-         * Initialize the test case
-         * Called for every defined test
-         */
-        public function setUp() {
-            self::$dbh->beginTransaction();
-        }
-
-        /**
-         * Clean up the test case, called for every defined test
-         */
-        public function tearDown() {
-            self::$dbh->rollBack();
-        }
-
-        /**
-         * Clean up the whole test class
-         */
-        public static function tearDownAfterClass() {
-            self::$dbh = null;
-            self::$container = null;
-            self::$app = null;
-        }
+    final class UserTest extends \Sumidero\Test\BaseTest {
 
         public function testAddWithoutId(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("id");
-                (new \Sumidero\User("", "", "", "", ""))->add(self::$dbh);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Sumidero\User("", $id . "@localhost.localnet", "secret"))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -58,7 +23,19 @@
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("email");
-                (new \Sumidero\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "", "", ""))->add(self::$dbh);
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Sumidero\User($id, "", "secret"))->add(self::$dbh);
+            } else {
+                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
+            }
+        }
+
+        public function testAddWithoutValidEmailLength(): void {
+            if (self::$container->get('settings')['common']['allowSignUp']) {
+                $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+                $this->expectExceptionMessage("email");
+                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                (new \Sumidero\User($id, str_repeat($id, 10) . "@localhost.localnet", "secret"))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -69,18 +46,7 @@
                 $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("email");
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Sumidero\User($id, $id, "", "", ""))->add(self::$dbh);
-            } else {
-                $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
-            }
-        }
-
-        public function testAddWithoutNick(): void {
-            if (self::$container->get('settings')['common']['allowSignUp']) {
-                $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-                $this->expectExceptionMessage("nick");
-                $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Sumidero\User($id, $id . "@server.com", "", "", ""))->add(self::$dbh);
+                (new \Sumidero\User($id, $id, "secret"))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -91,16 +57,16 @@
                 $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
                 $this->expectExceptionMessage("password");
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                (new \Sumidero\User($id, $id . "@server.com", "", $id, ""))->add(self::$dbh);
+                (new \Sumidero\User($id, $id . "@localhost.localnet", ""))->add(self::$dbh);
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
         }
 
-        public function testAdd(): void {
+        public function testAddUserAccount(): void {
             if (self::$container->get('settings')['common']['allowSignUp']) {
                 $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $this->assertTrue((new \Sumidero\User($id, $id . "@server.com", "secret", $id, ""))->add(self::$dbh));
+                $this->assertTrue((new \Sumidero\User($id, $id . "@localhost.localnet", "secret"))->add(self::$dbh));
             } else {
                 $this->markTestSkipped("This test can not be run (allowSignUp disabled in settings)");
             }
@@ -109,152 +75,160 @@
         public function testUpdateWithoutId(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id");
-            (new \Sumidero\User("", "", "", "", ""))->update(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User("", $id . "@localhost.localnet", "secret"))->update(self::$dbh);
         }
 
         public function testUpdateWithoutEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
-            (new \Sumidero\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "", "", ""))->update(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User($id, "", "name of " . $id, "secret"))->update(self::$dbh);
+        }
+
+        public function testUpdateWithoutValidEmailLength(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User($id, str_repeat($id, 10) . "@localhost.localnet", "secret"))->update(self::$dbh);
         }
 
         public function testUpdateWithoutValidEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Sumidero\User($id, $id, "", "", ""))->update(self::$dbh);
+
+            (new \Sumidero\User($id, $id, "secret"))->update(self::$dbh);
         }
 
-        public function testUpdateWithoutNick(): void {
-            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("nick");
+        public function testUpdateMyProfile(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Sumidero\User($id, $id . "@server.com", "", "", ""))->update(self::$dbh);
-        }
-
-        public function testUpdateWithoutPassword(): void {
-            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("password");
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            (new \Sumidero\User($id, $id . "@server.com", "", $id, ""))->update(self::$dbh);
-        }
-
-        public function testUpdate(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
-            $this->assertTrue($u->add(self::$dbh) && $u->update(self::$dbh));
-        }
-
-        public function testFindByEmailWithoutEmail(): void {
-            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("email");
-            \Sumidero\User::findByEmail(self::$dbh, "");
-        }
-
-        public function testFindByEmailWithInvalidEmail(): void {
-            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("email");
-            \Sumidero\User::findByEmail(self::$dbh, "invalid-email");
-        }
-
-        public function testFindByEmailWithNonExistentEmail(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertNull(\Sumidero\User::findByEmail(self::$dbh, $id . "@server.com"));
-        }
-
-        public function testFindByEmail(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
-            $u2 = \Sumidero\User::findByEmail(self::$dbh, $u->email);
-            $this->assertNotNull($u2);
-            $this->assertEquals($u->id, $u2->id);
+            $u->login(self::$dbh);
+            $this->assertTrue($u->update(self::$dbh));
         }
 
-        public function testFindByNickWithoutNick(): void {
-            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
-            $this->expectExceptionMessage("nick");
-            \Sumidero\User::findByNick(self::$dbh, "");
-        }
-
-        public function testFindByNickWithNonExistentNick(): void {
+        public function testUpdateAdministratorAccountAccount(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertNull(\Sumidero\User::findByNick(self::$dbh, $id));
-        }
-
-        public function testFindByNick(): void {
-            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
-            $u2 = \Sumidero\User::findByNick(self::$dbh, $u->nick);
-            $this->assertNotNull($u2);
-            $this->assertEquals($u->id, $u2->id);
+            $u->login(self::$dbh);
+            $this->assertTrue($u->update(self::$dbh));
         }
 
         public function testGetWithoutIdOrEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $u = new \Sumidero\User("", "", "", "", "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User("", "", "secret"))->get(self::$dbh);
+        }
+
+        public function testGetWithoutValidEmailLength(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("id,email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User("", str_repeat($id, 10) . "@server.com", "secret"))->get(self::$dbh);
         }
 
         public function testGetWithoutValidEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $u = new \Sumidero\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "", "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User("", $id, "secret"))->get(self::$dbh);
         }
 
         public function testGetWithNonExistentId(): void {
             $this->expectException(\Sumidero\Exception\NotFoundException::class);
-            $u = new \Sumidero\User((\Ramsey\Uuid\Uuid::uuid4())->toString(), "", "", "", "");
-            $u->get(self::$dbh);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User($id, $id, "secret"))->get(self::$dbh);
         }
 
         public function testGetWithNonExistentEmail(): void {
             $this->expectException(\Sumidero\Exception\NotFoundException::class);
-            $u = new \Sumidero\User("", (\Ramsey\Uuid\Uuid::uuid4())->toString() . "@server.com", "", "", "");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User($id, $id . "@server.com", "secret"))->get(self::$dbh);
+        }
+
+        public function testGetDeleted(): void {
+            $this->expectException(\Sumidero\Exception\DeletedException::class);
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $u->delete(self::$dbh);
             $u->get(self::$dbh);
         }
 
         public function testGet(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $u->get(self::$dbh);
             $this->assertTrue($id == $u->id);
         }
 
+        public function testExistsEmailWithNonExistentEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $this->assertFalse(\Sumidero\User::existsEmail(self::$dbh, $id . "@server.com"));
+        }
+
+        public function testExistsEmailWithExistentEmail(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $this->assertTrue(\Sumidero\User::existsEmail(self::$dbh, $u->email));
+        }
+
+        public function testExistsEmailWithExistentEmailIgnoringId(): void {
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
+            $u->add(self::$dbh);
+            $this->assertFalse(\Sumidero\User::existsEmail(self::$dbh, $u->email, $u->id));
+        }
 
         public function testLoginWithoutIdOrEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("id,email");
-            $this->assertTrue((new \Sumidero\User("", "", "secret", "", ""))->login(self::$dbh));
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            (new \Sumidero\User("", "", "secret"))->login(self::$dbh);
         }
 
         public function testLoginWithoutPassword(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("password");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Sumidero\User($id, $id . "@server.com", "", "", ""))->login(self::$dbh));
+            (new \Sumidero\User($id, $id . "@server.com", ""))->login(self::$dbh);
         }
 
         public function testLoginWithoutExistentEmail(): void {
             $this->expectException(\Sumidero\Exception\NotFoundException::class);
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Sumidero\User($id, $id . "@server.com", "secret", "", ""))->login(self::$dbh));
+            (new \Sumidero\User($id, $id . "@server.com", "secret"))->login(self::$dbh);
+        }
+
+        public function testLoginWithoutValidEmailLength(): void {
+            $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
+            $this->expectExceptionMessage("email");
+            $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+            $u = new \Sumidero\User($id, $id, "secret");
+            $u->add(self::$dbh);
+            $u->email = str_repeat($id, 10) . "@server.com";
+            $u->login(self::$dbh);
         }
 
         public function testLoginWithoutValidEmail(): void {
             $this->expectException(\Sumidero\Exception\InvalidParamsException::class);
             $this->expectExceptionMessage("email");
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $this->assertTrue((new \Sumidero\User("", $id, "secret", "", ""))->login(self::$dbh));
+            $u = new \Sumidero\User($id, $id, "secret");
+            $u->add(self::$dbh);
+            $u->email = $id;
+            $u->login(self::$dbh);
         }
 
         public function testLoginWithInvalidPassword(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $u->password = "other";
             $this->assertFalse($u->login(self::$dbh));
@@ -262,7 +236,7 @@
 
         public function testLogin(): void {
             $id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-            $u = new \Sumidero\User($id, $id . "@server.com", "secret", $id, "");
+            $u = new \Sumidero\User($id, $id . "@server.com", "secret");
             $u->add(self::$dbh);
             $this->assertTrue($u->login(self::$dbh));
         }
@@ -272,4 +246,5 @@
         }
 
     }
+
 ?>

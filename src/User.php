@@ -4,72 +4,56 @@
 
     namespace Sumidero;
 
+    /**
+     * User class
+     */
     class User {
+
 
         public $id;
         public $email;
-        public $nick;
         public $password;
         public $passwordHash;
-        public $avatarUrl;
+        public $creationDate;
+        public $deletionDate;
 
-        /**
-         * user constructor
-         *
-         * @param string $id
-         * @param string $email
-         * @param string $password
-         */
-	    public function __construct (string $id = "", string $email = "", string $password = "", string $nick = "", string $avatarUrl = "") {
+        public function __construct (string $id = "", string $email = "", string $password = "") {
             $this->id = $id;
             $this->email = $email;
             $this->password = $password;
-            $this->nick = $nick;
-            $this->avatarUrl = $avatarUrl;
         }
 
-        public function __destruct() { }
+        public function __destruct() {
+        }
 
         /**
          * helper for hashing password (predefined algorithm)
          *
          * @param string $password string the password to hash
+         *
+         * @return string hashed password
          */
-        private function passwordHash(string $password = "") {
+        private function passwordHash(string $password = ""): string {
             return(password_hash($password, PASSWORD_BCRYPT, array('cost' => 12)));
         }
 
         /**
-         * add new user
+         * add user
          *
          * @param \Sumidero\Database\DB $dbh database handler
          */
         public function add(\Sumidero\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                    if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
-                        if (! empty($this->password)) {
-                            $params = array(
-                                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                                (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                                (new \Sumidero\Database\DBParam())->str(":nick", mb_strtolower($this->nick)),
-                                (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
-                            );
-                            if (! empty($this->avatarUrl)) {
-                                if (mb_strlen($this->avatarUrl) <= 2048) {
-                                    $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
-                                } else {
-                                    throw new \Sumidero\Exception\InvalidParamsException("avatarUrl");
-                                }
-                            } else {
-                                $params[] = (new \Sumidero\Database\DBParam())->null(":avatar_url");
-                            }
-                            return($dbh->execute("INSERT INTO USER (id, email, nick, password_hash, avatar_url) VALUES(:id, :email, :nick, :password_hash, :avatar_url)", $params));
-                        } else {
-                            throw new \Sumidero\Exception\InvalidParamsException("password");
-                        }
+                if (! empty($this->email) && mb_strlen($this->email) <= 255 && filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+                    if (! empty($this->password)) {
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                            (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
+                            (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                        );
+                        return($dbh->execute(" INSERT INTO USER (id, email, password_hash, creation_date) VALUES(:id, :email, :password_hash, strftime('%s', 'now')) ", $params));
                     } else {
-                        throw new \Sumidero\Exception\InvalidParamsException("nick");
+                        throw new \Sumidero\Exception\InvalidParamsException("password");
                     }
                 } else {
                     throw new \Sumidero\Exception\InvalidParamsException("email");
@@ -80,36 +64,28 @@
         }
 
         /**
-         * update user (email, nick, avatar url & hashed password fields)
+         * update user (email, hashed password fields)
          *
          * @param \Sumidero\Database\DB $dbh database handler
          */
         public function update(\Sumidero\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
                 if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                    if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
-                        if (! empty($this->password)) {
-                            $params = array(
-                                (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                                (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                                (new \Sumidero\Database\DBParam())->str(":nick", mb_strtolower($this->nick)),
-                                (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
-                            );
-                            if (! empty($this->avatarUrl)) {
-                                if (mb_strlen($this->avatarUrl) <= 2048) {
-                                    $params[] = (new \Sumidero\Database\DBParam())->str(":avatar_url", $this->avatarUrl);
-                                } else {
-                                    throw new \Sumidero\Exception\InvalidParamsException("avatarUrl");
-                                }
-                            } else {
-                                $params[] = (new \Sumidero\Database\DBParam())->null(":avatar_url");
-                            }
-                            return($dbh->execute(" UPDATE USER SET email = :email, nick = :nick, password_hash = :password_hash, avatar_url = :avatar_url WHERE id = :id ", $params));
-                        } else {
-                            throw new \Sumidero\Exception\InvalidParamsException("password");
-                        }
+                    $fields = array(
+                        "email = :email "
+                    );
+                    $params = array(
+                        (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)),
+                        (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
+                    );
+                    if (! empty($password)) {
+                        $fields[] = "password_hash = :password_hash";
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password));
+                    }
+                    if (mb_strtolower($this->id) == \Sumidero\UserSession::getUserId() || \Sumidero\UserSession::isAdministrator()) {
+                        return($dbh->execute(sprintf(" UPDATE USER SET %s WHERE id = :id ", implode(", ", $fields)), $params));
                     } else {
-                        throw new \Sumidero\Exception\InvalidParamsException("nick");
+                        throw new \Sumidero\Exception\AccessDeniedException("");
                     }
                 } else {
                     throw new \Sumidero\Exception\InvalidParamsException("email");
@@ -120,43 +96,22 @@
         }
 
         /**
-         * get user data by email
+         * delete user (mark as deleted)
          *
          * @param \Sumidero\Database\DB $dbh database handler
-         * @param string $email user email
          */
-        public static function findByEmail(\Sumidero\Database\DB $dbh, $email = "") {
-            $u = null;
-            try {
-                $u = new \Sumidero\User();
-                $u->email = $email;
-                $u->get($dbh);
-            } catch (\Sumidero\Exception\NotFoundException $e) {
-                $u = null;
+        public function delete(\Sumidero\Database\DB $dbh) {
+            if (! empty($this->id) && mb_strlen($this->id) == 36) {
+                return($dbh->execute(" UPDATE USER SET deletion_date = strftime('%s', 'now') WHERE id = :id ", array(
+                    (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)))
+                ));
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
             }
-            return($u);
         }
 
         /**
-         * get user data by nick
-         *
-         * @param \Sumidero\Database\DB $dbh database handler
-         * @param string $nick user nick
-         */
-        public static function findByNick(\Sumidero\Database\DB $dbh, string $nick = "") {
-            $u = null;
-            try {
-                $u = new \Sumidero\User();
-                $u->nick = $nick;
-                $u->get($dbh);
-            } catch (\Sumidero\Exception\NotFoundException $e) {
-                $u = null;
-            }
-            return($u);
-        }
-
-        /**
-         * get user data (id, email, nick, avatar url & hashed password)
+         * get user data (id, email, hashed password)
          * id || email must be set
          *
          * @param \Sumidero\Database\DB $dbh database handler
@@ -164,29 +119,79 @@
         public function get(\Sumidero\Database\DB $dbh) {
             $results = null;
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE id = :id ", array(
-                    (new \Sumidero\Database\DBParam())->str(":id", $this->id)
-                ));
+                $results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                                USER.id, USER.email, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                            FROM USER
+                            WHERE USER.id = :id
+                        ",
+                        \Sumidero\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
+                        (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id))
+                    )
+                );
             } else if (! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL) && mb_strlen($this->email) <= 255) {
-                $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE email = :email ", array(
-                    (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
-                ));
-            } else if (! empty($this->nick) && mb_strlen($this->nick) <= 255) {
-                $results = $dbh->query(" SELECT id, email, nick, password_hash AS passwordHash, avatar_url AS avatarUrl FROM USER WHERE nick = :nick ", array(
-                    (new \Sumidero\Database\DBParam())->str(":nick", mb_strtolower($this->nick))
-                ));
+                $results = $dbh->query(
+                    sprintf(
+                        "
+                            SELECT
+                            USER.id, USER.email, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                            FROM USER
+                            WHERE USER.email = :email
+                        ",
+                        \Sumidero\Database\DB::SQLITE_STRFTIME_FORMAT
+                    ),
+                    array(
+                        (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email))
+                    )
+                );
             } else {
-                throw new \Sumidero\Exception\InvalidParamsException("id,email,nick");
+                throw new \Sumidero\Exception\InvalidParamsException("id,email");
             }
             if (count($results) == 1) {
                 $this->id = $results[0]->id;
                 $this->email = $results[0]->email;
-                $this->nick = $results[0]->nick;
                 $this->passwordHash = $results[0]->passwordHash;
-                $this->avatarUrl = $results[0]->avatarUrl;
+                $this->creationDate = $results[0]->creationDate;
+                if (! empty($results[0]->deletionDate)) {
+                    throw new \Sumidero\Exception\DeletedException("");
+                }
             } else {
                 throw new \Sumidero\Exception\NotFoundException("");
             }
+        }
+
+        /**
+         * check email existence
+         *
+         * @param \Sumidero\Database\DB $dbh database handler
+         * @param string $email email to check existence
+         */
+        public static function existsEmail(\Sumidero\Database\DB $dbh, string $email = "", string $ignoreId = "") {
+            $params = array(
+                (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($email))
+            );
+            $whereCondition = null;
+            if (! empty($ignoreId)) {
+                $whereCondition = " AND USER.id <> :id ";
+                $params[] = (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($ignoreId));
+            }
+            $results = $dbh->query(sprintf
+                (
+                    "
+                        SELECT
+                            COUNT(id) AS total
+                        FROM USER
+                        WHERE email = :email
+                        AND deletion_date IS NULL
+                        %s
+                    ", $whereCondition
+                ), $params
+            );
+            return($results[0]->total == 1);
         }
 
         /**
@@ -201,7 +206,7 @@
             if (! empty($this->password)) {
                 $this->get($dbh);
                 if (password_verify($this->password, $this->passwordHash)) {
-                    \Sumidero\UserSession::set($this->id, $this->email, $this->nick, $this->avatarUrl);
+                    \Sumidero\UserSession::set($this->id, $this->email);
                     return(true);
                 } else {
                     return(false);
@@ -218,7 +223,6 @@
             \Sumidero\UserSession::clear();
             return(true);
         }
-
     }
 
 ?>
