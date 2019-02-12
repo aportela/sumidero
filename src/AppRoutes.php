@@ -24,7 +24,8 @@
                     "tags" => \Sumidero\Post::searchTags($dbh),
                     'upgradeAvailable' => $v->hasUpgradeAvailable(),
                     "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                    "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                    "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
+                    'isPublic' => $this->get('settings')['common']['isPublic']
                 )
             )
         ));
@@ -57,7 +58,8 @@
                                 "subs" => \Sumidero\Post::searchSubs($dbh),
                                 'upgradeAvailable' => $v->hasUpgradeAvailable(),
                                 "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                                "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                                "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
+                                'isPublic' => $this->get('settings')['common']['isPublic']
                             )
                         )
                     , 200);
@@ -105,7 +107,8 @@
                             ),
                             'upgradeAvailable' => $v->hasUpgradeAvailable(),
                             "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                            "allowSignUp" => $this->get('settings')['common']['allowSignUp']
+                            "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
+                            'isPublic' => $this->get('settings')['common']['isPublic'],
                         )
                     )
                 , 200);

@@ -14,6 +14,7 @@
             'common' => [
                 'defaultResultsPage' => 32,
                 'allowSignUp' => true,
+                'isPublic' => false,
                 'siteUrl' => "http://localhost"
             ],
             // database settings
