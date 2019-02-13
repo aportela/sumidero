@@ -80,5 +80,25 @@
             }
 
         }
+
+        public static function getInitialState(\Slim\Container $container) {
+            $dbh = new \Sumidero\Database\DB($container);
+            $v = new \Sumidero\Database\Version($dbh, $container->get('settings')['database']['type']);
+            return(
+                array(
+                    'upgradeAvailable' => $v->hasUpgradeAvailable(),
+                    'allowSignUp' => $container->get('settings')['common']['allowSignUp'],
+                    'isPublic' => $container->get('settings')['common']['isPublic'],
+                    'session' => array(
+                        'logged' => \Sumidero\UserSession::isLogged(),
+                        'id' => \Sumidero\UserSession::getUserId(),
+                        'email' => \Sumidero\UserSession::getEmail(),
+                        'timeout' => ini_get("session.gc_maxlifetime")
+                    ),
+                    'defaultResultsPage' => $container->get('settings')['common']['defaultResultsPage'],
+                    'productionEnvironment' => $container->get('settings')['twigParams']['production'],
+                )
+            );
+        }
     }
 ?>
