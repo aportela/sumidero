@@ -228,7 +228,7 @@
                     P.total_votes AS totalVotes,
                     P.total_comments AS totalComments,
                     P.op_user_id AS userId,
-                    U.nick AS userNick,
+                    U.email AS userEmail,
                     U.avatar_url AS userAvatarUrl,
                     T.tags
                 FROM POST P
@@ -343,8 +343,7 @@
                     P.total_votes AS totalVotes,
                     P.total_comments AS totalComments,
                     P.op_user_id AS userId,
-                    U.nick AS userNick,
-                    U.avatar_url AS userAvatarUrl,
+                    U.email AS userEmail,
                     T.tags
                 FROM POST P
                 LEFT JOIN USER U ON U.id = P.op_user_id
