@@ -18,3 +18,8 @@ img.post-thumbnail
     box-shadow: 2px 2px 2px #888888;
     max-width: 128px;
 }
+
+.s-mt-1rem
+{
+    margin-top: 1rem;
+}
