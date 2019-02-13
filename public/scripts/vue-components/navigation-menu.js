@@ -7,9 +7,9 @@ var navigationMenu = (function () {
         <div class="navbar-brand is-unselectable">
             <a class="navbar-item is-uppercase has-text-weight-bold" href="https://github.com/aportela/sumidero">
                 <span class="icon">
-                    <i class="fa fa-github"></i>
+                    <i class="fab fa-github"></i>
                 </span>
-                SUMIDERO
+                <span>SUMIDERO</span>
             </a>
         </div>
         <div class="navbar-menu">
