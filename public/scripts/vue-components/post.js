@@ -6,7 +6,10 @@ var post = (function () {
     <article class="media">
       <figure class="media-left">
         <p class="image is-64x64">
+          <!--
           <img class="user-avatar lozad" rel="noreferrer" v-bind:data-src="post.userAvatarUrl">
+          -->
+          <i class="fa-3x fas fa-user-secret"></i>
         </p>
         <br>
         <div v-if="allowVotes">
@@ -97,7 +100,7 @@ var post = (function () {
       }
     },
     created: function () {
-      bus.$emit("incProgress");
+      //bus.$emit("incProgress");
     },
     filters: {
       getThermoFillClass(votes) {
