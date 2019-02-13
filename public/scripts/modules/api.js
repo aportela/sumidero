@@ -4,68 +4,69 @@
  * all methods return callback with vue-resource response object
  */
 export default {
-    poll: function (callback) {
-        Vue.http.get("api/user/poll").then(
-            response => {
-                if (callback && typeof callback === "function") {
+    user: {
+        poll: function (callback) {
+            Vue.http.get("api/poll").then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
                     callback(response);
                 }
-            },
-            response => {
-                callback(response);
+            );
+        },
+        signUp: function (email, password, callback) {
+            let params = {
+                email: email,
+                password: password
             }
-        );
-    },
-    signUp: function (email, password, nick, callback) {
-        var params = {
-            email: email,
-            password: password,
-            nick: nick
+            Vue.http.post("api/signup", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        signIn: function (email, password, callback) {
+            let params = {
+                email: email,
+                password: password
+            }
+            Vue.http.post("api/signin", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        signOut: function (callback) {
+            Vue.http.get("api/signout").then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
-        Vue.http.post("api/user/signup", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    signIn: function (email, password, callback) {
-        var params = {
-            email: email,
-            password: password
-        }
-        Vue.http.post("api/user/signin", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    signOut: function (callback) {
-        Vue.http.get("api/user/signout").then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
     },
     scrap: function (url, callback) {
         var params = {
