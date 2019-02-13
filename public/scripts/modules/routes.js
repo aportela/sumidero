@@ -1,5 +1,22 @@
+import  { default as sumideroSectionSignIn } from './section-signin.js';
+import  { default as sumideroSectionSignUp } from './section-signup.js';
+import { default as sectionAPIError } from './section-api-error.js';
+import { default as sectionUpgrade } from './section-upgrade.js';
+import { default as sectionAppContainer } from './section-app-container.js';
+import { default as sectionTimeline } from './section-timeline.js';
+
 export const routes = [
-    { path: '/upgrade', name: 'upgrade', component: upgrade },
+    { path: '/upgrade', name: 'upgrade', component: sectionUpgrade },
+    { path: '/signin', name: 'signIn', component: sumideroSectionSignIn },
+    { path: '/signup', name: 'signUp', component: sumideroSectionSignUp },
+    {
+        path: '/app', component: sectionAppContainer,
+        children: [
+            { path: 'timeline', name: 'timeline', component: sectionTimeline }
+        ]
+    },
+    { path: '/api-error', name: 'apiError', component: sectionAPIError }
+    /*
     {
         path: '/',
         name: 'root',
@@ -45,6 +62,7 @@ export const routes = [
                     }
                 ]
             }
-        ]
+    ]
     }
-];
+        */
+]
