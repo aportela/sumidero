@@ -6,34 +6,82 @@
 
     $this->app->get('/', function (Request $request, Response $response, array $args) {
         $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
-        $dbh = new \Sumidero\Database\DB($this);
-        $v = new \Sumidero\Database\Version($dbh, $this->get('settings')['database']['type']);
         return $this->view->render($response, 'index.html.twig', array(
             'settings' => $this->settings["twigParams"],
             'initialState' => json_encode(
-                array(
-                    "logged" => \Sumidero\UserSession::isLogged(),
-                    "session" => array(
-                        "userId" => \Sumidero\UserSession::getUserId(),
-                        "email" => \Sumidero\UserSession::getEmail(),
-                        "nick" => \Sumidero\UserSession::getNick(),
-                        "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
-                    ),
-                    "siteUrl" => $this->get('settings')['common']['siteUrl'],
-                    "subs" => \Sumidero\Post::searchSubs($dbh),
-                    "tags" => \Sumidero\Post::searchTags($dbh),
-                    'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                    "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                    "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
-                    'isPublic' => $this->get('settings')['common']['isPublic']
-                )
+                \Sumidero\Utils::getInitialState($this)
             )
         ));
     });
 
     $this->app->group("/api", function() {
+
+        $this->get('/poll', function (Request $request, Response $response, array $args) {
+            $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+            return $response->withJson(
+                [
+                    'success' => true,
+                    'initialState' => \Sumidero\Utils::getInitialState($this)
+                ],
+                200
+            );
+        });
+
+        $this->post('/signin', function (Request $request, Response $response, array $args) {
+            $user = new \Sumidero\User(
+                "",
+                $request->getParam("email", ""),
+                $request->getParam("password", "")
+            );
+            if ($user->login(new \Sumidero\Database\DB($this))) {
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'initialState' => \Sumidero\Utils::getInitialState($this)
+                    ],
+                    200
+                );
+            } else {
+                throw new \Sumidero\Exception\UnauthorizedException();
+            }
+        });
+
+        $this->post('/signup', function (Request $request, Response $response, array $args) {
+            if ($this->get('settings')['common']['allowSignUp']) {
+                $dbh = new \Sumidero\Database\DB($this);
+                $user = new \Sumidero\User(
+                    "",
+                    $request->getParam("email", ""),
+                    $request->getParam("password", "")
+                );
+                if (\Sumidero\User::existsEmail($dbh, $user->email)) {
+                    throw new \Sumidero\Exception\AlreadyExistsException("email");
+                } else {
+                    $user->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
+                    $user->add($dbh);
+                    return $response->withJson(
+                        [
+                            'success' => true,
+                        ], 200
+                    );
+                }
+            } else {
+                throw new \Sumidero\Exception\AccessDeniedException("");
+            }
+        });
+
+        $this->get('/signout', function (Request $request, Response $response, array $args) {
+            \Sumidero\User::logout();
+            return $response->withJson(
+                [
+                    'success' => true
+                ], 200
+            );
+        });
+
         /* user */
 
+        /*
         $this->group("/user", function() {
 
             $this->get('/poll', function (Request $request, Response $response, array $args) {
@@ -55,7 +103,7 @@
                                     "nick" => \Sumidero\UserSession::getNick(),
                                     "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
                                 ),
-                                "subs" => \Sumidero\Post::searchSubs($dbh),
+                                //"subs" => \Sumidero\Post::searchSubs($dbh),
                                 'upgradeAvailable' => $v->hasUpgradeAvailable(),
                                 "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                                 "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
@@ -108,12 +156,13 @@
                             'upgradeAvailable' => $v->hasUpgradeAvailable(),
                             "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
                             "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
-                            'isPublic' => $this->get('settings')['common']['isPublic'],
+                            'isPublic' => $this->get('settings')['common']['isPublic']
                         )
                     )
                 , 200);
             });
         });
+        */
 
         /* user */
 
