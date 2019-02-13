@@ -1,11 +1,14 @@
 import { bus } from './modules/bus.js';
 import { default as sumideroAPI } from './modules/api.js';
 import { router as router } from './modules/router.js';
+import { mixinRoutes } from './mixins.js';
+import { default as sumideroModalError } from './modules/modal-error.js';
 
 const imageLazyLoadObserver = lozad(); // lazy loads elements with default selector as '.lozad'
 if (imageLazyLoadObserver) {
     imageLazyLoadObserver.observe();
 }
+
 
 /**
  * top scroll window before change router page
@@ -69,41 +72,48 @@ const app = new Vue({
     data: function () {
         return ({
             loading: false,
-            compact: false
+            pollTimeout: null
         });
     },
+    mixins: [
+        mixinRoutes
+    ],
+    components: {
+        'sumidero-modal-error': sumideroModalError
+    },
     created: function () {
-        var self = this;
+        let self = this;
+        bus.$on("setPollTimeout", function (milliSeconds) {
+            self.pollTimeout = setInterval(
+                function () {
+                    sumideroAPI.user.poll(function () { });
+                },
+                milliSeconds
+            );
+        });
+        bus.$on("deletePollTimeout", function () {
+            clearInterval(self.pollTimeout);
+        });
+        this.navigateTo('signIn');
+        /*
         if (!initialState.upgradeAvailable) {
-            if (!initialState.logged) {
-                //self.$router.push({ name: 'signin' });
-                self.$router.push({ name: 'allSubs' });
+            if (initialState.isPublic) {
+                this.navigateTo('timeline');
             } else {
-                if (!self.$route.name) {
-                    self.$router.push({ name: 'allSubs' });
+                if (!initialState.session.logged) {
+                    this.navigateTo('signIn');
+                } else {
+                    if (!this.$route.name) {
+                        this.navigateTo('timeline');
+
+                    } else {
+                        this.navigateTo(this.$route.name);
+                    }
                 }
             }
         } else {
-            self.$router.push({ name: 'upgrade' });
+            this.navigateTo('upgrade');
         }
-        /*
-        NProgress.configure({ showSpinner: false });
-        bus.$on("startProgress", function () {
-            //NProgress.start();
-        });
-        bus.$on("incProgress", function () {
-            //NProgress.inc();
-        });
-        bus.$on("endProgress", function () {
-            //NProgress.done();
-        });
         */
     }
 }).$mount('#app');
-
-
-// prevent php session lost (TODO: better management, only poll if we are logged)
-setInterval(function () {
-    sumideroAPI.poll(function () { });
-    }, 300000 // 5 mins * 60 * 1000
-);
