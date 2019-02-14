@@ -11,6 +11,9 @@ export const mixinRoutes = {
 
 export const mixinSession = {
     computed: {
+        allowSignUp: function () {
+            return (initialState.allowSignUp || false);
+        },
         isLogged: function() {
             return(initialState.session.logged || false);
         },

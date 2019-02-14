@@ -1,7 +1,7 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes } from '../mixins.js';
+import { mixinRoutes, mixinSession } from '../mixins.js';
 
 const template = `
     <!-- template credits: daniel (https://github.com/dansup) -->
@@ -65,15 +65,10 @@ export default {
         });
     },
     mixins: [
-        mixinRoutes
+        mixinRoutes, mixinSession
     ],
     created: function () {
         this.$nextTick(() => this.$refs.email.focus());
-    },
-    computed: {
-        allowSignUp: function () {
-            return (initialState.allowSignUp);
-        }
     },
     methods: {
         onSubmit: function () {
