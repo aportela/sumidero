@@ -25,6 +25,15 @@ const template = `
                                     </p>
                                 </div>
                                 <div class="field">
+                                    <label class="label">Name</label>
+                                    <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('name') }">
+                                        <input class="input" type="test" name="name" maxlength="255" required v-bind:class="{ 'is-danger': validator.hasInvalidField('name') }" v-bind:disabled="loading" v-model.trim="name">
+                                        <span class="icon is-small is-left"><i class="fa fa-user"></i></span>
+                                        <span class="icon is-small is-right" v-show="validator.hasInvalidField('name')"><i class="fa fa-warning"></i></span>
+                                        <p class="help is-danger" v-show="validator.hasInvalidField('name')">{{ validator.getInvalidFieldMessage('name') }}</p>
+                                    </p>
+                                </div>
+                                <div class="field">
                                     <label class="label">Password</label>
                                     <p class="control has-icons-left" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('password') }">
                                         <input class="input" type="password" name="password" required v-bind:class="{ 'is-danger': validator.hasInvalidField('password') }" v-bind:disabled="loading" v-model="password">
@@ -63,6 +72,7 @@ export default {
             loading: false,
             validator: validator,
             email: null,
+            name: null,
             password: null,
             success: false
         });
@@ -87,7 +97,7 @@ export default {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.user.signUp(this.email, this.password, function (response) {
+            sumideroAPI.user.signUp(this.email, this.name, this.password, function (response) {
                 if (response.ok && response.body.success) {
                     self.success = true;
                 } else {
@@ -95,6 +105,8 @@ export default {
                         case 400:
                             if (response.body.invalidOrMissingParams.find(function (e) { return (e === "email"); })) {
                                 self.validator.setInvalid("email", "Invalid email");
+                            } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "name"); })) {
+                                self.validator.setInvalid("name", "Invalid name");
                             } else if (response.body.invalidOrMissingParams.find(function (e) { return (e === "password"); })) {
                                 self.validator.setInvalid("email", "Invalid password");
                             } else {
@@ -104,6 +116,8 @@ export default {
                         case 409:
                             if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
                                 self.validator.setInvalid("email", "Email already used");
+                            } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
+                                self.validator.setInvalid("email", "Name already used");
                             } else {
                                 self.showApiError(response.getApiErrorData());
                             }

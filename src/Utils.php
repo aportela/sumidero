@@ -93,6 +93,7 @@
                         'logged' => \Sumidero\UserSession::isLogged(),
                         'id' => \Sumidero\UserSession::getUserId(),
                         'email' => \Sumidero\UserSession::getEmail(),
+                        'name' => \Sumidero\UserSession::getName(),
                         'timeout' => ini_get("session.gc_maxlifetime")
                     ),
                     'defaultResultsPage' => $container->get('settings')['common']['defaultResultsPage'],

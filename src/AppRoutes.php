@@ -31,6 +31,7 @@
             $user = new \Sumidero\User(
                 "",
                 $request->getParam("email", ""),
+                "",
                 $request->getParam("password", "")
             );
             if ($user->login(new \Sumidero\Database\DB($this))) {
@@ -52,10 +53,13 @@
                 $user = new \Sumidero\User(
                     "",
                     $request->getParam("email", ""),
+                    $request->getParam("name", ""),
                     $request->getParam("password", "")
                 );
                 if (\Sumidero\User::existsEmail($dbh, $user->email)) {
                     throw new \Sumidero\Exception\AlreadyExistsException("email");
+                } else if (\Sumidero\User::existsName($dbh, $user->name)) {
+                    throw new \Sumidero\Exception\AlreadyExistsException("name");
                 } else {
                     $user->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
                     $user->add($dbh);
@@ -78,93 +82,6 @@
                 ], 200
             );
         });
-
-        /* user */
-
-        /*
-        $this->group("/user", function() {
-
-            $this->get('/poll', function (Request $request, Response $response, array $args) {
-                return $response->withJson(['sessionId' => session_id() ], 200);
-            });
-
-            $this->post('/signin', function (Request $request, Response $response, array $args) {
-                $u = new \Sumidero\User("", $request->getParam("email", ""), $request->getParam("password", ""), $request->getParam("nick", ""), "");
-                $dbh = new \Sumidero\Database\DB($this);
-                if ($u->login($dbh)) {
-                    $v = new \Sumidero\Database\Version($dbh, $this->get('settings')['database']['type']);
-                    return $response->withJson(
-                        array(
-                            'initialState' => array(
-                                "logged" => \Sumidero\UserSession::isLogged(),
-                                "session" => array(
-                                    "userId" => \Sumidero\UserSession::getUserId(),
-                                    "email" => \Sumidero\UserSession::getEmail(),
-                                    "nick" => \Sumidero\UserSession::getNick(),
-                                    "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
-                                ),
-                                //"subs" => \Sumidero\Post::searchSubs($dbh),
-                                'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                                "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                                "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
-                                'isPublic' => $this->get('settings')['common']['isPublic']
-                            )
-                        )
-                    , 200);
-                } else {
-                    return $response->withJson([], 401);
-                }
-            });
-
-            $this->post('/signup', function (Request $request, Response $response, array $args) {
-                if ($this->get('settings')['common']['allowSignUp']) {
-                    $dbh = new \Sumidero\Database\DB($this);
-                    $exists = false;
-                    if (\Sumidero\User::findByEmail($dbh, $request->getParam("email", "")) != null) {
-                        return $response->withJson(array("invalidOrMissingParams" => array("email")), 409);
-                    } else if (\Sumidero\User::findByNick($dbh, $request->getParam("nick", "")) != null) {
-                        return $response->withJson(array("invalidOrMissingParams" => array("nick")), 409);
-                    } else {
-                        $u = new \Sumidero\User(
-                            (\Ramsey\Uuid\Uuid::uuid4())->toString(),
-                            $request->getParam("email", ""),
-                            $request->getParam("password", ""),
-                            $request->getParam("nick", ""),
-                            ""
-                        );
-                        $u->add($dbh);
-                        return $response->withJson([], 200);
-                    }
-                } else {
-                    throw new \Sumidero\Exception\AccessDeniedException("");
-                }
-            });
-
-            $this->get('/signout', function (Request $request, Response $response, array $args) {
-                \Sumidero\User::logout();
-                $v = new \Sumidero\Database\Version(new \Sumidero\Database\DB($this), $this->get('settings')['database']['type']);
-                return $response->withJson(
-                    array(
-                        'initialState' => array(
-                            "logged" => \Sumidero\UserSession::isLogged(),
-                            "session" => array(
-                                "userId" => \Sumidero\UserSession::getUserId(),
-                                "email" => \Sumidero\UserSession::getEmail(),
-                                "nick" => \Sumidero\UserSession::getNick(),
-                                "avatarUrl" => \Sumidero\UserSession::getAvatarUrl(),
-                            ),
-                            'upgradeAvailable' => $v->hasUpgradeAvailable(),
-                            "defaultResultsPage" => $this->get('settings')['common']['defaultResultsPage'],
-                            "allowSignUp" => $this->get('settings')['common']['allowSignUp'],
-                            'isPublic' => $this->get('settings')['common']['isPublic']
-                        )
-                    )
-                , 200);
-            });
-        });
-        */
-
-        /* user */
 
         /* post */
 

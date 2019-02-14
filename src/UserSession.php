@@ -6,9 +6,10 @@
 
     class UserSession {
 
-        public static function set($userId = "", string $email = "") {
+        public static function set($userId = "", string $email = "", string $name = "") {
             $_SESSION["userId"] = $userId;
             $_SESSION["email"] = $email;
+            $_SESSION["name"] = $name;
         }
 
         public static function clear() {
@@ -47,6 +48,15 @@
          */
         public static function getEmail() {
             return(isset($_SESSION["email"]) ? $_SESSION["email"]: null);
+        }
+
+        /**
+         * return logged user name
+         *
+         * @return string name || null
+         */
+        public static function getName() {
+            return(isset($_SESSION["name"]) ? $_SESSION["name"]: null);
         }
 
     }

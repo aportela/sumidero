@@ -17,9 +17,10 @@ export default {
                 }
             );
         },
-        signUp: function (email, password, callback) {
+        signUp: function (email, name, password, callback) {
             let params = {
                 email: email,
+                name: name,
                 password: password
             }
             Vue.http.post("api/signup", params).then(
