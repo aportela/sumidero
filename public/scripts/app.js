@@ -2,7 +2,6 @@ import { bus } from './modules/bus.js';
 import { default as sumideroAPI } from './modules/api.js';
 import { router as router } from './modules/router.js';
 import { mixinRoutes } from './mixins.js';
-import { default as sumideroModalError } from './modules/modal-error.js';
 
 const imageLazyLoadObserver = lozad(); // lazy loads elements with default selector as '.lozad'
 if (imageLazyLoadObserver) {
@@ -78,9 +77,6 @@ const app = new Vue({
     mixins: [
         mixinRoutes
     ],
-    components: {
-        'sumidero-modal-error': sumideroModalError
-    },
     created: function () {
         let self = this;
         bus.$on("setPollTimeout", function (milliSeconds) {
