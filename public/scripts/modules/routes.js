@@ -15,7 +15,7 @@ export const routes = [
             { path: 'timeline', name: 'timeline', component: sectionTimeline }
         ]
     },
-    { path: '/api-error', name: 'apiError', component: sectionAPIError }
+    { path: '/api-error', name: 'APIError', component: sectionAPIError }
     /*
     {
         path: '/',

@@ -4,7 +4,7 @@ export const mixinRoutes = {
             this.$router.push({ name: routeName, params: params });
         },
         showApiError: function (error) {
-            this.$router.push({ name: "apiError", params: { error: error } });
+            this.$router.push({ name: "APIError", params: { error: error } });
         }
     }
 }
