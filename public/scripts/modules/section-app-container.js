@@ -1,5 +1,5 @@
 import { bus } from './bus.js';
-import { mixinSession as mixinSession } from "../mixins.js";
+import { mixinRoutes, mixinSession  } from "../mixins.js";
 
 const template = `
     <div>
@@ -23,7 +23,7 @@ const template = `
                 </div>
             </div>
             <div class="navbar-end">
-                <div class="navbar-item">
+                <div class="navbar-item" v-if="isLogged">
                     <div class="buttons">
                         <a class="button is-light">
                             <span class="icon">
@@ -45,6 +45,22 @@ const template = `
                         </a>
                     </div>
                 </div>
+                <div class="navbar-item" v-else>
+                    <div class="buttons">
+                        <a class="button is-light" v-on:click.prevent="navigateTo('signIn')">
+                            <span class="icon">
+                                <i class="fas fa-user-secret"></i>
+                            </span>
+                            <span>sign in</span>
+                        </a>
+                        <a class="button is-light" v-if="allowSignUp" v-on:click.prevent="navigateTo('signUp')">
+                            <span class="icon">
+                                <i class="fas fa-user-plus"></i>
+                            </span>
+                            <span>sign up</span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </nav>
         <transition name="fade">
@@ -63,7 +79,7 @@ export default {
         });
     },
     mixins: [
-        mixinSession
+        mixinSession,mixinRoutes
     ],
     methods: {
         search: function () {
