@@ -8,3 +8,17 @@ export const mixinRoutes = {
         }
     }
 }
+
+export const mixinSession = {
+    computed: {
+        isLogged: function() {
+            return(initialState.session.logged || false);
+        },
+        sessionUserEmail: function() {
+            return(initialState.session.email || null);
+        },
+        sessionUserName: function() {
+            return(initialState.session.name || null);
+        }
+    }
+}
