@@ -6,6 +6,7 @@
 
     require __DIR__ . '/../vendor/autoload.php';
 
+    session_name("SUMIDERO");
     session_start();
 
     $app = (new \Sumidero\App())->get();
