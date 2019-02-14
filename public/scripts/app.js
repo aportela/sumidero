@@ -80,18 +80,21 @@ const app = new Vue({
     created: function () {
         let self = this;
         bus.$on("setPollTimeout", function (milliSeconds) {
-            self.pollTimeout = setInterval(
-                function () {
-                    sumideroAPI.user.poll(function () { });
-                },
-                milliSeconds
-            );
+            self.enablePollTimeout(milliSeconds);
         });
         bus.$on("deletePollTimeout", function () {
-            clearInterval(self.pollTimeout);
+            self.disablePollTimeout();
         });
-        this.navigateTo('signIn');
-        /*
+        bus.$on("signOut", function () {
+            sumideroAPI.user.signOut(function (response) {
+                if (response.ok) {
+                    self.disablePollTimeout();
+                    self.navigateTo('signIn');
+                } else {
+                    self.showApiError(response.getApiErrorData());
+                }
+            });
+        });
         if (!initialState.upgradeAvailable) {
             if (initialState.isPublic) {
                 this.navigateTo('timeline');
@@ -110,6 +113,18 @@ const app = new Vue({
         } else {
             this.navigateTo('upgrade');
         }
-        */
+    },
+    methods: {
+        enablePollTimeout: function (milliSeconds) {
+            this.pollTimeout = setInterval(
+                function () {
+                    sumideroAPI.user.poll(function () { });
+                },
+                milliSeconds
+            );
+        },
+        disablePollTimeout: function () {
+            clearInterval(this.pollTimeout);
+        }
     }
 }).$mount('#app');
