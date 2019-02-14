@@ -117,7 +117,7 @@ export default {
                             if (response.body.invalidParams.find(function (e) { return (e === "email"); })) {
                                 self.validator.setInvalid("email", "Email already used");
                             } else if (response.body.invalidParams.find(function (e) { return (e === "name"); })) {
-                                self.validator.setInvalid("email", "Name already used");
+                                self.validator.setInvalid("name", "Name already used");
                             } else {
                                 self.showApiError(response.getApiErrorData());
                             }
