@@ -1,90 +1,101 @@
 const template = `
-    <article class="message is-danger">
-        <div class="message-header">
-            <p><i class="fas fa-bomb" aria-hidden="true"></i> Error</p>
-        </div>
-        <div class="message-body" v-if="error">
-            <div class="content">
-                <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
-                <h2 v-if="serverReturnError">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ error.response.status }} - {{ error.response.statusText }})</h2>
-                <h2 v-else>Uh oh! ...can't connect, server unreachable</h2>
-                <p v-show="! visibleDetails"><a v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
-                <div v-show="visibleDetails">
-                    <hr>
-                    <div class="tabs is-medium is-toggle">
-                        <ul>
-                            <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('request') }">
-                                <a class="no-text-decoration" v-on:click.prevent="changeTab('request');">
-                                    <span class="icon is-small"><i class="fas fa-upload"></i></span>
-                                    <span>Request</span>
-                                </a>
-                            </li>
-                            <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('response') }">
-                                <a class="no-text-decoration" v-on:click.prevent="changeTab('response');">
-                                    <span class="icon is-small"><i class="fas fa-download"></i></span>
-                                    <span>Response</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="panel" v-show="isTabActive('request')">
-                        <h2>Api request method & url:</h2>
-                        <pre>{{ error.request.method }} {{ error.request.url }}</pre>
-                        <div class="tabs is-small is-toggle">
-                            <ul>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('body') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('body');">
-                                        <span class="icon is-small"><i class="fas fa-database"></i></span>
-                                        <span>Body</span>
-                                    </a>
-                                </li>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('headers') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('headers');">
-                                        <span class="icon is-small"><i class="fas fa-list"></i></span>
-                                        <span>Headers</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div v-show="isRequestTabActive('body')">
-                            <h2>Api request body:</h2>
-                            <pre>{{ error.request.body }}</pre>
-                        </div>
-                        <div v-show="isRequestTabActive('headers')">
-                            <h2>Api request headers:</h2>
-                            <pre>{{ error.request.headers }}</pre>
-                        </div>
-                    </div>
-                    <div class="panel" v-show="isTabActive('response')">
-                        <div class="tabs is-small is-toggle">
-                            <ul>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('text') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('text');">
-                                    <span class="icon is-small"><i class="fas fa-database"></i></span>
-                                        <span>Body</span>
-                                    </a>
-                                </li>
-                                <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('headers') }">
-                                    <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('headers');">
-                                        <span class="icon is-small"><i class="fas fa-list"></i></span>
-                                        <span>Headers</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div v-show="isResponseTabActive('text')">
-                            <h2>Api response text:</h2>
-                            <pre>{{ error.response.text }}</pre>
-                        </div>
-                        <div v-show="isResponseTabActive('headers')">
-                            <h2>Api response headers:</h2>
-                            <pre>{{ error.response.headers }}</pre>
-                        </div>
+    <section class="hero is-fullheight is-light is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column is-10 is-offset-1">
+                        <article class="message is-warning">
+                            <div class="message-header">
+                                <p><i class="fas fa-bomb" aria-hidden="true"></i> Error</p>
+                            </div>
+                            <div class="message-body" v-if="error">
+                                <div class="content">
+                                    <h1 class="has-text-centered">“I'm sorry Dave. I'm afraid I can't do that”</h1>
+                                    <h2 v-if="serverReturnError">Uh oh! ...the server sent a <strong>invalid response</strong> ({{ error.response.status }} - {{ error.response.statusText }})</h2>
+                                    <h2 v-else>Uh oh! ...can't connect, server unreachable</h2>
+                                    <h2>Click <a href="#" v-on:click.prevent="$router.go(-1)">here</a> for go back or visit <a href="#" v-on:click.prevent="$router.push({ name: 'foobar' })">homepage</a></h2>
+                                    <p v-show="! visibleDetails"><a v-on:click.prevent="toggleDetails();">Follow</a> for  the rabbit.</p>
+                                    <div v-show="visibleDetails">
+                                        <hr>
+                                        <div class="tabs is-medium is-toggle">
+                                            <ul>
+                                                <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('request') }">
+                                                    <a class="no-text-decoration" v-on:click.prevent="changeTab('request');">
+                                                        <span class="icon is-small"><i class="fas fa-upload"></i></span>
+                                                        <span>Request</span>
+                                                    </a>
+                                                </li>
+                                                <li class="is-marginless" v-bind:class="{ 'is-active' : isTabActive('response') }">
+                                                    <a class="no-text-decoration" v-on:click.prevent="changeTab('response');">
+                                                        <span class="icon is-small"><i class="fas fa-download"></i></span>
+                                                        <span>Response</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="panel" v-show="isTabActive('request')">
+                                            <h2>Api request method & url:</h2>
+                                            <pre>{{ error.request.method }} {{ error.request.url }}</pre>
+                                            <div class="tabs is-small is-toggle">
+                                                <ul>
+                                                    <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('body') }">
+                                                        <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('body');">
+                                                            <span class="icon is-small"><i class="fas fa-database"></i></span>
+                                                            <span>Body</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="is-marginless" v-bind:class="{ 'is-active' : isRequestTabActive('headers') }">
+                                                        <a class="no-text-decoration" v-on:click.prevent="changeRequestTab('headers');">
+                                                            <span class="icon is-small"><i class="fas fa-list"></i></span>
+                                                            <span>Headers</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div v-show="isRequestTabActive('body')">
+                                                <h2>Api request body:</h2>
+                                                <pre>{{ error.request.body }}</pre>
+                                            </div>
+                                            <div v-show="isRequestTabActive('headers')">
+                                                <h2>Api request headers:</h2>
+                                                <pre>{{ error.request.headers }}</pre>
+                                            </div>
+                                        </div>
+                                        <div class="panel" v-show="isTabActive('response')">
+                                            <div class="tabs is-small is-toggle">
+                                                <ul>
+                                                    <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('text') }">
+                                                        <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('text');">
+                                                        <span class="icon is-small"><i class="fas fa-database"></i></span>
+                                                            <span>Body</span>
+                                                        </a>
+                                                    </li>
+                                                    <li class="is-marginless" v-bind:class="{ 'is-active' : isResponseTabActive('headers') }">
+                                                        <a class="no-text-decoration" v-on:click.prevent="changeResponseTab('headers');">
+                                                            <span class="icon is-small"><i class="fas fa-list"></i></span>
+                                                            <span>Headers</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div v-show="isResponseTabActive('text')">
+                                                <h2>Api response text:</h2>
+                                                <pre>{{ error.response.text }}</pre>
+                                            </div>
+                                            <div v-show="isResponseTabActive('headers')">
+                                                <h2>Api response headers:</h2>
+                                                <pre>{{ error.response.headers }}</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     </div>
                 </div>
             </div>
         </div>
-    </article>
+    </section>
 `;
 
 export default {
