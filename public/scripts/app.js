@@ -120,7 +120,7 @@ const app = new Vue({
                 function () {
                     sumideroAPI.user.poll(function () { });
                 },
-                milliSeconds
+                milliSeconds * 1000
             );
         },
         disablePollTimeout: function () {
