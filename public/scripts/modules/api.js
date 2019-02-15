@@ -125,7 +125,7 @@ export default {
         var params = {
             url: url
         };
-        Vue.http.post("api/post/scrap", params).then(
+        Vue.http.post("api/scrap", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);

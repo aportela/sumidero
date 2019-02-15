@@ -174,23 +174,23 @@
             });
         });
 
+        $this->post('/scrap', function (Request $request, Response $response, array $args) {
+            $scraper = new \Sumidero\Scraper();
+            $url = $request->getParam("url", "");
+            $data = $scraper->scrap($url);
+            $embed = $scraper->embed($url);
+            $tags = $scraper->getSuggestedTags($url);
+            return $response->withJson([
+                'title' => $embed->title, // isset($data["title"]) ? $data["title"]: null,
+                'image' => $embed->image, // isset($data["image"]) ? $data["image"]: null,
+                'body' => isset($data["article"]) && $data["article"]->textContent ? trim($data["article"]->textContent): null,
+                'suggestedTags' => $tags
+            ], 200);
+        });
+
         /* post */
 
         $this->group("/post", function() {
-
-            $this->post('/scrap', function (Request $request, Response $response, array $args) {
-                $scraper = new \Sumidero\Scraper();
-                $url = $request->getParam("url", "");
-                $data = $scraper->scrap($url);
-                $embed = $scraper->embed($url);
-                $tags = $scraper->getSuggestedTags($url);
-                return $response->withJson([
-                    'title' => $embed->title, // isset($data["title"]) ? $data["title"]: null,
-                    'image' => $embed->image, // isset($data["image"]) ? $data["image"]: null,
-                    'body' => isset($data["article"]) && $data["article"]->textContent ? trim($data["article"]->textContent): null,
-                    'suggestedTags' => $tags
-                ], 200);
-            });
 
             $this->get('/id/{id}', function (Request $request, Response $response, array $args) {
                 $post = new \Sumidero\Post();
