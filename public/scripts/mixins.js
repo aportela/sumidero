@@ -17,6 +17,9 @@ export const mixinSession = {
         isLogged: function() {
             return(initialState.session.logged || false);
         },
+        sessionUserId: function() {
+            return(initialState.session.id || null);
+        },
         sessionUserEmail: function() {
             return(initialState.session.email || null);
         },
