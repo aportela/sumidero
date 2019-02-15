@@ -97,6 +97,8 @@
                         'avatar' => \Sumidero\UserSession::getAvatar(),
                         'timeout' => ini_get("session.gc_maxlifetime")
                     ),
+                    'subs' => \Sumidero\Post::searchSubs($dbh),
+                    'tags' => \Sumidero\Post::searchTags($dbh),
                     'defaultResultsPage' => $container->get('settings')['common']['defaultResultsPage'],
                     'productionEnvironment' => $container->get('settings')['twigParams']['production'],
                 )
