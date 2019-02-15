@@ -83,6 +83,60 @@
             );
         });
 
+        $this->group("/user", function() {
+
+            $this->get('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Sumidero\User(
+                    $route->getArgument("id")
+                );
+                $dbh = new \Sumidero\Database\DB($this);
+                $user->get($dbh);
+                if (! $user->deletionDate) {
+                    unset($user->password);
+                    unset($user->passwordHash);
+                    unset($user->deletionDate);
+                    return $response->withJson(
+                        [
+                            'success' => true,
+                            "user" => $user
+                        ], 200
+                    );
+                } else {
+                    throw new \Sumidero\Exception\DeletedException();
+                }
+            });
+
+            $this->put('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $user = new \Sumidero\User(
+                    $route->getArgument("id"),
+                    $request->getParam("email", ""),
+                    $request->getParam("name", ""),
+                    $request->getParam("password", "")
+                );
+                if ($user->id == \Sumidero\UserSession::getUserId()) {
+                    $dbh = new \Sumidero\Database\DB($this);
+                    if (\Sumidero\User::existsEmail($dbh, $user->email, $user->id)) {
+                        throw new \Sumidero\Exception\AlreadyExistsException("email");
+                    } else if (\Sumidero\User::existsName($dbh, $user->name, $user->id)) {
+                        throw new \Sumidero\Exception\AlreadyExistsException("name");
+                    } else {
+                        $user->update($dbh);
+                        return $response->withJson(
+                            [
+                                'success' => true,
+                                'initialState' => \Sumidero\Utils::getInitialState($this)
+                            ], 200
+                        );
+                    }
+                } else {
+                    throw new \Sumidero\Exception\AccessDeniedException();
+                }
+            });
+
+        });
+
         /* post */
 
         $this->group("/post", function() {

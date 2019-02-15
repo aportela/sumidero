@@ -67,6 +67,40 @@ export default {
                     }
                 }
             );
+        },
+        get: function(id, callback) {
+            Vue.http.get("api/user/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        update: function(id, email, name, password, callback) {
+            let params = {
+                id: id,
+                email: email,
+                name: name,
+                password: password
+            }
+            Vue.http.put("api/user/" + id, params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
     },
     scrap: function (url, callback) {
