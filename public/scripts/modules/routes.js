@@ -1,8 +1,9 @@
-import  { default as sumideroSectionSignIn } from './section-signin.js';
-import  { default as sumideroSectionSignUp } from './section-signup.js';
+import { default as sumideroSectionSignIn } from './section-signin.js';
+import { default as sumideroSectionSignUp } from './section-signup.js';
 import { default as sectionAPIError } from './section-api-error.js';
 import { default as sectionUpgrade } from './section-upgrade.js';
 import { default as sectionAppContainer } from './section-app-container.js';
+import { default as sectionAdd } from './section-add.js';
 import { default as sectionMyProfile } from './section-my-profile.js';
 import { default as sectionTimeline } from './section-timeline.js';
 
@@ -14,6 +15,8 @@ export const routes = [
         path: '/app', component: sectionAppContainer,
         children: [
             { path: 'timeline', name: 'timeline', component: sectionTimeline },
+            { path: 'add-link', name: 'addLink', component: sectionAdd },
+            { path: 'add-post', name: 'addPost', component: sectionAdd },
             { path: 'my-profile', name: 'myProfile', component: sectionMyProfile }
         ]
     },
