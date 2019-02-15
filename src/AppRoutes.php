@@ -148,22 +148,30 @@
                     if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
                         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
                         $avatar = sprintf("%s.%s", $id, $extension);
-                        $dest = "C:\Users\z0mbie\Documents\GitHub\sumidero\public\avatar" . DIRECTORY_SEPARATOR . $avatar;
-                        $uploadedFile->moveTo($dest);
-                        return $response->withJson(
-                            [
-                                'success' => true,
-                                'avatar' => $avatar
-                            ]
-                        );
+                        $destinationDirectory = $this->settings["avatarsLocalPath"];
+                        if (file_exists($destinationDirectory)) {
+                            $uploadedFile->moveTo($destinationDirectory . $avatar);
+                            $user = new \Sumidero\User($id);
+                            $dbh = new \Sumidero\Database\DB($this);
+                            $user->get($dbh);
+                            $user->avatar = $avatar;
+                            $user->update($dbh);
+                            return $response->withJson(
+                                [
+                                    'success' => true,
+                                    'avatar' => $avatar
+                                ]
+                            );
+                        } else {
+                            throw new \Sumidero\Exception\UploadException("local avatar path not found");
+                        }
                     } else {
-                        throw new \Sumidero\Exception\UploadException();
+                        throw new \Sumidero\Exception\UploadException($uploadedFile->getError());
                     }
                 } else {
                     throw new \Sumidero\Exception\AccessDeniedException();
                 }
             });
-
         });
 
         /* post */
