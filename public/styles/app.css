@@ -28,3 +28,8 @@ img.post-thumbnail
 {
     cursor: pointer;
 }
+
+img.s-thumbnail-preview
+{
+    max-width: 50%;
+}
