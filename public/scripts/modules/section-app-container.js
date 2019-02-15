@@ -31,7 +31,7 @@ const template = `
                             </span>
                             <span>post</span>
                         </a>
-                        <a class="button is-light">
+                        <a class="button is-light" v-on:click.prevent="navigateTo('myProfile')">
                             <span class="icon">
                                 <i class="fas fa-user-circle"></i>
                             </span>
@@ -65,6 +65,7 @@ const template = `
         </nav>
         <transition name="fade">
             <!-- component matched by the route will render here -->
+            <router-view></router-view>
         </transition>
     </div>
 `;
@@ -79,7 +80,7 @@ export default {
         });
     },
     mixins: [
-        mixinSession,mixinRoutes
+        mixinSession, mixinRoutes
     ],
     methods: {
         search: function () {

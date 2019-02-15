@@ -3,6 +3,7 @@ import  { default as sumideroSectionSignUp } from './section-signup.js';
 import { default as sectionAPIError } from './section-api-error.js';
 import { default as sectionUpgrade } from './section-upgrade.js';
 import { default as sectionAppContainer } from './section-app-container.js';
+import { default as sectionMyProfile } from './section-my-profile.js';
 import { default as sectionTimeline } from './section-timeline.js';
 
 export const routes = [
@@ -12,7 +13,8 @@ export const routes = [
     {
         path: '/app', component: sectionAppContainer,
         children: [
-            { path: 'timeline', name: 'timeline', component: sectionTimeline }
+            { path: 'timeline', name: 'timeline', component: sectionTimeline },
+            { path: 'my-profile', name: 'myProfile', component: sectionMyProfile }
         ]
     },
     { path: '/api-error', name: 'APIError', component: sectionAPIError }
