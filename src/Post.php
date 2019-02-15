@@ -366,7 +366,7 @@
         }
 
         public static function searchSubs(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(sub) FROM POST ORDER BY RANDOM()";
+            $query = " SELECT DISTINCT(sub) FROM POST ORDER BY sub";
             $results = $dbh->query($query, array());
             $subs = array();
             foreach($results as $result) {
@@ -376,7 +376,7 @@
         }
 
         public static function searchTags(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ORDER BY RANDOM()";
+            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ORDER BY tag_name";
             $results = $dbh->query($query, array());
             $tags = array();
             foreach($results as $result) {
