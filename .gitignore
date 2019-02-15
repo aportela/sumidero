@@ -3,4 +3,6 @@
 !/logs/README.md
 /data/*
 !/data/README.md
+/public/avatar/*
+!/public/avatar/README.md
 composer.lock
