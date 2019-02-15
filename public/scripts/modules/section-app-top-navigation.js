@@ -30,41 +30,37 @@ const template = `
                         </span>
                         <span>timeline</span>
                     </a>
-                </div>
-            </a>
-
-            </div>
-            <div class="navbar-item" v-if="isLogged">
-                <div class="buttons">
-                    <a class="button is-light">
+                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addPost')">
                         <span class="icon">
-                            <i class="fas fa-comment-medical"></i>
+                            <i class="fas fa-comment-dots"></i>
                         </span>
                         <span>post</span>
                     </a>
-                    <a class="button is-light" v-on:click.prevent="navigateTo('myProfile')">
+                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addLink')">
+                        <span class="icon">
+                            <i class="fas fa-link"></i>
+                        </span>
+                        <span>link</span>
+                    </a>
+                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('myProfile')">
                         <span class="icon">
                             <i class="fas fa-user-circle"></i>
                         </span>
                         <span>my profile</span>
                     </a>
-                    <a class="button is-light" v-on:click.prevent="signOut()">
+                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="signOut()">
                         <span class="icon">
                             <i class="fas fa-sign-out-alt"></i>
                         </span>
                         <span>sign out</span>
                     </a>
-                </div>
-            </div>
-            <div class="navbar-item" v-else>
-                <div class="buttons">
-                    <a class="button is-light" v-on:click.prevent="navigateTo('signIn')">
+                    <a class="button is-light" v-if="! isLogged" v-on:click.prevent="navigateTo('signIn')">
                         <span class="icon">
                             <i class="fas fa-user-secret"></i>
                         </span>
                         <span>sign in</span>
                     </a>
-                    <a class="button is-light" v-if="allowSignUp" v-on:click.prevent="navigateTo('signUp')">
+                    <a class="button is-light" v-if="! isLogged && allowSignUp" v-on:click.prevent="navigateTo('signUp')">
                         <span class="icon">
                             <i class="fas fa-user-plus"></i>
                         </span>
