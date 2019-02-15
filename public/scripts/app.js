@@ -89,6 +89,8 @@ const app = new Vue({
             sumideroAPI.user.signOut(function (response) {
                 if (response.ok) {
                     self.disablePollTimeout();
+                    // enable fixed top navbar
+                    document.getElementsByTagName('html')[0].setAttribute('class', '')
                     self.navigateTo('signIn');
                 } else {
                     self.showApiError(response.getApiErrorData());
@@ -104,7 +106,6 @@ const app = new Vue({
                 } else {
                     if (!this.$route.name) {
                         this.navigateTo('timeline');
-
                     } else {
                         this.navigateTo(this.$route.name);
                     }

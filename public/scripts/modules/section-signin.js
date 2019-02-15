@@ -79,6 +79,8 @@ export default {
                 if (response.ok && response.body.success) {
                     initialState = response.body.initialState;
                     bus.$emit("setPollTimeout", initialState.session.timeout);
+                    // enable fixed top navbar
+                    document.getElementsByTagName('html')[0].setAttribute('class', 'has-navbar-fixed-top');
                     self.navigateTo('timeline', {});
                 } else {
                     switch (response.status) {
