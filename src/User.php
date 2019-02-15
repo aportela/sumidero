@@ -16,12 +16,14 @@
         public $passwordHash;
         public $creationDate;
         public $deletionDate;
+        public $avatar;
 
-        public function __construct (string $id = "", string $email = "", string $name = "", string $password = "") {
+        public function __construct (string $id = "", string $email = "", string $name = "", string $password = "", string $avatar = "") {
             $this->id = $id;
             $this->email = $email;
             $this->name = $name;
             $this->password = $password;
+            $this->avatar = $avatar;
         }
 
         public function __destruct() {
@@ -52,9 +54,10 @@
                                 (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                                 (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
                                 (new \Sumidero\Database\DBParam())->str(":name", $this->name),
-                                (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password))
+                                (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
+                                (new \Sumidero\Database\DBParam())->str(":avatar", $this->avatar),
                             );
-                            return($dbh->execute(" INSERT INTO USER (id, email, name, password_hash, creation_date) VALUES(:id, :email, :name, :password_hash, strftime('%s', 'now')) ", $params));
+                            return($dbh->execute(" INSERT INTO USER (id, email, name, avatar, password_hash, creation_date) VALUES(:id, :email, :name, :avatar, :password_hash, strftime('%s', 'now')) ", $params));
                         } else {
                             throw new \Sumidero\Exception\InvalidParamsException("password");
                         }
@@ -81,11 +84,13 @@
                         $fields = array(
                             "email = :email ",
                             "name = :name ",
+                            "avatar = :avatar "
                         );
                         $params = array(
                             (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)),
                             (new \Sumidero\Database\DBParam())->str(":email", mb_strtolower($this->email)),
-                            (new \Sumidero\Database\DBParam())->str(":name", $this->name)
+                            (new \Sumidero\Database\DBParam())->str(":name", $this->name),
+                            (new \Sumidero\Database\DBParam())->str(":avatar", $this->avatar)
                         );
                         if (! empty($password)) {
                             $fields[] = "password_hash = :password_hash";
@@ -135,7 +140,7 @@
                     sprintf(
                         "
                             SELECT
-                                USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
                             FROM USER
                             WHERE USER.id = :id
                         ",
@@ -150,7 +155,7 @@
                     sprintf(
                         "
                             SELECT
-                                USER.id, USER.email, USER.name, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
                             FROM USER
                             WHERE USER.email = :email
                         ",
@@ -167,6 +172,7 @@
                 $this->id = $results[0]->id;
                 $this->email = $results[0]->email;
                 $this->name = $results[0]->name;
+                $this->avatar = $results[0]->avatar;
                 $this->passwordHash = $results[0]->passwordHash;
                 $this->creationDate = $results[0]->creationDate;
                 if (! empty($results[0]->deletionDate)) {
@@ -249,7 +255,7 @@
             if (! empty($this->password)) {
                 $this->get($dbh);
                 if (password_verify($this->password, $this->passwordHash)) {
-                    \Sumidero\UserSession::set($this->id, $this->email, $this->name);
+                    \Sumidero\UserSession::set($this->id, $this->email, $this->name, $this->avatar);
                     return(true);
                 } else {
                     return(false);

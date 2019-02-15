@@ -106,6 +106,22 @@
                             [deletion_date] INTEGER
                         );
                     '
+                ),
+                "1.07" => array(
+                    '
+                        DROP TABLE [USER]
+                    ',
+                    '
+                        CREATE TABLE [USER] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [email] VARCHAR(255) UNIQUE NOT NULL,
+                            [name] VARCHAR(255) UNIQUE NOT NULL,
+                            [avatar] VARCHAR(40) UNIQUE NULL,
+                            [password_hash] VARCHAR(60) NOT NULL,
+                            [creation_date] INTEGER NOT NULL,
+                            [deletion_date] INTEGER
+                        );
+                    '
                 )
             )
         );

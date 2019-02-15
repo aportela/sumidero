@@ -82,11 +82,12 @@ export default {
                 }
             );
         },
-        update: function(id, email, name, password, callback) {
+        update: function(id, email, name, avatar, password, callback) {
             let params = {
                 id: id,
                 email: email,
                 name: name,
+                avatar: avatar,
                 password: password
             }
             Vue.http.put("api/user/" + id, params).then(
@@ -101,6 +102,23 @@ export default {
                     }
                 }
             );
+        },
+        uploadAvatar: function(userId, file, callback) {
+            var formData = new FormData();
+            formData.append("avatar", file, file.name);
+            Vue.http.post("api/user/" + userId + "/avatar", formData).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+
         }
     },
     scrap: function (url, callback) {

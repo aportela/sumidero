@@ -6,10 +6,11 @@
 
     class UserSession {
 
-        public static function set($userId = "", string $email = "", string $name = "") {
+        public static function set($userId = "", string $email = "", string $name = "", string $avatar = "") {
             $_SESSION["userId"] = $userId;
             $_SESSION["email"] = $email;
             $_SESSION["name"] = $name;
+            $_SESSION["avatar"] = $avatar;
         }
 
         public static function clear() {
@@ -57,6 +58,15 @@
          */
         public static function getName() {
             return(isset($_SESSION["name"]) ? $_SESSION["name"]: null);
+        }
+
+        /**
+         * return logged user avatar
+         *
+         * @return string avatar || null
+         */
+        public static function getAvatar() {
+            return(isset($_SESSION["avatar"]) ? $_SESSION["avatar"]: null);
         }
 
     }

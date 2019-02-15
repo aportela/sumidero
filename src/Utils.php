@@ -94,6 +94,7 @@
                         'id' => \Sumidero\UserSession::getUserId(),
                         'email' => \Sumidero\UserSession::getEmail(),
                         'name' => \Sumidero\UserSession::getName(),
+                        'avatar' => \Sumidero\UserSession::getAvatar(),
                         'timeout' => ini_get("session.gc_maxlifetime")
                     ),
                     'defaultResultsPage' => $container->get('settings')['common']['defaultResultsPage'],

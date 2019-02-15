@@ -1,6 +1,6 @@
 export const mixinRoutes = {
     methods: {
-        navigateTo: function(routeName, params) {
+        navigateTo: function (routeName, params) {
             this.$router.push({ name: routeName, params: params });
         },
         showApiError: function (error) {
@@ -14,17 +14,30 @@ export const mixinSession = {
         allowSignUp: function () {
             return (initialState.allowSignUp || false);
         },
-        isLogged: function() {
-            return(initialState.session.logged || false);
+        isLogged: function () {
+            return (initialState.session.logged || false);
         },
-        sessionUserId: function() {
-            return(initialState.session.id || null);
+        sessionUserId: function () {
+            return (initialState.session.id || null);
         },
-        sessionUserEmail: function() {
-            return(initialState.session.email || null);
+        sessionUserEmail: function () {
+            return (initialState.session.email || null);
         },
-        sessionUserName: function() {
-            return(initialState.session.name || null);
+        sessionUserName: function () {
+            return (initialState.session.name || null);
+        }
+    }
+}
+
+export const mixinAvatar = {
+    filters: {
+        parseAvatarURL: function (avatar) {
+            return ("/avatar/" + avatar);
+        }
+    },
+    methods: {
+        getAvatarURL: function (avatar) {
+            return ("/avatar/" + avatar);
         }
     }
 }

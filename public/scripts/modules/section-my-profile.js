@@ -1,6 +1,6 @@
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes, mixinSession } from '../mixins.js';
+import { mixinRoutes, mixinSession, mixinAvatar } from '../mixins.js';
 
 const template = `
     <section class="hero is-fullheight is-light is-bold">
@@ -13,7 +13,8 @@ const template = `
                                 <div class="media">
                                     <div class="media-left">
                                         <figure class="image is-96x96">
-                                            <img src="https://bulma.io/images/placeholders/96x96.png" alt="User avatar">
+                                            <img class="s-cursor-pointer" title="user avatar, click to change" alt="user avatar, click to change" v-bind:src="avatarUrl" v-on:error="avatar = null" v-on:click.prevent="selectAvatarFromDisk()">
+                                            <input type="file" id="avatarFile" accept="image/*" class="is-invisible" v-on:change="selectAvatar">
                                         </figure>
                                     </div>
                                     <div class="media-content">
@@ -105,18 +106,27 @@ export default {
             validator: validator,
             email: null,
             name: null,
-            password: null,
-            success: false
+            avatar: null,
+            password: null
         });
     },
     mixins: [
-        mixinSession, mixinRoutes
+        mixinSession, mixinRoutes, mixinAvatar
     ],
-    created: function() {
+    created: function () {
         this.loadProfile();
     },
+    computed: {
+        avatarUrl: function () {
+            if (this.avatar) {
+                return (this.getAvatarURL(this.avatar));
+            } else {
+                return ("https://bulma.io/images/placeholders/96x96.png");
+            }
+        }
+    },
     methods: {
-        loadProfile: function() {
+        loadProfile: function () {
             let self = this;
             self.loading = true;
             sumideroAPI.user.get(this.sessionUserId, function (response) {
@@ -124,6 +134,7 @@ export default {
                     self.loading = false;
                     self.email = response.body.user.email;
                     self.name = response.body.user.name;
+                    self.avatar = response.body.user.avatar;
                 } else {
                     self.showApiError(response.getApiErrorData());
                 }
@@ -133,7 +144,7 @@ export default {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.user.update(this.sessionUserId, this.email, this.name, this.password, function (response) {
+            sumideroAPI.user.update(this.sessionUserId, this.email, this.name, this.avatar, this.password, function (response) {
                 if (response.ok && response.body.success) {
                     self.loading = false;
                     initialState = response.body.initialState;
@@ -161,12 +172,46 @@ export default {
                             }
                             break;
                         default:
-                                self.showApiError(response.getApiErrorData());
+                            self.showApiError(response.getApiErrorData());
                             break;
                     }
                     self.loading = false;
                 }
             });
+        },
+        selectAvatarFromDisk: function () {
+            document.getElementById('avatarFile').click();
+        },
+        removeAvatar: function () {
+            this.avatar = null;
+        },
+        selectAvatar: function (event) {
+            var self = this;
+
+            // https://jsfiddle.net/mani04/5zyozvx8/
+
+            // Reference to the DOM input element
+            var input = event.target;
+            // Ensure that you have a file before attempting to read it
+            if (input.files && input.files[0]) {
+                // create a new FileReader to read this image and convert to base64 format
+                var reader = new FileReader();
+                // Define a callback function to run, when FileReader finishes its job
+                var filename = input.files[0].name;
+                var filesize = input.files[0].size;
+                reader.onload = (e) => {
+                    sumideroAPI.user.uploadAvatar(self.sessionUserId, input.files[0], function (response) {
+                        if (response.body.success) {
+                            self.avatar = null;
+                            self.avatar = response.body.avatar;
+                        } else {
+                            self.showApiError(response.getApiErrorData());
+                        }
+                    });
+                }
+                // Start the reader job - read file as a data url (base64 format)
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     }
 }

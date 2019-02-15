@@ -113,7 +113,8 @@
                     $route->getArgument("id"),
                     $request->getParam("email", ""),
                     $request->getParam("name", ""),
-                    $request->getParam("password", "")
+                    $request->getParam("password", ""),
+                    $request->getParam("avatar", "")
                 );
                 if ($user->id == \Sumidero\UserSession::getUserId()) {
                     $dbh = new \Sumidero\Database\DB($this);
@@ -123,12 +124,40 @@
                         throw new \Sumidero\Exception\AlreadyExistsException("name");
                     } else {
                         $user->update($dbh);
+                        \Sumidero\UserSession::set($user->id, $user->email, $user->name, $user->avatar);
                         return $response->withJson(
                             [
                                 'success' => true,
                                 'initialState' => \Sumidero\Utils::getInitialState($this)
                             ], 200
                         );
+                    }
+                } else {
+                    throw new \Sumidero\Exception\AccessDeniedException();
+                }
+            });
+
+            $this->post('/{id}/avatar', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $id = $route->getArgument("id");
+                if ($id == \Sumidero\UserSession::getUserId()) {
+                    $directory = "c:\\temp\\";
+                    $uploadedFiles = $request->getUploadedFiles();
+                    // handle single input with single file upload
+                    $uploadedFile = $uploadedFiles['avatar'];
+                    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+                        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+                        $avatar = sprintf("%s.%s", $id, $extension);
+                        $dest = "C:\Users\z0mbie\Documents\GitHub\sumidero\public\avatar" . DIRECTORY_SEPARATOR . $avatar;
+                        $uploadedFile->moveTo($dest);
+                        return $response->withJson(
+                            [
+                                'success' => true,
+                                'avatar' => $avatar
+                            ]
+                        );
+                    } else {
+                        throw new \Sumidero\Exception\UploadException();
                     }
                 } else {
                     throw new \Sumidero\Exception\AccessDeniedException();
