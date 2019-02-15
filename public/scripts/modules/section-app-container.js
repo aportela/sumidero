@@ -1,6 +1,7 @@
 import { bus } from './bus.js';
 import { mixinRoutes, mixinSession } from "../mixins.js";
 import { default as sumideroAppTopNavigation } from "./section-app-top-navigation.js";
+
 const template = `
     <div>
         <sumidero-section-app-top-navigation></sumidero-section-app-top-navigation>
