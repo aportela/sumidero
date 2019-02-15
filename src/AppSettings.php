@@ -50,7 +50,8 @@
                 'name' => 'sumidero-api',
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/api.log',
                 'level' => \Monolog\Logger::DEBUG
-            ]
+            ],
+            'avatarsLocalPath' => sprintf("%s%s%s%s%s%s", dirname( __DIR__), DIRECTORY_SEPARATOR, "public", DIRECTORY_SEPARATOR, "avatar", DIRECTORY_SEPARATOR)
         ]
     ];
 ?>
