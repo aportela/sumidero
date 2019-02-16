@@ -250,7 +250,8 @@
                     "title" => $request->getParam("title", ""),
                     "nsfw" => (bool) $request->getParam("nsfw", false)
                 ),
-                $request->getParam("order", "")
+                $request->getParam("sortBy", ""),
+                $request->getParam("sortOrder", "")
             );
             return $response->withJson(['posts' => $data->results ], 200);
         });

@@ -216,16 +216,17 @@ export default {
                 }
             );
         },
-        search: function (timestamp, sub, tag, title, nsfw, callback) {
+        search: function (timestamp, sub, tag, title, nsfw, currentPage, resultsPage, sortBy, sortOrder, callback) {
             var params = {
                 timestamp: timestamp,
                 sub: sub,
                 tag: tag,
                 title: title,
                 nsfw: nsfw,
-                order: null,
-                currentPage: 1,
-                resultsPage: 32
+                currentPage: currentPage,
+                resultsPage: resultsPage,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
             };
             Vue.http.post("api/search", params).then(
                 response => {

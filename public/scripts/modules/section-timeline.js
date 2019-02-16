@@ -49,7 +49,7 @@ export default {
             var self = this;
             self.posts = [];
             self.loading = true;
-            sumideroAPI.post.search(null, this.$route.params.sub, this.$route.params.tag, null, initialState.session.nsfw, function (response) {
+            sumideroAPI.post.search(null, this.$route.params.sub, this.$route.params.tag, null, initialState.session.nsfw, 1, 16, "creationTimestamp", "DESC", function (response) {
                 if (response.ok) {
                     self.posts = response.body.posts;
                     self.loading = false;
