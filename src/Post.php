@@ -75,10 +75,25 @@
             }
         }
 
-        public function existsExternalUrl(\Sumidero\Database\DB $dbh) {
-            $query = " SELECT id FROM POST WHERE external_url = :external_url ";
-            $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
-            $results = $dbh->query($query, $params);
+        public function existsExternalUrl(\Sumidero\Database\DB $dbh, string $ignoreId = "") {
+            $params = array(
+                (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl)
+            );
+            $whereCondition = null;
+            if (! empty($ignoreId)) {
+                $whereCondition = " AND id <> :id ";
+                $params[] = (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($ignoreId));
+            }
+            $results = $dbh->query(sprintf
+                (
+                    "
+                        SELECT id
+                        FROM POST
+                        WHERE external_url = :external_url
+                        %s
+                    ", $whereCondition
+                ), $params
+            );
             return(count($results) > 0);
         }
 
@@ -101,7 +116,7 @@
                 $params[] = (new \Sumidero\Database\DBParam())->null(":body");
             }
             if (! empty($this->externalUrl)) {
-                if (! $this->existsExternalUrl($dbh)) {
+                if (! $this->existsExternalUrl($dbh, "")) {
                     $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
                     $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
                 } else {
@@ -141,69 +156,94 @@
             }
         }
 
-        public function update(\Sumidero\Database\DB $dbh) {
-            $this->validateFields();
+        /**
+         * check for post write permissions (update/delete)
+         */
+        private function hasWritePermission(\Sumidero\Database\DB $dbh): bool
+        {
+            $hasPermission = false;
+            $query = " SELECT COUNT(id) AS total FROM POST WHERE id = :id AND op_user_id = :op_user_id ";
             $params = array(
                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                (new \Sumidero\Database\DBParam())->str(":sub", $this->sub),
-                (new \Sumidero\Database\DBParam())->str(":nsfw", $this->nsfw ? "Y": "N")
+                (new \Sumidero\Database\DBParam())->str(":op_user_id", \Sumidero\UserSession::getUserId())
             );
-            if (! empty($this->title)) {
-                $params[] = (new \Sumidero\Database\DBParam())->str(":title", $this->title);
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":title");
+            $data = $dbh->query($query, $params);
+            if($data[0]) {
+                $hasPermission = $data[0]->total == 1;
             }
-            if (! empty($this->body)) {
-                $params[] = (new \Sumidero\Database\DBParam())->str(":body", $this->body);
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":body");
-            }
-            if (! empty($this->externalUrl)) {
-                if (! $this->existsExternalUrl($dbh)) {
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+            return($hasPermission);
+        }
+
+
+        public function update(\Sumidero\Database\DB $dbh) {
+            if ($this->hasWritePermission($dbh)) {
+                $this->validateFields();
+                $params = array(
+                    (new \Sumidero\Database\DBParam())->str(":id", $this->id),
+                    (new \Sumidero\Database\DBParam())->str(":op_user_id", \Sumidero\UserSession::getUserId()),
+                    (new \Sumidero\Database\DBParam())->str(":sub", $this->sub),
+                    (new \Sumidero\Database\DBParam())->str(":nsfw", $this->nsfw ? "Y": "N")
+                );
+                if (! empty($this->title)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":title", $this->title);
                 } else {
-                    throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
+                    $params[] = (new \Sumidero\Database\DBParam())->null(":title");
                 }
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
-                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
-            }
-            if (! empty($this->thumbnail)) {
-                $params[] = (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail);
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":thumbnail");
-            }
-            $query = '
-                UPDATE POST
-                    SET
-                        domain = :domain,
-                        external_url = :external_url,
-                        sub = :sub,
-                        title = :title,
-                        body = :body,
-                        thumbnail = :thumbnail,
-                        nsfw = :nsfw
-                WHERE id = :id
-            ';
-            if ($dbh->execute($query, $params)) {
-                if (count($this->tags) > 0) {
-                    $query = " DELETE FROM POST_TAG WHERE post_id = :post_id; ";
-                    $params = array(
-                        (new \Sumidero\Database\DBParam())->str(":post_id", $this->id),
-                    );
-                    $dbh->execute($query, $params);
-                    $query = " INSERT INTO POST_TAG (post_id, tag_name) VALUES (:post_id, :tag_name); ";
-                    foreach($this->tags as $tag) {
-                        $params[] = (new \Sumidero\Database\DBParam())->str(":tag_name", $tag);
-                        $dbh->execute($query, $params);
+                if (! empty($this->body)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":body", $this->body);
+                } else {
+                    $params[] = (new \Sumidero\Database\DBParam())->null(":body");
+                }
+                if (! empty($this->externalUrl)) {
+                    if (! $this->existsExternalUrl($dbh, $this->id)) {
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+                        $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                    } else {
+                        throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
                     }
-                    return(true);
                 } else {
-                    return(true);
+                    $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
+                    $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
+                }
+                if (! empty($this->thumbnail)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail);
+                } else {
+                    $params[] = (new \Sumidero\Database\DBParam())->null(":thumbnail");
+                }
+                $query = '
+                    UPDATE POST
+                        SET
+                            domain = :domain,
+                            external_url = :external_url,
+                            sub = :sub,
+                            title = :title,
+                            body = :body,
+                            thumbnail = :thumbnail,
+                            nsfw = :nsfw
+                    WHERE id = :id
+                    AND op_user_id = :op_user_id
+                ';
+                if ($dbh->execute($query, $params)) {
+                    if (count($this->tags) > 0) {
+                        $query = " DELETE FROM POST_TAG WHERE post_id = :post_id; ";
+                        $params = array(
+                            (new \Sumidero\Database\DBParam())->str(":post_id", $this->id),
+                        );
+                        $dbh->execute($query, $params);
+                        $query = " INSERT INTO POST_TAG (post_id, tag_name) VALUES (:post_id, :tag_name); ";
+                        foreach($this->tags as $tag) {
+                            $params[] = (new \Sumidero\Database\DBParam())->str(":tag_name", $tag);
+                            $dbh->execute($query, $params);
+                        }
+                        return(true);
+                    } else {
+                        return(true);
+                    }
+                } else {
+                    return(false);
                 }
             } else {
-                return(false);
+                throw new \Sumidero\Exception\AccessDeniedException("");
             }
         }
 
@@ -279,9 +319,9 @@
                 $this->externalUrl = $data[0]->externalUrl;
                 $this->op = new \stdclass();
                 $this->op->id = $data[0]->userId;
-                $this->op->name = $data[0]->name;
+                $this->op->name = $data[0]->userName;
                 $this->op->avatar = $data[0]->userAvatar;
-                $this->tags = $data[0]->tags;
+                $this->tags = explode(",", $data[0]->tags);
                 $this->totalComments = $data[0]->totalComments;
                 $this->nsfw = $data[0]->nsfw == "Y";
             } else {
@@ -290,23 +330,27 @@
         }
 
         public function delete(\Sumidero\Database\DB $dbh) {
-            if (empty($this->id)) {
-                throw new \Sumidero\Exception\InvalidParamsException("id");
-            }
-            $params = array(
-                (new \Sumidero\Database\DBParam())->str(":id", $this->id)
-            );
-            $query = ' DELETE FROM POST_TAG WHERE post_id = :id ';
-            if ($dbh->execute($query, $params)) {
-                $query = ' DELETE FROM POST_COMMENT WHERE post_id = :id ';
+            if ($this->hasWritePermission($dbh)) {
+                if (empty($this->id)) {
+                    throw new \Sumidero\Exception\InvalidParamsException("id");
+                }
+                $params = array(
+                    (new \Sumidero\Database\DBParam())->str(":id", $this->id)
+                );
+                $query = ' DELETE FROM POST_TAG WHERE post_id = :id ';
                 if ($dbh->execute($query, $params)) {
-                    $query = ' DELETE FROM POST WHERE id = :id ';
-                    return($dbh->execute($query, $params));
+                    $query = ' DELETE FROM POST_COMMENT WHERE post_id = :id ';
+                    if ($dbh->execute($query, $params)) {
+                        $query = ' DELETE FROM POST WHERE id = :id ';
+                        return($dbh->execute($query, $params));
+                    } else {
+                        return(false);
+                    }
                 } else {
                     return(false);
                 }
             } else {
-                return(false);
+                throw new \Sumidero\Exception\AccessDeniedException("");
             }
         }
 
