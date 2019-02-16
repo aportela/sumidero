@@ -18,6 +18,7 @@
 
         $this->get('/poll', function (Request $request, Response $response, array $args) {
             $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
+            \Sumidero\UserSession::setNSFW($request->getParam("nsfw", "NO") == "YES");
             return $response->withJson(
                 [
                     'success' => true,
@@ -238,10 +239,10 @@
 
         /* post */
 
-        $this->get('/posts', function (Request $request, Response $response, array $args) {
+        $this->post('/search', function (Request $request, Response $response, array $args) {
             $data = \Sumidero\Post::search(
                 new \Sumidero\Database\DB($this),
-                1,
+                intval($request->getParam("currentPage", 1)),
                 intval($request->getParam("count", 16)),
                 array(
                     "sub" => $request->getParam("sub", ""),

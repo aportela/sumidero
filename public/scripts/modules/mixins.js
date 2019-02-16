@@ -1,3 +1,5 @@
+import { default as sumideroAPI } from './api.js';
+
 export const mixinRoutes = {
     methods: {
         navigateTo: function (routeName, params) {
@@ -38,6 +40,14 @@ export const mixinAvatar = {
     methods: {
         getAvatarURL: function (avatar) {
             return ("/avatar/" + avatar);
+        }
+    }
+}
+
+export const mixinInitialState = {
+    methods: {
+        setInitialState: function(state) {
+            initialState = state;
         }
     }
 }
