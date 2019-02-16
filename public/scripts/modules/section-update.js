@@ -217,6 +217,7 @@ export default {
             self.loading = true;
             sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, function (response) {
                 if (response.ok) {
+                    self.$router.back();
                 } else {
                     switch (response.status) {
                         case 409:
