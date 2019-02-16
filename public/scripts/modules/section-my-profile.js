@@ -1,6 +1,6 @@
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes, mixinSession, mixinAvatar } from '../mixins.js';
+import { mixinRoutes, mixinSession, mixinAvatar, mixinInitialState } from './mixins.js';
 
 const template = `
     <section class="hero is-fullheight is-light is-bold">
@@ -111,7 +111,7 @@ export default {
         });
     },
     mixins: [
-        mixinSession, mixinRoutes, mixinAvatar
+        mixinSession, mixinRoutes, mixinAvatar, mixinInitialState
     ],
     created: function () {
         this.loadProfile();
@@ -147,7 +147,7 @@ export default {
             sumideroAPI.user.update(this.sessionUserId, this.email, this.name, this.avatar, this.password, function (response) {
                 if (response.ok && response.body.success) {
                     self.loading = false;
-                    initialState = response.body.initialState;
+                    self.setInitialState(response.body.initialState);
                 } else {
                     switch (response.status) {
                         case 400:
