@@ -7,9 +7,6 @@
         <!-- prevent favicon request (https://stackoverflow.com/a/13416784) -->
         <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         <title>Sumidero</title>
-        <!--
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-        -->
         {% if settings.localVendorAssets %}
             {% if settings.production %}
         <link rel="stylesheet" href="vendor/bulma-0.7.4/css/bulma.min.css" integrity="sha256-8B1OaG0zT7uYA572S2xOxWACq9NXYPQ+U5kHPV1bJN4=" crossorigin="anonymous" />
@@ -125,24 +122,6 @@
         {% endif %}
         <!-- vendor section -->
 
-        <!-- app section -->
-        <!--
-        <script src="scripts/vue-components/container.js"></script>
-        <script src="scripts/vue-components/profile.js"></script>
-        <script src="scripts/vue-components/api-error.js"></script>
-        <script src="scripts/vue-components/auth-menu.js"></script>
-        <script src="scripts/vue-components/navigation-menu.js"></script>
-        <script src="scripts/vue-components/sumidero.js"></script>
-        -->
-
-        <script src="scripts/vue-components/post.js"></script>
-        <script src="scripts/vue-components/post-details.js"></script>
-        <!--
-        <script src="scripts/vue-components/add-post.js"></script>
-        <script src="scripts/vue-components/update-post.js"></script>
-        <script src="scripts/api.js"></script>
-        -->
         <script type="module" src="scripts/app.js"></script>
-        <!-- app section -->
     </body>
 </html>
