@@ -14,8 +14,8 @@
         public $name;
         public $password;
         public $passwordHash;
-        public $creationDate;
-        public $deletionDate;
+        public $creationTimestamp;
+        public $deletionTimestamp;
         public $avatar;
 
         public function __construct (string $id = "", string $email = "", string $name = "", string $password = "", string $avatar = "") {
@@ -57,7 +57,7 @@
                                 (new \Sumidero\Database\DBParam())->str(":password_hash", $this->passwordHash($this->password)),
                                 (new \Sumidero\Database\DBParam())->str(":avatar", $this->avatar),
                             );
-                            return($dbh->execute(" INSERT INTO USER (id, email, name, avatar, password_hash, creation_date) VALUES(:id, :email, :name, :avatar, :password_hash, strftime('%s', 'now')) ", $params));
+                            return($dbh->execute(" INSERT INTO USER (id, email, name, avatar, password_hash, creation_timestamp) VALUES(:id, :email, :name, :avatar, :password_hash, strftime('%s', 'now')) ", $params));
                         } else {
                             throw new \Sumidero\Exception\InvalidParamsException("password");
                         }
@@ -119,7 +119,7 @@
          */
         public function delete(\Sumidero\Database\DB $dbh) {
             if (! empty($this->id) && mb_strlen($this->id) == 36) {
-                return($dbh->execute(" UPDATE USER SET deletion_date = strftime('%s', 'now') WHERE id = :id ", array(
+                return($dbh->execute(" UPDATE USER SET deletion_timestamp = strftime('%s', 'now') WHERE id = :id ", array(
                     (new \Sumidero\Database\DBParam())->str(":id", mb_strtolower($this->id)))
                 ));
             } else {
@@ -140,7 +140,7 @@
                     sprintf(
                         "
                             SELECT
-                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, USER.creation_timestamp AS creationTimestamp, USER.deletion_timestamp AS deletionTimestamp
                             FROM USER
                             WHERE USER.id = :id
                         ",
@@ -155,7 +155,7 @@
                     sprintf(
                         "
                             SELECT
-                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, strftime('%s', datetime(USER.creation_date, 'unixepoch')) AS creationDate, USER.deletion_date AS deletionDate
+                                USER.id, USER.email, USER.name, USER.avatar, USER.password_hash AS passwordHash, USER.creation_timestamp AS creationTimestamp, USER.deletion_timestamp AS deletionTimestamp
                             FROM USER
                             WHERE USER.email = :email
                         ",
@@ -174,8 +174,8 @@
                 $this->name = $results[0]->name;
                 $this->avatar = $results[0]->avatar;
                 $this->passwordHash = $results[0]->passwordHash;
-                $this->creationDate = $results[0]->creationDate;
-                if (! empty($results[0]->deletionDate)) {
+                $this->creationTimestamp = $results[0]->creationTimestamp;
+                if (! empty($results[0]->deletionTimestamp)) {
                     throw new \Sumidero\Exception\DeletedException("");
                 }
             } else {
@@ -205,7 +205,7 @@
                             COUNT(id) AS total
                         FROM USER
                         WHERE email = :email
-                        AND deletion_date IS NULL
+                        AND deletion_timestamp IS NULL
                         %s
                     ", $whereCondition
                 ), $params
@@ -235,7 +235,7 @@
                             COUNT(id) AS total
                         FROM USER
                         WHERE name = :name
-                        AND deletion_date IS NULL
+                        AND deletion_timestamp IS NULL
                         %s
                     ", $whereCondition
                 ), $params

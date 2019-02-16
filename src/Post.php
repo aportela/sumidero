@@ -133,7 +133,7 @@
             }
             $query = '
                 INSERT INTO POST
-                    (id, op_user_id, creation_date, domain, external_url, sub, title, body, thumbnail, total_comments, nsfw)
+                    (id, op_user_id, creation_timestamp, domain, external_url, sub, title, body, thumbnail, total_comments, nsfw)
                 VALUES
                     (:id, :op_user_id, strftime("%s", "now"), :domain, :external_url, :sub, :title, :body, :thumbnail, 0, :nsfw)
             ';
@@ -262,7 +262,7 @@
             );
             $query = '
                 INSERT INTO POST_COMMENT
-                    (id, post_id, c_user_id, creation_date, body)
+                    (id, post_id, c_user_id, creation_timestamp, body)
                 VALUES
                     (:id, :post_id, :c_user_id, strftime("%s", "now"), :body)
             ';
@@ -287,7 +287,7 @@
                     P.title,
                     P.body,
                     P.thumbnail,
-                    P.creation_date as created,
+                    P.creation_timestamp as created,
                     P.sub,
                     P.domain,
                     P.external_url AS externalUrl,
@@ -321,7 +321,7 @@
                 $this->op->id = $data[0]->userId;
                 $this->op->name = $data[0]->userName;
                 $this->op->avatar = $data[0]->userAvatar;
-                $this->tags = explode(",", $data[0]->tags);
+                $this->tags = $data[0]->tags ? explode(",", $data[0]->tags): array();
                 $this->totalComments = $data[0]->totalComments;
                 $this->nsfw = $data[0]->nsfw == "Y";
             } else {
@@ -401,7 +401,7 @@
             if (! empty($order) && $order == "random") {
                 $sqlOrder = " ORDER BY RANDOM() ";
             } else {
-                $sqlOrder = " ORDER BY P.creation_date DESC ";
+                $sqlOrder = " ORDER BY P.creation_timestamp DESC ";
             }
             $query = sprintf('
                 SELECT
@@ -409,7 +409,7 @@
                     P.title,
                     P.body,
                     P.thumbnail,
-                    P.creation_date as created,
+                    P.creation_timestamp as created,
                     P.sub,
                     P.domain,
                     P.external_url AS externalUrl,
