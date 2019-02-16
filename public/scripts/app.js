@@ -85,6 +85,12 @@ const app = new Vue({
         bus.$on("deletePollTimeout", function () {
             self.disablePollTimeout();
         });
+        bus.$on("showNSFW", function() {
+            initialState.nsfw = true;
+        });
+        bus.$on("hideNSFW", function() {
+            initialState.nsfw = false;
+        });
         bus.$on("signOut", function () {
             sumideroAPI.user.signOut(function (response) {
                 if (response.ok) {
@@ -99,11 +105,15 @@ const app = new Vue({
         });
         if (!initialState.upgradeAvailable) {
             if (initialState.isPublic) {
+                // enable fixed top navbar
+                document.getElementsByTagName('html')[0].setAttribute('class', 'has-navbar-fixed-top');
                 this.navigateTo('timeline');
             } else {
                 if (!initialState.session.logged) {
                     this.navigateTo('signIn');
                 } else {
+                    // enable fixed top navbar
+                    document.getElementsByTagName('html')[0].setAttribute('class', 'has-navbar-fixed-top');
                     if (!this.$route.name) {
                         this.navigateTo('timeline');
                     } else {
