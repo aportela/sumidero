@@ -16,7 +16,7 @@ export const routes = [
         children: [
             { path: 'timeline', name: 'timeline', component: sectionTimeline },
             { path: 'add-link', name: 'addLink', component: sectionAdd },
-            { path: 'add-post', name: 'addPost', component: sectionAdd },
+            { path: 'add-shout', name: 'addShout', component: sectionAdd },
             { path: 'my-profile', name: 'myProfile', component: sectionMyProfile }
         ]
     },

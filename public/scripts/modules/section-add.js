@@ -7,7 +7,7 @@ const template = `
             <div class="container">
                 <div class="columns is-vcentered">
                     <div class="column is-10 is-offset-1">
-                        <p class="title has-text-centered" v-if="isPost">Add post</p>
+                        <p class="title has-text-centered" v-if="isShout">Add shout</p>
                         <p class="title has-text-centered" v-if="isLink">Add link</p>
                         <div class="card">
                             <div class="card-content">
@@ -141,8 +141,8 @@ export default {
         isLink: function () {
             return (this.$route.name == "addLink");
         },
-        isPost: function () {
-            return (this.$route.name == "addPost");
+        isShout: function () {
+            return (this.$route.name == "addShout");
         },
         isValidUrl: function () {
             return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://")) == 0);

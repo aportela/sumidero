@@ -30,17 +30,17 @@ const template = `
                         </span>
                         <span>timeline</span>
                     </a>
-                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addPost')">
+                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addShout')">
                         <span class="icon">
-                            <i class="fas fa-comment-dots"></i>
+                            <i class="far fa-comment-alt"></i>
                         </span>
-                        <span>post</span>
+                        <span>add shout</span>
                     </a>
                     <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addLink')">
                         <span class="icon">
                             <i class="fas fa-link"></i>
                         </span>
-                        <span>link</span>
+                        <span>add link</span>
                     </a>
                     <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('myProfile')">
                         <span class="icon">
