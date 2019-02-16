@@ -45,7 +45,7 @@ export default {
             var self = this;
             self.posts = [];
             self.loading = true;
-            sumideroAPI.getPosts(null, this.$route.params.sub, this.$route.params.tag, title, true, function (response) {
+            sumideroAPI.post.search(null, this.$route.params.sub, this.$route.params.tag, null, initialState.session.nsfw, function (response) {
                 if (response.ok) {
                     self.posts = response.body.posts;
                     self.loading = false;
