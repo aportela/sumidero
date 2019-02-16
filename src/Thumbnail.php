@@ -50,7 +50,7 @@
                     }
                     $createFolders = true;
                     $backgroundColor = null;
-                    $imageQuality = 95;
+                    $imageQuality = 32;
                     $thumb->save($dir, $filename, $createFolders, $backgroundColor, $imageQuality);
                     unlink($tmpFile);
                 }
