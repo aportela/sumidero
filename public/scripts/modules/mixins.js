@@ -34,12 +34,12 @@ export const mixinSession = {
 export const mixinAvatar = {
     filters: {
         parseAvatarURL: function (avatar) {
-            return ("/avatar/" + avatar);
+            return ("avatar/" + avatar);
         }
     },
     methods: {
         getAvatarURL: function (avatar) {
-            return ("/avatar/" + avatar);
+            return ("avatar/" + avatar);
         }
     }
 }
