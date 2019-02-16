@@ -1,6 +1,10 @@
-p.post-header
+.post-header, .post-content
 {
     margin-bottom: 1rem;
+}
+
+.post-content {
+    font-size: 14px;
 }
 
 img.user-avatar
@@ -27,9 +31,4 @@ img.post-thumbnail
 .s-cursor-pointer
 {
     cursor: pointer;
-}
-
-img.s-thumbnail-preview
-{
-    max-width: 50%;
 }
