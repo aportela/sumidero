@@ -1,5 +1,6 @@
 import { bus } from './bus.js';
-import { mixinRoutes, mixinSession } from "../mixins.js";
+import { default as sumideroAPI } from './api.js';
+import { mixinRoutes, mixinSession, mixinInitialState } from "./mixins.js";
 
 const template = `
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
@@ -24,13 +25,13 @@ const template = `
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button is-light" title="click here to hide content not suitable for work" v-if="nsfw" v-on:click.prevent="hideNSFW()">
+                    <a class="button is-light" title="click here to hide content not suitable for work" v-if="isNSFW" v-on:click.prevent="toggleNSFW()">
                         <span class="icon">
                             <i class="fas fa-user-ninja"></i>
                         </span>
                         <span>nsfw</span>
                     </a>
-                    <a class="button is-light" title="click here to show all content (including not suitable for work)" v-else v-on:click.prevent="showNSFW()">
+                    <a class="button is-light" title="click here to show all content (including not suitable for work)" v-else v-on:click.prevent="toggleNSFW()">
                         <span class="icon">
                             <span class="fa-stack">
                                 <i class="fas fa-user-ninja fa-stack-1x"></i>
@@ -94,17 +95,12 @@ export default {
         return ({
             isSearching: false,
             searchText: null,
-            nsfw: false
+            isNSFW: initialState.session.nsfw
         });
     },
     mixins: [
-        mixinSession, mixinRoutes
+        mixinSession, mixinRoutes, mixinInitialState
     ],
-    computed: {
-        SFW: function() {
-            return(initialState && initialState.nsfw == false);
-        }
-    },
     methods: {
         search: function () {
             var self = this;
@@ -117,11 +113,17 @@ export default {
         signOut: function () {
             bus.$emit('signOut');
         },
-        hideNSFW: function() {
-            this.nsfw = false;
-        },
-        showNSFW: function() {
-            this.nsfw = true;
+        toggleNSFW: function() {
+            let self = this;
+            sumideroAPI.user.poll(initialState.session.nsfw ? "NO": "YES", function (response) {
+                if (response.ok)  {
+                    initialState = response.body.initialState;
+                    self.isNSFW = initialState.session.nsfw;
+                } else {
+                    self.showApiError(response.getApiErrorData());
+                }
+            });
+
         }
     }
 }
