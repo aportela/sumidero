@@ -54,7 +54,7 @@ const template = `
                 </div>
             </div>
         </div>
-        <div class="media-right">
+        <div class="media-right" v-if="hasPermissions">
             <small>
                 <div v-if="deletedId == post.id">
                     <a href="#" v-on:click.prevent="onDelete(post.id)"><i class="fas fa-exclamation-triangle"></i> <span>confirm delete</span></a>
@@ -75,13 +75,11 @@ export default {
     data: function () {
         return ({
             loading: false,
-            deletedId: null,
-            posts: [],
-            gallery: false
+            deletedId: null
         });
     },
     props: [
-        'post', 'compact'
+        'post', 'compact', 'gallery'
     ],
     computed: {
         tags: function () {
@@ -104,6 +102,9 @@ export default {
             } else {
                 return ("https://bulma.io/images/placeholders/96x96.png");
             }
+        },
+        hasPermissions: function() {
+            return(this.post.userId == initialState.session.id);
         }
     },
     filters: {
@@ -121,7 +122,6 @@ export default {
     methods: {
         onDelete: function(id) {
             var self = this;
-            self.posts = [];
             self.loading = true;
             sumideroAPI.post.delete(id, function (response) {
                 if (response.ok) {
