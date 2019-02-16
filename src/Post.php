@@ -354,7 +354,7 @@
             }
         }
 
-        public static function search(\Sumidero\Database\DB $dbh, int $page = 1, int $resultsPage = 16, array $filter = array(), string $order = "") {
+        public static function search(\Sumidero\Database\DB $dbh, int $currentPage = 1, int $resultsPage = 16, array $filter = array(), string $sortBy = "creationTimestamp", string $sortOrder = "DESC") {
             $results = array();
             $params = array();
             $whereCondition = "";
@@ -364,7 +364,7 @@
                     $queryConditions[] = " P.sub LIKE :sub ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $filter["sub"]);
                 }
-                if (! isset($filter["nsfw"])) {
+                if (!( isset($filter["nsfw"]) && $filter["nsfw"] === true)) {
                     $queryConditions[] = " P.nsfw = 'N' ";
                 }
                 if (isset($filter["tag"]) && ! empty($filter["tag"])) {
@@ -393,49 +393,57 @@
             ', $whereCondition);
             $result = $dbh->query($queryCount, $params);
             $data = new \stdClass();
-            $data->actualPage = $page;
+            $data->currentPage = $currentPage;
             $data->resultsPage = $resultsPage;
             $data->totalResults = $result[0]->total;
-            $data->totalPages = ceil($data->totalResults / $resultsPage);
-            $sqlOrder = "";
-            if (! empty($order) && $order == "random") {
-                $sqlOrder = " ORDER BY RANDOM() ";
+            if ($data->resultsPage > 0) {
+                $data->totalPages = ceil($data->totalResults / $resultsPage);
             } else {
-                $sqlOrder = " ORDER BY P.creation_timestamp DESC ";
+                $data->totalPages = $data->totalResults > 0 ? 1: 0;
             }
-            $query = sprintf('
-                SELECT
-                    P.id,
-                    P.title,
-                    P.body,
-                    P.thumbnail,
-                    P.creation_timestamp as created,
-                    P.sub,
-                    P.domain,
-                    P.external_url AS externalUrl,
-                    P.op_user_id AS userId,
-                    U.name AS userName,
-                    U.avatar AS userAvatar,
-                    T.tags,
-                    P.total_comments AS totalComments,
-                    P.nsfw
-                FROM POST P
-                LEFT JOIN USER U ON U.id = P.op_user_id
-                LEFT JOIN (
-                    SELECT PT.post_id, group_concat(PT.tag_name) AS tags
-					FROM POST_TAG PT
-					GROUP BY PT.post_id
-				) T ON T.post_id = P.id
-                %s
-                %s
-                LIMIT %d OFFSET %d
-                ',
-                $whereCondition,
-                $sqlOrder,
-                $resultsPage,
-                $resultsPage * ($page - 1)
-            );
-            $data->results = $dbh->query($query, $params);
+            if ($data->totalResults > 0) {
+                $sqlSortBy = "";
+                switch($sortBy) {
+                    default:
+                        $sqlSortBy = "P.creation_timestamp";
+                    break;
+                }
+                $query = sprintf('
+                    SELECT
+                        P.id,
+                        P.title,
+                        P.body,
+                        P.thumbnail,
+                        P.creation_timestamp as created,
+                        P.sub,
+                        P.domain,
+                        P.external_url AS externalUrl,
+                        P.op_user_id AS userId,
+                        U.name AS userName,
+                        U.avatar AS userAvatar,
+                        T.tags,
+                        P.total_comments AS totalComments,
+                        P.nsfw
+                    FROM POST P
+                    LEFT JOIN USER U ON U.id = P.op_user_id
+                    LEFT JOIN (
+                        SELECT PT.post_id, group_concat(PT.tag_name) AS tags
+                        FROM POST_TAG PT
+                        GROUP BY PT.post_id
+                    ) T ON T.post_id = P.id
+                    %s
+                    ORDER BY %s COLLATE NOCASE %s
+                    %s
+                    ',
+                    $whereCondition,
+                    $sqlSortBy,
+                    $sortOrder == "DESC" ? "DESC": "ASC",
+                    $data->resultsPage > 0 ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->resultsPage * ($data->currentPage - 1)) : null
+                );
+                $data->results = $dbh->query($query, $params);
+            } else {
+                $data->results = array();
+            }
             return($data);
         }
 
