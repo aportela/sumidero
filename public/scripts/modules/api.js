@@ -138,27 +138,30 @@ export default {
             }
         );
     },
-    addPost: function (url, title, body, sub, tags, thumbnail, callback) {
-        var params = {
-            externalUrl: url,
-            title: title,
-            body: body,
-            sub: sub,
-            tags: tags,
-            thumbnail: thumbnail
-        };
-        Vue.http.post("api/post/add", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
+    post: {
+        add: function (id, url, title, body, sub, tags, thumbnail, callback) {
+            var params = {
+                id: id,
+                externalUrl: url,
+                title: title,
+                body: body,
+                sub: sub,
+                tags: tags,
+                thumbnail: thumbnail
+            };
+            Vue.http.post("api/post/" + id, params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
                 }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
+            );
+        }
     },
     updatePost: function (id, url, title, body, sub, tags, thumbnail, callback) {
         var params = {
@@ -200,13 +203,14 @@ export default {
             }
         );
     },
-    getPosts: function (timestamp, sub, tag, title, callback) {
+    getPosts: function (timestamp, sub, tag, title, nsfw, callback) {
         var params = {
             timestamp: timestamp,
             sub: sub,
             tag: tag,
             count: 256,
             title: title,
+            nsfw: nsfw,
             order: null
         };
         Vue.http.get("api/posts", { params: params }).then(
