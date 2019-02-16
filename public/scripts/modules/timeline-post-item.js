@@ -55,8 +55,16 @@ const template = `
             </div>
         </div>
         <div class="media-right">
-            <a v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span></a>
-            <a v-on:click.prevent="onDelete(post.id)"><span class="icon is-small"><i class="fa fa-trash"></i></span></a>
+            <small>
+                <div v-if="deletedId == post.id">
+                    <a href="#" v-on:click.prevent="onDelete(post.id)"><i class="fas fa-exclamation-triangle"></i> <span>confirm delete</span></a>
+                    <a href="#" v-on:click.prevent="deletedId = null"><i class="fas fa-times-circle"></i> <span>cancel</span></a>
+                </div>
+                <div v-else>
+                    <a v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span> <span>update</span></a>
+                    <a v-on:click.prevent="deletedId = post.id"><span class="icon is-small"><i class="fa fa-trash"></i></span> <span>delete</span></a>
+                </div>
+            </small>
         </div>
     </article>
 `;
@@ -67,6 +75,7 @@ export default {
     data: function () {
         return ({
             loading: false,
+            deletedId: null,
             posts: [],
             gallery: false
         });
@@ -117,6 +126,7 @@ export default {
             sumideroAPI.post.delete(id, function (response) {
                 if (response.ok) {
                     self.loading = false;
+                    self.deletedId = null;
                     self.$emit('onDelete', id);
                 } else {
                     self.showApiError(response.getApiErrorData());
