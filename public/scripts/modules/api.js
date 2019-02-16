@@ -161,6 +161,43 @@ export default {
                     }
                 }
             );
+        },
+        update: function (id, url, title, body, sub, tags, thumbnail, callback) {
+            var params = {
+                id: id,
+                externalUrl: url,
+                title: title,
+                body: body,
+                sub: sub,
+                tags: tags,
+                thumbnail: thumbnail
+            };
+            Vue.http.put("api/post/" + id, params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
+        },
+        get: function (id, callback) {
+            Vue.http.get("api/post/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
     },
     updatePost: function (id, url, title, body, sub, tags, thumbnail, callback) {
@@ -174,23 +211,6 @@ export default {
             thumbnail: thumbnail
         };
         Vue.http.put("api/post/update", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPost: function (permaLink, callback) {
-        var params = {
-            permaLink: permaLink
-        };
-        Vue.http.get("api/post/permalink/" + permaLink).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
