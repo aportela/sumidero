@@ -1,6 +1,5 @@
-import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
-import {  mixinAvatar } from '../mixins.js';
+import { mixinRoutes, mixinAvatar } from '../mixins.js';
 
 const template = `
     <article class="media">
@@ -56,8 +55,8 @@ const template = `
             </div>
         </div>
         <div class="media-right">
-            <a v-on:click.prevent="$router.push({ name: 'updatePost', params: { permalink: post.permalink } })"><span class="icon is-small"><i class="fa fa-edit"></i></span></a>
-            <a v-on:click.prevent="deletePost(post.id)"><span class="icon is-small"><i class="fa fa-trash"></i></span></a>
+            <a v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span></a>
+            <a v-on:click.prevent="onDelete(post.id)"><span class="icon is-small"><i class="fa fa-trash"></i></span></a>
         </div>
     </article>
 `;
@@ -108,6 +107,21 @@ export default {
 
     },
     mixins: [
-        mixinAvatar
-    ]
+        mixinAvatar, mixinRoutes
+    ],
+    methods: {
+        onDelete: function(id) {
+            var self = this;
+            self.posts = [];
+            self.loading = true;
+            sumideroAPI.post.delete(id, function (response) {
+                if (response.ok) {
+                    self.loading = false;
+                    self.$emit('onDelete', id);
+                } else {
+                    self.showApiError(response.getApiErrorData());
+                }
+            });
+        }
+    }
 }
