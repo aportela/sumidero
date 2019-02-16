@@ -5,17 +5,15 @@
 
     class Post {
         public $id;
-        public $opUserId;
-        public $permaLink;
+        public $op;
         public $externalUrl;
         public $domain;
         public $sub;
         public $title;
         public $body;
         public $thumbnail;
-        public $totalVotes;
-        public $totalComments;
         public $tags;
+        public $nsfw;
 
         public function __construct () {
             $this->tags = array();
@@ -27,17 +25,50 @@
             if (empty($this->id)) {
                 throw new \Sumidero\Exception\InvalidParamsException("id");
             }
-            if (empty($this->permaLink)) {
-                throw new \Sumidero\Exception\InvalidParamsException("permaLink");
+            if (! empty($this->title)) {
+                if (mb_strlen($this->title) > 128) {
+                    throw new \Sumidero\Exception\InvalidParamsException("title");
+                }
             }
-            if (empty($this->title)) {
-                throw new \Sumidero\Exception\InvalidParamsException("title");
+            if (! empty($this->body)) {
+                if (mb_strlen($this->body) > 16384) {
+                    throw new \Sumidero\Exception\InvalidParamsException("body");
+                }
+            }
+            if (! empty($this->externalUrl)) {
+                if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
+                    if (mb_strlen($this->externalUrl) > 2048) {
+                        throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
+                    }
+                    $this->domain = parse_url($this->externalUrl, PHP_URL_HOST);
+                    if (! empty($this->domain)) {
+                        if (mb_strlen($this->domain) > 255) {
+                            throw new \Sumidero\Exception\InvalidParamsException("domain");
+                        }
+                    } else {
+                        throw new \Sumidero\Exception\InvalidParamsException("domain");
+                    }
+                } else {
+                    throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
+                }
+            }
+            if (! empty($this->thumbnail)) {
+                if (mb_strlen($this->thumbnail) > 2048) {
+                    throw new \Sumidero\Exception\InvalidParamsException("thumbnail");
+                }
+            }
+            if (! empty($this->sub)) {
+                if (mb_strlen($this->sub) > 32) {
+                    throw new \Sumidero\Exception\InvalidParamsException("sub");
+                }
+            } else {
+                throw new \Sumidero\Exception\InvalidParamsException("sub");
             }
             $totalTags = count($this->tags);
             if ($totalTags > 0) {
                 for ($i = 0; $i < $totalTags; $i++) {
                     $this->tags[$i] = mb_strtolower(trim($this->tags[$i]));
-                    if (empty($this->tags[$i])) {
+                    if (empty($this->tags[$i]) || mb_strlen($this->tags[$i]) > 32) {
                         throw new \Sumidero\Exception\InvalidParamsException("tags");
                     }
                 }
@@ -45,7 +76,7 @@
         }
 
         public function existsExternalUrl(\Sumidero\Database\DB $dbh) {
-            $query = " SELECT id FROM POST WHERE external_url LIKE :external_url ";
+            $query = " SELECT id FROM POST WHERE external_url = :external_url ";
             $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
             $results = $dbh->query($query, $params);
             return(count($results) > 0);
@@ -56,33 +87,29 @@
             $params = array(
                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
                 (new \Sumidero\Database\DBParam())->str(":op_user_id", \Sumidero\UserSession::getUserId()),
-                (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink),
-                (new \Sumidero\Database\DBParam())->str(":title", $this->title),
+                (new \Sumidero\Database\DBParam())->str(":sub", $this->sub),
+                (new \Sumidero\Database\DBParam())->str(":nsfw", $this->nsfw ? "Y": "N")
             );
-            if (! empty($this->externalUrl)) {
-                if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
-                    if (! $this->existsExternalUrl($dbh)) {
-                        $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
-                        $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
-                    } else {
-                        throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
-                    }
-                } else {
-                    throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
-                }
+            if (! empty($this->title)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":title", $this->title);
             } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
-                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
-            }
-            if (! empty($this->sub)) {
-                $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $this->sub);
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":sub");
+                $params[] = (new \Sumidero\Database\DBParam())->null(":title");
             }
             if (! empty($this->body)) {
                 $params[] = (new \Sumidero\Database\DBParam())->str(":body", $this->body);
             } else {
                 $params[] = (new \Sumidero\Database\DBParam())->null(":body");
+            }
+            if (! empty($this->externalUrl)) {
+                if (! $this->existsExternalUrl($dbh)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                } else {
+                    throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
+                }
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
+                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
             }
             if (! empty($this->thumbnail)) {
                 $params[] = (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail);
@@ -91,9 +118,9 @@
             }
             $query = '
                 INSERT INTO POST
-                    (id, op_user_id, creation_date, permalink, domain, external_url, sub, total_votes, total_comments, title, body, thumbnail)
+                    (id, op_user_id, creation_date, domain, external_url, sub, title, body, thumbnail, total_comments, nsfw)
                 VALUES
-                    (:id, :op_user_id, strftime("%s", "now"), :permalink, :domain, :external_url, :sub, 0, 0, :title, :body, :thumbnail)
+                    (:id, :op_user_id, strftime("%s", "now"), :domain, :external_url, :sub, :title, :body, :thumbnail, 0, :nsfw)
             ';
             if ($dbh->execute($query, $params)) {
                 if (count($this->tags) > 0) {
@@ -118,29 +145,29 @@
             $this->validateFields();
             $params = array(
                 (new \Sumidero\Database\DBParam())->str(":id", $this->id),
-                (new \Sumidero\Database\DBParam())->str(":permalink", $this->permaLink),
-                (new \Sumidero\Database\DBParam())->str(":title", $this->title),
+                (new \Sumidero\Database\DBParam())->str(":sub", $this->sub),
+                (new \Sumidero\Database\DBParam())->str(":nsfw", $this->nsfw ? "Y": "N")
             );
-            if (! empty($this->externalUrl)) {
-                if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
-                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
-                } else {
-                    throw new \Sumidero\Exception\InvalidParamsException("externalUrl");
-                }
+            if (! empty($this->title)) {
+                $params[] = (new \Sumidero\Database\DBParam())->str(":title", $this->title);
             } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
-                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
-            }
-            if (! empty($this->sub)) {
-                $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $this->sub);
-            } else {
-                $params[] = (new \Sumidero\Database\DBParam())->null(":sub");
+                $params[] = (new \Sumidero\Database\DBParam())->null(":title");
             }
             if (! empty($this->body)) {
                 $params[] = (new \Sumidero\Database\DBParam())->str(":body", $this->body);
             } else {
                 $params[] = (new \Sumidero\Database\DBParam())->null(":body");
+            }
+            if (! empty($this->externalUrl)) {
+                if (! $this->existsExternalUrl($dbh)) {
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":external_url", $this->externalUrl);
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":domain", parse_url($this->externalUrl, PHP_URL_HOST));
+                } else {
+                    throw new \Sumidero\Exception\AlreadyExistsException("externalUrl");
+                }
+            } else {
+                $params[] = (new \Sumidero\Database\DBParam())->null(":external_url");
+                $params[] = (new \Sumidero\Database\DBParam())->null(":domain");
             }
             if (! empty($this->thumbnail)) {
                 $params[] = (new \Sumidero\Database\DBParam())->str(":thumbnail", $this->thumbnail);
@@ -150,13 +177,13 @@
             $query = '
                 UPDATE POST
                     SET
-                        permalink = :permalink,
                         domain = :domain,
                         external_url = :external_url,
                         sub = :sub,
                         title = :title,
                         body = :body,
-                        thumbnail = :thumbnail
+                        thumbnail = :thumbnail,
+                        nsfw = :nsfw
                 WHERE id = :id
             ';
             if ($dbh->execute($query, $params)) {
@@ -180,11 +207,11 @@
             }
         }
 
-        public function addComment(\Sumidero\Database\DB $dbh, $body) {
+        public function addComment(\Sumidero\Database\DB $dbh, string $body = "") {
             if (empty($this->id)) {
                 throw new \Sumidero\Exception\InvalidParamsException("id");
             }
-            if (empty($body)) {
+            if (empty($body || mb_strlen($body) > 2048)) {
                 throw new \Sumidero\Exception\InvalidParamsException("body");
             }
             $params = array(
@@ -222,15 +249,14 @@
                     P.thumbnail,
                     P.creation_date as created,
                     P.sub,
-                    P.permalink AS permaLink,
                     P.domain,
                     P.external_url AS externalUrl,
-                    P.total_votes AS totalVotes,
-                    P.total_comments AS totalComments,
                     P.op_user_id AS userId,
-                    U.email AS userEmail,
-                    U.avatar_url AS userAvatarUrl,
-                    T.tags
+                    U.name AS userName,
+                    U.avatar AS userAvatar,
+                    T.tags,
+                    P.total_comments AS totalComments,
+                    P.nsfw
                 FROM POST P
                 LEFT JOIN USER U ON U.id = P.op_user_id
                 LEFT JOIN (
@@ -249,14 +275,15 @@
                 $this->thumbnail = $data[0]->thumbnail;
                 $this->created = $data[0]->created;
                 $this->sub = $data[0]->sub;
-                $this->permaLink = $data[0]->permaLink;
                 $this->domain = $data[0]->domain;
                 $this->externalUrl = $data[0]->externalUrl;
-                $this->totalVotes = $data[0]->totalVotes;
-                $this->totalComments = $data[0]->totalComments;
-                $this->opUserId = $data[0]->userId;
+                $this->op = new \stdclass();
+                $this->op->id = $data[0]->userId;
+                $this->op->name = $data[0]->name;
+                $this->op->avatar = $data[0]->userAvatar;
                 $this->tags = $data[0]->tags;
-                $this->userAvatarUrl = $data[0]->userAvatarUrl; // TODO
+                $this->totalComments = $data[0]->totalComments;
+                $this->nsfw = $data[0]->nsfw == "Y";
             } else {
                 throw new \Sumidero\Exception\NotFoundException("");
             }
@@ -293,12 +320,15 @@
                     $queryConditions[] = " P.sub LIKE :sub ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $filter["sub"]);
                 }
+                if (! isset($filter["nsfw"])) {
+                    $queryConditions[] = " P.nsfw = 'N' ";
+                }
                 if (isset($filter["tag"]) && ! empty($filter["tag"])) {
                     $queryConditions[] = " EXISTS ( SELECT PT.tag_name FROM POST_TAG PT WHERE PT.post_id = P.id AND PT.tag_name = :tag ) ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":tag", $filter["tag"]);
                 }
                 if (isset($filter["domain"]) && ! empty($filter["domain"])) {
-                    $queryConditions[] = " P.domain LIKE :domain ";
+                    $queryConditions[] = " P.domain = :domain ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":domain", $filter["domain"]);
                 }
                 if (isset($filter["title"]) && ! empty($filter["title"])) {
@@ -337,14 +367,14 @@
                     P.thumbnail,
                     P.creation_date as created,
                     P.sub,
-                    P.permalink,
                     P.domain,
                     P.external_url AS externalUrl,
-                    P.total_votes AS totalVotes,
-                    P.total_comments AS totalComments,
                     P.op_user_id AS userId,
-                    U.email AS userEmail,
-                    T.tags
+                    U.name AS userName,
+                    U.avatar AS userAvatar,
+                    T.tags,
+                    P.total_comments AS totalComments,
+                    P.nsfw
                 FROM POST P
                 LEFT JOIN USER U ON U.id = P.op_user_id
                 LEFT JOIN (
