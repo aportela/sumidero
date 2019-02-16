@@ -192,6 +192,21 @@
 
         $this->group("/post", function() {
 
+            $this->post('/{id}', function (Request $request, Response $response, array $args) {
+                $route = $request->getAttribute('route');
+                $post = new \Sumidero\Post();
+                $post->id = $route->getArgument("id");
+                $post->title = $request->getParam("title", "");
+                $post->body = $request->getParam("body", "");
+                $post->sub = $request->getParam("sub", "");
+                $post->tags = $request->getParam("tags", array());
+                $post->externalUrl = $request->getParam("externalUrl", "");
+                $post->thumbnail = $request->getParam("thumbnail", "");
+                $post->add(new \Sumidero\Database\DB($this));
+                return $response->withJson(['success' => true ], 200);
+            });
+
+
             $this->get('/id/{id}', function (Request $request, Response $response, array $args) {
                 $post = new \Sumidero\Post();
                 $post->id = $args['id'];
@@ -213,26 +228,6 @@
                 return $response->withJson([ "post" => $post ], 200);
             });
 
-            $this->post('/add', function (Request $request, Response $response, array $args) {
-                $post = new \Sumidero\Post();
-                $post->id = (\Ramsey\Uuid\Uuid::uuid4())->toString();
-                $post->opUserId = \Sumidero\UserSession::getUserId();
-                $post->title = $request->getParam("title", "");
-                $post->body = $request->getParam("body", "");
-                $post->sub = $request->getParam("sub", "");
-                $post->tags = $request->getParam("tags", array());
-                $post->permaLink = mb_substr(preg_replace('/[^A-Za-z0-9-]+/', '-', mb_strtolower(uniqid() . " " .  $post->title)), 0, 2048);
-                $post->thumbnail = $request->getParam("thumbnail", "");
-                $post->totalVotes = 0;
-                $post->totalComments = 0;
-                $externalUrl = $request->getParam("externalUrl", "");
-                if (! empty($externalUrl) && filter_var($externalUrl, FILTER_VALIDATE_URL)) {
-                    $post->externalUrl = $externalUrl;
-                    $post->domain = parse_url($externalUrl, PHP_URL_HOST);
-                }
-                $post->add(new \Sumidero\Database\DB($this));
-                return $response->withJson(['id' => $post->id, 'title' => $post->title, 'image' => $post->thumbnail, 'body' => $post->body ], 200);
-            });
 
             $this->put('/update', function (Request $request, Response $response, array $args) {
                 $post = new \Sumidero\Post();
@@ -267,7 +262,8 @@
                 array(
                     "sub" => $request->getParam("sub", ""),
                     "tag" => $request->getParam("tag", ""),
-                    "title" => $request->getParam("title", "")
+                    "title" => $request->getParam("title", ""),
+                    "nsfw" => $request->getParam("nsfw", false)
                 ),
                 $request->getParam("order", "")
             );
