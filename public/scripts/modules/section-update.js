@@ -111,6 +111,23 @@ const template = `
                                     </div>
                                     <div class="field is-horizontal">
                                         <div class="field-label">
+                                            <label class="label">Content type</label>
+                                        </div>
+                                        <div class="field-body">
+                                            <div class="control">
+                                                <label class="radio">
+                                                    <input type="radio" name="nsfw" v-bind:value="false" v-model="nsfw">
+                                                    Safe for work
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" name="nsfw" v-bind:value="true" v-model="nsfw">
+                                                    Not safe for work
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field is-horizontal">
+                                        <div class="field-label">
                                             <label class="label"></label>
                                         </div>
                                         <div class="field-body">
@@ -144,7 +161,8 @@ export default {
             body: null,
             sub: null,
             thumbnail: null,
-            tagNames: null
+            tagNames: null,
+            nsfw: false
         });
     },
     computed: {
@@ -186,6 +204,7 @@ export default {
                     self.thumbnail = response.body.image ? response.body.image : null;
                     self.tagNames = response.body.suggestedTags && response.body.suggestedTags.length > 0 ? response.body.suggestedTags.join(",") : null;
                     self.loading = false;
+
                 } else {
                     self.validator.setInvalid("externalUrl", "Remote URL scraping failed");
                 }
@@ -204,6 +223,7 @@ export default {
                     self.thumbnail = response.body.post.thumbnail;
                     self.sub = response.body.post.sub;
                     self.tagNames = response.body.post.tags.join(",");
+                    self.nsfw = response.body.post.nsfw;
                     self.loading = false;
                 } else {
                     self.showApiError(response.getApiErrorData());
@@ -214,7 +234,7 @@ export default {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, function (response) {
+            sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
                     self.$router.back();
                 } else {

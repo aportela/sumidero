@@ -112,6 +112,23 @@ const template = `
                                     </div>
                                     <div class="field is-horizontal">
                                         <div class="field-label">
+                                            <label class="label">Content type</label>
+                                        </div>
+                                        <div class="field-body">
+                                            <div class="control">
+                                                <label class="radio">
+                                                    <input type="radio" name="nsfw" v-bind:value="false" v-model="nsfw">
+                                                    Safe for work
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" name="nsfw" v-bind:value="true" v-model="nsfw">
+                                                    Not safe for work
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="field is-horizontal">
+                                        <div class="field-label">
                                             <label class="label"></label>
                                         </div>
                                         <div class="field-body">
@@ -144,7 +161,8 @@ export default {
             body: null,
             sub: null,
             thumbnail: null,
-            tagNames: null
+            tagNames: null,
+            nsfw: false
         });
     },
     computed: {
@@ -192,7 +210,7 @@ export default {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.post.add(uuid(), this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, function (response) {
+            sumideroAPI.post.add(uuid(), this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
                     self.$router.back();
                 } else {

@@ -203,6 +203,7 @@
                 $post->tags = $request->getParam("tags", array());
                 $post->externalUrl = $request->getParam("externalUrl", "");
                 $post->thumbnail = $request->getParam("thumbnail", "");
+                $post->nsfw = (bool) $request->getParam("nsfw", false);
                 $post->add(new \Sumidero\Database\DB($this));
                 return $response->withJson(['success' => true ], 200);
             });
@@ -217,6 +218,7 @@
                 $post->tags = $request->getParam("tags", array());
                 $post->externalUrl = $request->getParam("externalUrl", "");
                 $post->thumbnail = $request->getParam("thumbnail", "");
+                $post->nsfw = (bool) $request->getParam("nsfw", false);
                 $post->update(new \Sumidero\Database\DB($this));
                 return $response->withJson(['success' => true ], 200);
             });

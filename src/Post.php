@@ -422,8 +422,7 @@
                         U.name AS userName,
                         U.avatar AS userAvatar,
                         T.tags,
-                        P.total_comments AS totalComments,
-                        P.nsfw
+                        P.total_comments AS totalComments
                     FROM POST P
                     LEFT JOIN USER U ON U.id = P.op_user_id
                     LEFT JOIN (

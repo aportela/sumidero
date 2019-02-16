@@ -142,7 +142,7 @@ export default {
         );
     },
     post: {
-        add: function (id, url, title, body, sub, tags, thumbnail, callback) {
+        add: function (id, url, title, body, sub, tags, thumbnail, nsfw, callback) {
             var params = {
                 id: id,
                 externalUrl: url,
@@ -150,7 +150,8 @@ export default {
                 body: body,
                 sub: sub,
                 tags: tags,
-                thumbnail: thumbnail
+                thumbnail: thumbnail,
+                nsfw: nsfw
             };
             Vue.http.post("api/post/" + id, params).then(
                 response => {
@@ -165,7 +166,7 @@ export default {
                 }
             );
         },
-        update: function (id, url, title, body, sub, tags, thumbnail, callback) {
+        update: function (id, url, title, body, sub, tags, thumbnail, nsfw, callback) {
             var params = {
                 id: id,
                 externalUrl: url,
@@ -173,7 +174,8 @@ export default {
                 body: body,
                 sub: sub,
                 tags: tags,
-                thumbnail: thumbnail
+                thumbnail: thumbnail,
+                nsfw: nsfw
             };
             Vue.http.put("api/post/" + id, params).then(
                 response => {
