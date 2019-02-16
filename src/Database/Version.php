@@ -74,7 +74,7 @@
                             [post_id] VARCHAR(36) NOT NULL,
                             [c_user_id] [id] VARCHAR(36),
                             [creation_date] INTEGER NOT NULL,
-                            [body] VARCHAR(384)
+                            [body] VARCHAR(2048)
                         );
                     '
                 ),
@@ -120,6 +120,48 @@
                             [password_hash] VARCHAR(60) NOT NULL,
                             [creation_date] INTEGER NOT NULL,
                             [deletion_date] INTEGER
+                        );
+                    '
+                ),
+                "1.08" => array(
+                    '
+                        DROP TABLE [POST]
+                    ',
+                    '
+                        CREATE TABLE [POST] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [op_user_id] [id] VARCHAR(36),
+                            [creation_date] INTEGER NOT NULL,
+                            [title] VARCHAR(128),
+                            [body] VARCHAR(16384),
+                            [external_url] VARCHAR(2048),
+                            [domain] VARCHAR(255),
+                            [thumbnail] VARCHAR(2048),
+                            [sub] VARCHAR(32),
+                            [total_comments] INTEGER NOT NULL DEFAULT 0,
+                            [nsfw] VARCHAR(1) DEFAULT "N"
+                        );
+                    ',
+                    '
+                        DROP TABLE [POST_TAG]
+                    ',
+                    '
+                        CREATE TABLE [POST_TAG] (
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [tag_name] VARCHAR(32) NOT NULL,
+                            PRIMARY KEY([post_id], [tag_name])
+                        );
+                    ',
+                    '
+                        DROP TABLE [POST_COMMENT]
+                    ',
+                    '
+                        CREATE TABLE [POST_COMMENT] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [post_id] VARCHAR(36) NOT NULL,
+                            [c_user_id] [id] VARCHAR(36),
+                            [creation_date] INTEGER NOT NULL,
+                            [body] VARCHAR(2048)
                         );
                     '
                 )
@@ -212,5 +254,4 @@
         }
 
     }
-
 ?>
