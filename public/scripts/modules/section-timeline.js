@@ -1,10 +1,11 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
+import { default as sumideroTimelinePostItem } from "./timeline-post-item.js";
 
 const template = `
     <div class="container">
         <div v-if="! loading" class="sumidero-post" v-for="post in posts">
-            <sumidero-post v-bind:post="post" v-bind:compact="compact"></sumidero-post>
+            <sumidero-timeline-post-item v-bind:post="post"></sumidero-timeline-post-item>
             <hr>
         </div>
     </div>
@@ -34,14 +35,17 @@ export default {
         });
     },
     updated: function () {
-        imageLazyLoadObserver.observe();
+        //imageLazyLoadObserver.observe();
+    },
+    components: {
+        'sumidero-timeline-post-item': sumideroTimelinePostItem
     },
     methods: {
         loadItems: function (title) {
             var self = this;
             self.posts = [];
             self.loading = true;
-            sumideroAPI.getPosts(null, this.$route.params.sub, this.$route.params.tag, title, function (response) {
+            sumideroAPI.getPosts(null, this.$route.params.sub, this.$route.params.tag, title, true, function (response) {
                 if (response.ok) {
                     self.posts = response.body.posts;
                     self.loading = false;
