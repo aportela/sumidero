@@ -1,6 +1,7 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as sumideroTimelinePostItem } from "./timeline-post-item.js";
+import { mixinRoutes } from './mixins.js';
 
 const template = `
     <div class="container">
@@ -37,6 +38,9 @@ export default {
     updated: function () {
         //imageLazyLoadObserver.observe();
     },
+    mixins: [
+        mixinRoutes
+    ],
     components: {
         'sumidero-timeline-post-item': sumideroTimelinePostItem
     },
