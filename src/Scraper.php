@@ -43,7 +43,7 @@
             if (! empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
                 switch(parse_url($url, PHP_URL_HOST)) {
                     case "www.youtube.com":
-                        $tags[] = "youtube";
+                        $tags = array("youtube", "videos");
                     break;
                 }
             }
