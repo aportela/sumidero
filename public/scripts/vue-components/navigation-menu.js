@@ -177,7 +177,7 @@ var navigationMenu = (function () {
                 }
             },
             search: function () {
-                bus.$emit("searchByTitle", this.searchText);
+                bus.$emit("search", this.searchText);
             },
             signOut: function () {
                 var self = this;
