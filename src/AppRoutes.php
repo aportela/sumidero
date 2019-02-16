@@ -16,9 +16,9 @@
 
     $this->app->group("/api", function() {
 
-        $this->get('/poll', function (Request $request, Response $response, array $args) {
+        $this->post('/poll', function (Request $request, Response $response, array $args) {
             $this->logger->info($request->getOriginalMethod() . " " . $request->getUri()->getPath());
-            \Sumidero\UserSession::setNSFW($request->getParam("nsfw", "NO") == "YES");
+            \Sumidero\UserSession::setNSFW((bool) $request->getParam("nsfw", false));
             return $response->withJson(
                 [
                     'success' => true,
@@ -248,7 +248,7 @@
                     "sub" => $request->getParam("sub", ""),
                     "tag" => $request->getParam("tag", ""),
                     "title" => $request->getParam("title", ""),
-                    "nsfw" => $request->getParam("nsfw", false)
+                    "nsfw" => (bool) $request->getParam("nsfw", false)
                 ),
                 $request->getParam("order", "")
             );

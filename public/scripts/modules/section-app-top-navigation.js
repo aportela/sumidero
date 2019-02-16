@@ -115,7 +115,7 @@ export default {
         },
         toggleNSFW: function() {
             let self = this;
-            sumideroAPI.user.poll(initialState.session.nsfw ? "NO": "YES", function (response) {
+            sumideroAPI.user.poll(! initialState.session.nsfw, function (response) {
                 if (response.ok)  {
                     initialState = response.body.initialState;
                     self.isNSFW = initialState.session.nsfw;

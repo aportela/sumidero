@@ -6,7 +6,10 @@
 export default {
     user: {
         poll: function (nsfw, callback) {
-            Vue.http.get("api/poll", { params: { nsfw: nsfw } }).then(
+            const params = {
+                nsfw: nsfw
+            }
+            Vue.http.post("api/poll", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
