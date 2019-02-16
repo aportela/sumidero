@@ -1,7 +1,7 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes, mixinSession } from '../mixins.js';
+import { mixinRoutes, mixinSession, mixinInitialState } from './mixins.js';
 
 const template = `
     <!-- template credits: daniel (https://github.com/dansup) -->
@@ -65,7 +65,7 @@ export default {
         });
     },
     mixins: [
-        mixinRoutes, mixinSession
+        mixinRoutes, mixinSession, mixinInitialState
     ],
     created: function () {
         this.$nextTick(() => this.$refs.email.focus());
@@ -77,7 +77,7 @@ export default {
             self.loading = true;
             sumideroAPI.user.signIn(this.email, this.password, function (response) {
                 if (response.ok && response.body.success) {
-                    initialState = response.body.initialState;
+                    self.setInitialState(response.body.initialState);
                     bus.$emit("setPollTimeout", initialState.session.timeout);
                     // enable fixed top navbar
                     document.getElementsByTagName('html')[0].setAttribute('class', 'has-navbar-fixed-top');
