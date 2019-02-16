@@ -15,7 +15,23 @@ export const routes = [
     {
         path: '/app', component: sectionAppContainer,
         children: [
-            { path: 'timeline', name: 'timeline', component: sectionTimeline },
+            {
+                path: 'timeline',
+                name: 'timeline',
+                component: sectionTimeline,
+                children: [
+                    {
+                        path: 'sub/:sub',
+                        name: 'timelineFilteredBySub',
+                        component: sectionTimeline
+                    },
+                    {
+                        path: 'tag/:tag',
+                        name: 'timelineFilteredBTag',
+                        component: sectionTimeline
+                    }
+                ]
+            },
             { path: 'add-link', name: 'addLink', component: sectionAdd },
             { path: 'add-shout', name: 'addShout', component: sectionAdd },
             { path: 'update-post/:id', name: 'updatePost', component: sectionUpdate },
