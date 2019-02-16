@@ -5,8 +5,8 @@
  */
 export default {
     user: {
-        poll: function (callback) {
-            Vue.http.get("api/poll").then(
+        poll: function (nsfw, callback) {
+            Vue.http.get("api/poll", { params: { nsfw: nsfw } }).then(
                 response => {
                     if (callback && typeof callback === "function") {
                         callback(response);
@@ -18,7 +18,7 @@ export default {
             );
         },
         signUp: function (email, name, password, callback) {
-            let params = {
+            const params = {
                 email: email,
                 name: name,
                 password: password
@@ -68,7 +68,7 @@ export default {
                 }
             );
         },
-        get: function(id, callback) {
+        get: function (id, callback) {
             Vue.http.get("api/user/" + id).then(
                 response => {
                     if (callback && typeof callback === "function") {
@@ -82,7 +82,7 @@ export default {
                 }
             );
         },
-        update: function(id, email, name, avatar, password, callback) {
+        update: function (id, email, name, avatar, password, callback) {
             let params = {
                 id: id,
                 email: email,
@@ -103,7 +103,7 @@ export default {
                 }
             );
         },
-        uploadAvatar: function(userId, file, callback) {
+        uploadAvatar: function (userId, file, callback) {
             var formData = new FormData();
             formData.append("avatar", file, file.name);
             Vue.http.post("api/user/" + userId + "/avatar", formData).then(
@@ -212,65 +212,30 @@ export default {
                     }
                 }
             );
+        },
+        search: function (timestamp, sub, tag, title, nsfw, callback) {
+            var params = {
+                timestamp: timestamp,
+                sub: sub,
+                tag: tag,
+                title: title,
+                nsfw: nsfw,
+                order: null,
+                currentPage: 1,
+                resultsPage: 32
+            };
+            Vue.http.post("api/search", params).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
-    },
-    updatePost: function (id, url, title, body, sub, tags, thumbnail, callback) {
-        var params = {
-            id: id,
-            externalUrl: url,
-            title: title,
-            body: body,
-            sub: sub,
-            tags: tags,
-            thumbnail: thumbnail
-        };
-        Vue.http.put("api/post/update", params).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    },
-    getPosts: function (timestamp, sub, tag, title, nsfw, callback) {
-        var params = {
-            timestamp: timestamp,
-            sub: sub,
-            tag: tag,
-            count: 256,
-            title: title,
-            nsfw: nsfw,
-            order: null
-        };
-        Vue.http.get("api/posts", { params: params }).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
-    }, deletePost: function (id, callback) {
-        Vue.http.delete("api/post/id/" + id).then(
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            },
-            response => {
-                if (callback && typeof callback === "function") {
-                    callback(response);
-                }
-            }
-        );
     }
 }
