@@ -5,7 +5,7 @@ import { default as sumideroTimelinePostItem } from "./timeline-post-item.js";
 const template = `
     <div class="container">
         <div v-if="! loading" class="sumidero-post" v-for="post in posts">
-            <sumidero-timeline-post-item v-bind:post="post"></sumidero-timeline-post-item>
+            <sumidero-timeline-post-item v-bind:post="post" v-on:onDelete="removeItemFromList($event)"></sumidero-timeline-post-item>
             <hr>
         </div>
     </div>
@@ -21,7 +21,7 @@ export default {
             gallery: false
         });
     },
-    props: ['sub', 'tag', 'compact' ],
+    props: ['sub', 'tag', 'compact'],
     watch: {
         '$route'(to, from) {
             this.loadItems();
@@ -30,8 +30,8 @@ export default {
     created: function () {
         this.loadItems();
         var self = this;
-        bus.$on("searchByTitle", function (title) {
-            self.loadItems(title);
+        bus.$on("search", function (text) {
+            self.loadItems(text);
         });
     },
     updated: function () {
@@ -53,6 +53,9 @@ export default {
                     self.showApiError(response.getApiErrorData());
                 }
             });
+        },
+        removeItemFromList: function (id) {
+            this.posts = this.posts.filter((post) => post.id !== id);
         }
     }
 }
