@@ -1,5 +1,5 @@
 import { bus } from './bus.js';
-import { mixinRoutes, mixinSession  } from "../mixins.js";
+import { mixinRoutes, mixinSession } from "../mixins.js";
 
 const template = `
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
@@ -24,6 +24,21 @@ const template = `
         <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
+                    <a class="button is-light" title="click here to hide content not suitable for work" v-if="nsfw" v-on:click.prevent="hideNSFW()">
+                        <span class="icon">
+                            <i class="fas fa-user-ninja"></i>
+                        </span>
+                        <span>nsfw</span>
+                    </a>
+                    <a class="button is-light" title="click here to show all content (including not suitable for work)" v-else v-on:click.prevent="showNSFW()">
+                        <span class="icon">
+                            <span class="fa-stack">
+                                <i class="fas fa-user-ninja fa-stack-1x"></i>
+                                <i class="fas fa-ban fa-stack-1x" style="color:Tomato"></i>
+                            </span>
+                        </span>
+                        <span>sfw</span>
+                    </a>
                     <a class="button is-light" v-on:click.prevent="navigateTo('timeline')">
                         <span class="icon">
                             <i class="fas fa-list-alt"></i>
@@ -78,12 +93,18 @@ export default {
     data: function () {
         return ({
             isSearching: false,
-            searchText: null
+            searchText: null,
+            nsfw: false
         });
     },
     mixins: [
         mixinSession, mixinRoutes
     ],
+    computed: {
+        SFW: function() {
+            return(initialState && initialState.nsfw == false);
+        }
+    },
     methods: {
         search: function () {
             var self = this;
@@ -95,6 +116,12 @@ export default {
         },
         signOut: function () {
             bus.$emit('signOut');
+        },
+        hideNSFW: function() {
+            this.nsfw = false;
+        },
+        showNSFW: function() {
+            this.nsfw = true;
         }
     }
 }
