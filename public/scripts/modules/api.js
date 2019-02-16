@@ -198,6 +198,20 @@ export default {
                     }
                 }
             );
+        },
+        delete: function (id, callback) {
+            Vue.http.delete("api/post/" + id).then(
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                },
+                response => {
+                    if (callback && typeof callback === "function") {
+                        callback(response);
+                    }
+                }
+            );
         }
     },
     updatePost: function (id, url, title, body, sub, tags, thumbnail, callback) {

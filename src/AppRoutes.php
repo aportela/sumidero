@@ -227,7 +227,7 @@
                 return $response->withJson([ "post" => $post ], 200);
             });
 
-            $this->delete('/id/{id}', function (Request $request, Response $response, array $args) {
+            $this->delete('/{id}', function (Request $request, Response $response, array $args) {
                 $post = new \Sumidero\Post();
                 $post->id = $args['id'];
                 $post->delete(new \Sumidero\Database\DB($this));

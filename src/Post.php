@@ -330,10 +330,10 @@
         }
 
         public function delete(\Sumidero\Database\DB $dbh) {
+            if (empty($this->id)) {
+                throw new \Sumidero\Exception\InvalidParamsException("id");
+            }
             if ($this->hasWritePermission($dbh)) {
-                if (empty($this->id)) {
-                    throw new \Sumidero\Exception\InvalidParamsException("id");
-                }
                 $params = array(
                     (new \Sumidero\Database\DBParam())->str(":id", $this->id)
                 );
