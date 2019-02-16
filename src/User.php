@@ -255,7 +255,7 @@
             if (! empty($this->password)) {
                 $this->get($dbh);
                 if (password_verify($this->password, $this->passwordHash)) {
-                    \Sumidero\UserSession::set($this->id, $this->email, $this->name, $this->avatar);
+                    \Sumidero\UserSession::set($this->id, $this->email, $this->name, $this->avatar, false);
                     return(true);
                 } else {
                     return(false);

@@ -95,7 +95,8 @@
                         'email' => \Sumidero\UserSession::getEmail(),
                         'name' => \Sumidero\UserSession::getName(),
                         'avatar' => \Sumidero\UserSession::getAvatar(),
-                        'timeout' => ini_get("session.gc_maxlifetime")
+                        'timeout' => ini_get("session.gc_maxlifetime"),
+                        'nsfw' => \Sumidero\UserSession::getNSFW()
                     ),
                     'subs' => \Sumidero\Post::searchSubs($dbh),
                     'tags' => \Sumidero\Post::searchTags($dbh),

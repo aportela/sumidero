@@ -6,11 +6,12 @@
 
     class UserSession {
 
-        public static function set($userId = "", string $email = "", string $name = "", string $avatar = "") {
+        public static function set($userId = "", string $email = "", string $name = "", string $avatar = "", bool $nsfw = false) {
             $_SESSION["userId"] = $userId;
             $_SESSION["email"] = $email;
             $_SESSION["name"] = $name;
             $_SESSION["avatar"] = $avatar;
+            $_SESSION["nsfw"] = $nsfw;
         }
 
         public static function clear() {
@@ -67,6 +68,24 @@
          */
         public static function getAvatar() {
             return(isset($_SESSION["avatar"]) ? $_SESSION["avatar"]: null);
+        }
+
+        /**
+         * return logged user nsfw mode
+         *
+         * @return string avatar || null
+         */
+        public static function getNSFW() {
+            return(isset($_SESSION["nsfw"]) ? $_SESSION["nsfw"]: false);
+        }
+
+        /**
+         * set logged user nsfw mode
+         *
+         * @return boolean
+         */
+        public static function setNSFW(bool $mode = false) {
+            $_SESSION["nsfw"] = $mode;
         }
 
     }
