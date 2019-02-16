@@ -4,6 +4,7 @@ import { default as sectionAPIError } from './section-api-error.js';
 import { default as sectionUpgrade } from './section-upgrade.js';
 import { default as sectionAppContainer } from './section-app-container.js';
 import { default as sectionAdd } from './section-add.js';
+import { default as sectionUpdate } from './section-update.js';
 import { default as sectionMyProfile } from './section-my-profile.js';
 import { default as sectionTimeline } from './section-timeline.js';
 
@@ -17,57 +18,10 @@ export const routes = [
             { path: 'timeline', name: 'timeline', component: sectionTimeline },
             { path: 'add-link', name: 'addLink', component: sectionAdd },
             { path: 'add-shout', name: 'addShout', component: sectionAdd },
+            { path: 'update-post/:id', name: 'updatePost', component: sectionUpdate },
+            { path: 'update-link/:id', name: 'updateLink', component: sectionUpdate },
             { path: 'my-profile', name: 'myProfile', component: sectionMyProfile }
         ]
     },
     { path: '/api-error', name: 'APIError', component: sectionAPIError }
-    /*
-    {
-        path: '/',
-        name: 'root',
-        //component: sumideroPosts,
-        component: container,
-        children: [
-            { path: '/profile', name: 'profile', component: profile },
-            { path: '/add_post', name: 'addPost', component: sumideroAddPost },
-            { path: '/update_post/:permalink', name: 'updatePost', component: sumideroUpdatePost },
-            {
-                path: '/post',
-                name: 'viewPost',
-                component: postDetails,
-                children: [
-                    {
-                        path: ':permalink',
-                        name: 'customPost',
-                        component: postDetails
-                    }
-                ]
-            },
-            {
-                path: '/s',
-                name: 'allSubs',
-                component: sumideroPosts,
-                children: [
-                    {
-                        path: ':sub',
-                        name: 'customSub',
-                        component: sumideroPosts
-                    }
-                ],
-            },
-            {
-                path: '/t',
-                name: 'allTags',
-                component: sumideroPosts,
-                children: [
-                    {
-                        path: ':tag',
-                        name: 'customTag',
-                        component: sumideroPosts
-                    }
-                ]
-            }
-    ]
-    }
-        */
 ]
