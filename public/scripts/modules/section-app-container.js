@@ -1,5 +1,5 @@
 import { bus } from './bus.js';
-import { mixinRoutes, mixinSession } from "../mixins.js";
+import { mixinRoutes, mixinSession } from "./mixins.js";
 import { default as sumideroAppTopNavigation } from "./section-app-top-navigation.js";
 
 const template = `

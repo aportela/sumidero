@@ -1,6 +1,6 @@
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes } from '../mixins.js';
+import { mixinRoutes } from './mixins.js';
 
 const template = `
     <!-- template credits: daniel (https://github.com/dansup) -->

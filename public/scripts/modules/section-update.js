@@ -1,8 +1,7 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes, mixinSession } from '../mixins.js';
-import { uuid } from './utils.js';
+import { mixinRoutes, mixinSession } from './mixins.js';
 
 const template = `
     <section class="hero is-fullheight is-light is-bold">

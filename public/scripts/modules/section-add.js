@@ -1,7 +1,7 @@
 import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
-import { mixinRoutes, mixinSession } from '../mixins.js';
+import { mixinRoutes, mixinSession } from './mixins.js';
 import { uuid } from './utils.js';
 
 const template = `
