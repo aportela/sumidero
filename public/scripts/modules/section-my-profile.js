@@ -148,7 +148,6 @@ export default {
                 if (response.ok && response.body.success) {
                     self.loading = false;
                     initialState = response.body.initialState;
-                    console.log(initialState);
                 } else {
                     switch (response.status) {
                         case 400:
