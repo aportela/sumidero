@@ -1,7 +1,7 @@
 import { bus } from './modules/bus.js';
 import { default as sumideroAPI } from './modules/api.js';
 import { router as router } from './modules/router.js';
-import { mixinRoutes } from './mixins.js';
+import { mixinRoutes, mixinInitialState } from './modules/mixins.js';
 
 const imageLazyLoadObserver = lozad(); // lazy loads elements with default selector as '.lozad'
 if (imageLazyLoadObserver) {
@@ -75,21 +75,16 @@ const app = new Vue({
         });
     },
     mixins: [
-        mixinRoutes
+        mixinRoutes, mixinInitialState
     ],
     created: function () {
         let self = this;
+        self.setInitialState(initialState);
         bus.$on("setPollTimeout", function (milliSeconds) {
             self.enablePollTimeout(milliSeconds);
         });
         bus.$on("deletePollTimeout", function () {
             self.disablePollTimeout();
-        });
-        bus.$on("showNSFW", function() {
-            initialState.nsfw = true;
-        });
-        bus.$on("hideNSFW", function() {
-            initialState.nsfw = false;
         });
         bus.$on("signOut", function () {
             sumideroAPI.user.signOut(function (response) {
@@ -129,7 +124,7 @@ const app = new Vue({
         enablePollTimeout: function (milliSeconds) {
             this.pollTimeout = setInterval(
                 function () {
-                    sumideroAPI.user.poll(function () { });
+                    sumideroAPI.user.poll(initialState.nsfw, function () { });
                 },
                 milliSeconds * 1000
             );
