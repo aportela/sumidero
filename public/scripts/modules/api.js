@@ -218,9 +218,10 @@ export default {
                 }
             );
         },
-        search: function (timestamp, sub, tag, title, nsfw, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (timestamp, userId, sub, tag, title, nsfw, currentPage, resultsPage, sortBy, sortOrder, callback) {
             var params = {
                 timestamp: timestamp,
+                userId: userId,
                 sub: sub,
                 tag: tag,
                 title: title,

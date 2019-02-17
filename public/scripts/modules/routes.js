@@ -21,6 +21,11 @@ export const routes = [
                 component: sectionTimeline,
                 children: [
                     {
+                        path: 'user/:userId',
+                        name: 'timelineFilteredByUserId',
+                        component: sectionTimeline
+                    },
+                    {
                         path: 'sub/:sub',
                         name: 'timelineFilteredBySub',
                         component: sectionTimeline

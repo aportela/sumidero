@@ -20,7 +20,7 @@ const template = `
                 <a v-bind:href="post.externalUrl">{{ post.title }}</a> <small>({{ post.domain }})</small>
                 <br >
                 </div>
-                <small>by <a href="#">@{{ post.userName }}</a> <span>{{ post.created | formatDateAgo }} ({{ post.created | formatDate }})</span></small>
+                <small>by <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByUserId', { userId: post.userId })">@{{ post.userName }}</a> <span>{{ post.created | formatDateAgo }} ({{ post.created | formatDate }})</span></small>
             </div>
             <div class="post-content">
                 <p v-if="! compact">

@@ -360,6 +360,10 @@
             $whereCondition = "";
             $queryConditions = array();
             if (isset($filter)) {
+                if (isset($filter["userId"]) && ! empty($filter["userId"])) {
+                    $queryConditions[] = " P.op_user_id = :op_user_id ";
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":op_user_id", $filter["userId"]);
+                }
                 if (isset($filter["sub"]) && ! empty($filter["sub"])) {
                     $queryConditions[] = " P.sub LIKE :sub ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":sub", $filter["sub"]);

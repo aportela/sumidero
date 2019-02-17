@@ -247,6 +247,7 @@
                 intval($request->getParam("currentPage", 1)),
                 intval($request->getParam("count", 16)),
                 array(
+                    "userId" => $request->getParam("userId", ""),
                     "sub" => $request->getParam("sub", ""),
                     "tag" => $request->getParam("tag", ""),
                     "title" => $request->getParam("title", ""),
