@@ -164,10 +164,10 @@ export default {
     },
     computed: {
         isLink: function () {
-            return (this.externalUrl);
+            return (this.$route.name == "updateLink");
         },
         isShout: function () {
-            return (! this.isLink);
+            return (this.$route.name == "updateShout");
         },
         isValidUrl: function () {
             return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://")) == 0);
