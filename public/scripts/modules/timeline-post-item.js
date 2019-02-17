@@ -17,7 +17,7 @@ const template = `
         <div class="media-content">
             <div class="post-header">
                 <div v-if="post.title">
-                <a v-bind:href="post.externalUrl">{{ post.title }}</a> <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByDomain', { domain: post.domain })"><small>({{ post.domain }})</small></a>
+                <a v-bind:href="post.externalUrl" target="_new">{{ post.title }}</a> <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByDomain', { domain: post.domain })"><small>({{ post.domain }})</small></a>
                 <br >
                 </div>
                 <small>by <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByUserId', { userId: post.userId })">@{{ post.userName }}</a> <span>{{ post.created | formatDateAgo }} ({{ post.created | formatDate }})</span></small>
