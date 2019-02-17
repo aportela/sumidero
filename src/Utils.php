@@ -98,8 +98,8 @@
                         'timeout' => ini_get("session.gc_maxlifetime"),
                         'nsfw' => \Sumidero\UserSession::getNSFW()
                     ),
-                    'subs' => \Sumidero\Post::searchSubs($dbh),
-                    'tags' => \Sumidero\Post::searchTags($dbh),
+                    'subs' => \Sumidero\UserSession::isLogged() ? \Sumidero\Post::searchSubs($dbh): array(),
+                    'tags' => \Sumidero\UserSession::isLogged() ? \Sumidero\Post::searchTags($dbh): array(),
                     'defaultResultsPage' => $container->get('settings')['common']['defaultResultsPage'],
                     'productionEnvironment' => $container->get('settings')['twigParams']['production'],
                 )
