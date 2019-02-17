@@ -29,7 +29,7 @@ const template = `
                         <span class="icon">
                             <i class="fas fa-user-ninja"></i>
                         </span>
-                        <span>nsfw</span>
+                        <span class="is-hidden-mobile">nsfw</span>
                     </a>
                     <a class="button is-light" title="click here to show all content (including not suitable for work)" v-else v-on:click.prevent="toggleNSFW()">
                         <span class="icon">
@@ -38,49 +38,49 @@ const template = `
                                 <i class="fas fa-ban fa-stack-1x" style="color:Tomato"></i>
                             </span>
                         </span>
-                        <span>sfw</span>
+                        <span class="is-hidden-mobile">sfw</span>
                     </a>
-                    <a class="button is-light" v-on:click.prevent="navigateTo('timeline')">
+                    <a class="button is-light" title="click here to browse the timeline" v-on:click.prevent="navigateTo('timeline')">
                         <span class="icon">
                             <i class="fas fa-list-alt"></i>
                         </span>
-                        <span>timeline</span>
+                        <span class="is-hidden-mobile">timeline</span>
                     </a>
-                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addShout')">
+                    <a class="button is-light" title="click here to add shout" v-if="isLogged" v-on:click.prevent="navigateTo('addShout')">
                         <span class="icon">
                             <i class="far fa-comment-alt"></i>
                         </span>
-                        <span>add shout</span>
+                        <span class="is-hidden-mobile">add shout</span>
                     </a>
-                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('addLink')">
+                    <a class="button is-light" title="click here to add link" v-if="isLogged" v-on:click.prevent="navigateTo('addLink')">
                         <span class="icon">
                             <i class="fas fa-link"></i>
                         </span>
-                        <span>add link</span>
+                        <span class="is-hidden-mobile">add link</span>
                     </a>
-                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="navigateTo('myProfile')">
+                    <a class="button is-light" title="click here to update your profile" v-if="isLogged" v-on:click.prevent="navigateTo('myProfile')">
                         <span class="icon">
                             <i class="fas fa-user-circle"></i>
                         </span>
-                        <span>my profile</span>
+                        <span class="is-hidden-mobile">my profile</span>
                     </a>
-                    <a class="button is-light" v-if="isLogged" v-on:click.prevent="signOut()">
+                    <a class="button is-light" title="click here to sign out" v-if="isLogged" v-on:click.prevent="signOut()">
                         <span class="icon">
                             <i class="fas fa-sign-out-alt"></i>
                         </span>
-                        <span>sign out</span>
+                        <span class="is-hidden-mobile">sign out</span>
                     </a>
-                    <a class="button is-light" v-if="! isLogged" v-on:click.prevent="navigateTo('signIn')">
+                    <a class="button is-light" title="click here to sign in" v-if="! isLogged" v-on:click.prevent="navigateTo('signIn')">
                         <span class="icon">
                             <i class="fas fa-user-secret"></i>
                         </span>
-                        <span>sign in</span>
+                        <span class="is-hidden-mobile">sign in</span>
                     </a>
-                    <a class="button is-light" v-if="! isLogged && allowSignUp" v-on:click.prevent="navigateTo('signUp')">
+                    <a class="button is-light" title="click here to sign up" v-if="! isLogged && allowSignUp" v-on:click.prevent="navigateTo('signUp')">
                         <span class="icon">
                             <i class="fas fa-user-plus"></i>
                         </span>
-                        <span>sign up</span>
+                        <span class="is-hidden-mobile">sign up</span>
                     </a>
                 </div>
             </div>

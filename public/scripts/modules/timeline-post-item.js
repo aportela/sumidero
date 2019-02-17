@@ -34,21 +34,21 @@ const template = `
                 <div class="control">
                     <div class="tags has-addons">
                         <span class="tag is-dark"><i class="fa fa-comment"></i></span>
-                        <a href="#" class="tag is-dark">comments</a>
+                        <a href="#" class="tag is-dark is-hidden-mobile">comments</a>
                         <span class="tag is-warning">{{ post.totalComments }}</span>
                     </div>
                 </div>
                 <div class="control">
                     <div class="tags has-addons">
                         <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
-                        <span class="tag is-dark">on</span>
+                        <span class="tag is-dark is-hidden-mobile">on</span>
                         <a v-on:click.prevent="navigateTo('timelineFilteredBySub', { sub: post.sub })" class="tag is-info">{{ post.sub }}</a>
                     </div>
                 </div>
                 <div class="control" v-for="tag in tags">
                     <div class="tags has-addons">
                         <span class="tag is-dark"><i class="fa fa-tag"></i></span>
-                        <span class="tag is-dark">tag</span>
+                        <span class="tag is-dark is-hidden-mobile">tag</span>
                         <a v-on:click.prevent="navigateTo('timelineFilteredBTag', { tag: tag })" class="tag is-light">{{ tag }}</a>
                     </div>
                 </div>
@@ -57,12 +57,12 @@ const template = `
         <div class="media-right" v-if="hasPermissions">
             <small>
                 <div v-if="deletedId == post.id">
-                    <a href="#" v-on:click.prevent="onDelete(post.id)"><i class="fas fa-exclamation-triangle"></i> <span>confirm delete</span></a>
-                    <a href="#" v-on:click.prevent="deletedId = null"><i class="fas fa-times-circle"></i> <span>cancel</span></a>
+                    <a href="#" title="click here to confirm deletion of post" v-on:click.prevent="onDelete(post.id)"><i class="fas fa-exclamation-triangle"></i> <span class="is-hidden-mobile">confirm delete</span></a>
+                    <a href="#" title="click here to cancel deletion of post" v-on:click.prevent="deletedId = null"><i class="fas fa-times-circle"></i> <span class="is-hidden-mobile">cancel</span></a>
                 </div>
                 <div v-else>
-                    <a v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span> <span>update</span></a>
-                    <a v-on:click.prevent="deletedId = post.id"><span class="icon is-small"><i class="fa fa-trash"></i></span> <span>delete</span></a>
+                    <a title="click here to update post" v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span> <span class="is-hidden-mobile">update</span></a>
+                    <a title="click here to remove post" v-on:click.prevent="deletedId = post.id"><span class="icon is-small"><i class="fa fa-trash"></i></span> <span class="is-hidden-mobile">delete</span></a>
                 </div>
             </small>
         </div>
