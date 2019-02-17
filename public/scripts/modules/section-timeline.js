@@ -34,6 +34,9 @@ export default {
         bus.$on("search", function (text) {
             self.loadItems(text);
         });
+        bus.$on("refreshTimeline", function(text) {
+            self.loadItems(text);
+        });
     },
     updated: function () {
         //imageLazyLoadObserver.observe();

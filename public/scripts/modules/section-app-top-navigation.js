@@ -119,6 +119,7 @@ export default {
                 if (response.ok)  {
                     initialState = response.body.initialState;
                     self.isNSFW = initialState.session.nsfw;
+                    bus.$emit('refreshTimeline', self.searchText);
                 } else {
                     self.showApiError(response.getApiErrorData());
                 }
