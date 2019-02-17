@@ -451,7 +451,20 @@
         }
 
         public static function searchSubs(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(sub) FROM POST ORDER BY sub";
+            if (\Sumidero\UserSession::getNSFW()) {
+                $query = "
+                    SELECT DISTINCT(sub)
+                    FROM POST
+                    ORDER BY sub
+                ";
+            } else {
+                $query = "
+                    SELECT DISTINCT(sub)
+                    FROM POST
+                    WHERE nsfw = 'N'
+                    ORDER BY sub
+                ";
+            }
             $results = $dbh->query($query, array());
             $subs = array();
             foreach($results as $result) {
@@ -461,7 +474,20 @@
         }
 
         public static function searchTags(\Sumidero\Database\DB $dbh): array {
-            $query = " SELECT DISTINCT(tag_name) AS tag FROM POST_TAG ORDER BY tag_name";
+            if (\Sumidero\UserSession::getNSFW()) {
+                $query = "
+                    SELECT DISTINCT(tag_name) AS tag
+                    FROM POST_TAG
+                    ORDER BY tag_name
+                ";
+            } else {
+                $query = "
+                    SELECT DISTINCT tag_name AS tag
+                    FROM POST_TAG
+                    INNER JOIN POST ON POST.id = POST_TAG.post_id
+                    WHERE POST.nsfw = 'N'
+                ";
+            }
             $results = $dbh->query($query, array());
             $tags = array();
             foreach($results as $result) {
