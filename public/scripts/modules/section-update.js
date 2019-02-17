@@ -2,6 +2,7 @@ import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
 import { mixinRoutes, mixinSession } from './mixins.js';
+import { default as sumideroControlInputTags } from './control-input-tags.js';
 
 const template = `
     <section class="hero is-fullheight is-light is-bold">
@@ -13,7 +14,7 @@ const template = `
                         <p class="title has-text-centered" v-if="isLink">Update link</p>
                         <div class="card">
                             <div class="card-content">
-                                <form v-on:submit.prevent="onSubmit">
+                                <form v-on:submit.prevent="">
                                     <div class="field is-horizontal" v-if="isLink">
                                         <div class="field-label">
                                             <label class="label">Remote URL</label>
@@ -102,11 +103,7 @@ const template = `
                                             <label class="label">Tags</label>
                                         </div>
                                         <div class="field-body">
-                                            <div class="field">
-                                                <div class="control">
-                                                    <input :disabled="loading" class="input loading" v-model.trim="tagNames" type="text" placeholder="type tag names (separated by commas)">
-                                                </div>
-                                            </div>
+                                            <sumidero-control-input-tags v-bind:loading="loading" v-bind:tags="tags" v-on:onUpdate="tags = $event"></sumidero-control-input-tags>
                                         </div>
                                     </div>
                                     <div class="field is-horizontal">
@@ -131,7 +128,7 @@ const template = `
                                             <label class="label"></label>
                                         </div>
                                         <div class="field-body">
-                                            <button type="submit" class="button is-link is-fullwidth" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading">
+                                            <button type="button" class="button is-link is-fullwidth" v-bind:class="{ 'is-loading': loading }" v-bind:disabled="loading" v-on:click.prevent="onSubmit">
                                                 <span class="icon"><i class="fas fa-save"></i></span>
                                                 <span>Save</span>
                                             </button>
@@ -161,7 +158,7 @@ export default {
             body: null,
             sub: null,
             thumbnail: null,
-            tagNames: null,
+            tags: [],
             nsfw: false
         });
     },
@@ -179,20 +176,14 @@ export default {
     mixins: [
         mixinRoutes, mixinSession
     ],
+    components: {
+        'sumidero-control-input-tags': sumideroControlInputTags
+    },
     created: function() {
         this.id = this.$route.params.id;
         this.get();
     },
     methods: {
-        parseTags: function () {
-            if (this.tagNames) {
-                return (this.tagNames.split(",").map(function (item) {
-                    return (item.trim());
-                }));
-            } else {
-                return ([]);
-            }
-        },
         scrap: function () {
             var self = this;
             self.validator.clear();
@@ -202,7 +193,7 @@ export default {
                     self.title = response.body.title ? response.body.title : null;
                     self.body = response.body.body ? response.body.body : null;
                     self.thumbnail = response.body.image ? response.body.image : null;
-                    self.tagNames = response.body.suggestedTags && response.body.suggestedTags.length > 0 ? response.body.suggestedTags.join(",") : null;
+                    self.tags = response.body.suggestedTags;
                     self.loading = false;
 
                 } else {
@@ -222,7 +213,7 @@ export default {
                     self.externalUrl = response.body.post.externalUrl;
                     self.thumbnail = response.body.post.thumbnail;
                     self.sub = response.body.post.sub;
-                    self.tagNames = response.body.post.tags.join(",");
+                    self.tags = response.body.post.tags;
                     self.nsfw = response.body.post.nsfw;
                     self.loading = false;
                 } else {
@@ -234,7 +225,7 @@ export default {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.parseTags(), this.thumbnail, this.nsfw, function (response) {
+            sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
                     self.$router.back();
                 } else {
