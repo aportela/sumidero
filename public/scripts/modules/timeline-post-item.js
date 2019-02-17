@@ -24,7 +24,7 @@ const template = `
             </div>
             <div class="post-content">
                 <p v-if="! compact">
-                    <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:src="'api/thumbnail?url=' + post.thumbnail">
+                    <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:src="'api/thumbnail?url=' +  encodeURIComponent(post.thumbnail)">
                     <img src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
                     <span v-html="formattedBody"></span>
                 </p>

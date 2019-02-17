@@ -259,7 +259,7 @@
         });
 
         $this->get('/thumbnail', function (Request $request, Response $response, array $args) {
-            $file = \Sumidero\Thumbnail::Get($request->getParam("url", ""));
+            $file = \Sumidero\Thumbnail::Get(rawurldecode($request->getParam("url", "")));
             if (! empty($file) && file_exists($file)) {
                 $filesize = filesize($file);
                 $f = fopen($file, 'r');

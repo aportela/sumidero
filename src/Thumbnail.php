@@ -37,7 +37,7 @@
         }
 
         public static function get(string $url = "") {
-            if (! empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+            if (! empty($url) && filter_var(filter_var($url, FILTER_SANITIZE_URL), FILTER_VALIDATE_URL)) {
                 $hash = sha1($url);
                 $dir = dirname(__DIR__) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "thumbnails" . DIRECTORY_SEPARATOR . substr($hash, 0, 1) . DIRECTORY_SEPARATOR . substr($hash, 1, 1);
                 $filename = sprintf("%s.jpg", $hash);
