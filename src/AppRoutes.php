@@ -248,6 +248,7 @@
                 intval($request->getParam("count", 16)),
                 array(
                     "userId" => $request->getParam("userId", ""),
+                    "domain" => $request->getParam("domain", ""),
                     "sub" => $request->getParam("sub", ""),
                     "tag" => $request->getParam("tag", ""),
                     "title" => $request->getParam("title", ""),

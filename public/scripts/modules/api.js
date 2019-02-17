@@ -218,7 +218,7 @@ export default {
                 }
             );
         },
-        search: function (timestamp, userId, sub, tag, title, nsfw, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (timestamp, userId, sub, tag, title, nsfw, domain, currentPage, resultsPage, sortBy, sortOrder, callback) {
             var params = {
                 timestamp: timestamp,
                 userId: userId,
@@ -226,6 +226,7 @@ export default {
                 tag: tag,
                 title: title,
                 nsfw: nsfw,
+                domain: domain,
                 currentPage: currentPage,
                 resultsPage: resultsPage,
                 sortBy: sortBy,

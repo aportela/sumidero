@@ -26,6 +26,11 @@ export const routes = [
                         component: sectionTimeline
                     },
                     {
+                        path: 'domain/:domain',
+                        name: 'timelineFilteredByDomain',
+                        component: sectionTimeline
+                    },
+                    {
                         path: 'sub/:sub',
                         name: 'timelineFilteredBySub',
                         component: sectionTimeline
