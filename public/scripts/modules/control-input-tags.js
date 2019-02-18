@@ -7,7 +7,7 @@ const template = `
             </div>
         </div>
         <div class="control">
-            <input :disabled="loading" class="input" v-model.trim="newTag" v-on:keyup.prevent="onKeyUp($event)"  type="text" placeholder="type tag names (separated by commas)">
+            <input :disabled="loading" class="input" v-model.trim="newTag" v-on:keyup.prevent="onKeyUp($event)"  type="text" placeholder="type tag name (confirm with return)">
             <div class="dropdown is-active" v-if="hasResults">
                 <div class="dropdown-menu">
                     <div class="dropdown-content is-unselectable">
