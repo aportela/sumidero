@@ -177,7 +177,7 @@ export default {
             return (this.$route.name == "addShout" || this.$route.name == "updateShout");
         },
         isValidUrl: function () {
-            return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://")) == 0);
+            return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://") == 0));
         }
     },
     mixins: [
@@ -258,8 +258,6 @@ export default {
                 } else {
                     this.onUpdate();
                 }
-            } else {
-                console.log("invalid");
             }
         },
         onAdd: function () {
