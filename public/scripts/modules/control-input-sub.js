@@ -1,8 +1,10 @@
 const template = `
     <div class="field">
-        <div class="control">
-            <input class="input" type="text" placeholder="type sub name" required maxlength="32" v-bind:disabled="loading" v-model.trim="selectedSub" v-on:keyup.prevent="onKeyUp($event)">
-            <div class="dropdown is-active" v-if="hasResults">
+        <div class="control" v-bind:class="{ 'has-icons-right' : invalidValue}">
+            <input class="input" type="text" placeholder="type sub name" required maxlength="32" v-bind:class="{ 'is-danger': invalidValue }" v-bind:disabled="loading" v-model.trim="selectedSub" v-on:keyup.prevent="onKeyUp($event)">
+            <span class="icon is-small is-right" v-show="invalidValue"><i class="fa fa-warning"></i></span>
+            <p class="help is-danger" v-show="invalidValue">{{ invalidMessage }}</p>
+            <div class="dropdown is-active" v-if="hasResults && ! invalidValue">
                 <div class="dropdown-menu">
                     <div class="dropdown-content is-unselectable">
                         <a href="#" class="dropdown-item" v-bind:class="{ 'is-active': selectedMatchSubIndex == index }" v-for="sub, index in matchedSubs" v-bind:key="sub" v-on:click.prevent="onSelect(sub)">
@@ -26,11 +28,16 @@ export default {
         });
     },
     props: [
-        'loading', 'sub'
+        'loading', 'sub', 'invalidValue', 'invalidMessage'
     ],
     computed: {
         hasResults: function () {
             return (this.matchedSubs.length > 0);
+        }
+    },
+    watch: {
+        sub: function(newValue) {
+            this.selectedSub = newValue;
         }
     },
     methods: {
@@ -40,7 +47,7 @@ export default {
                     this.cancelAutoComplete();
                     this.selectedSub = null;
                     this.onChange();
-                break;
+                    break;
                 case "Enter":
                     if (this.selectedMatchSubIndex != -1) {
                         this.selectedSub = this.matchedSubs[this.selectedMatchSubIndex];
@@ -76,13 +83,13 @@ export default {
                         this.cancelAutoComplete();
                     }
                     this.onChange();
-                break;
+                    break;
             }
         },
         onChange: function () {
             this.$emit("onUpdate", this.selectedSub);
         },
-        cancelAutoComplete: function() {
+        cancelAutoComplete: function () {
             this.matchedSubs = [];
             this.selectedMatchSubIndex = -1;
         },
