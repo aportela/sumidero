@@ -3,6 +3,7 @@ import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
 import { mixinRoutes, mixinSession } from './mixins.js';
 import { uuid } from './utils.js';
+import { default as sumideroControlInputSub } from './control-input-sub.js';
 import { default as sumideroControlInputTags } from './control-input-tags.js';
 
 const template = `
@@ -92,11 +93,7 @@ const template = `
                                             <label class="label">Sub</label>
                                         </div>
                                         <div class="field-body">
-                                            <div class="field">
-                                                <div class="control">
-                                                    <input :disabled="loading" class="input loading" v-model.trim="sub" type="text" placeholder="type sub name" required maxlength="32">
-                                                </div>
-                                            </div>
+                                            <sumidero-control-input-sub v-bind:loading="loading" v-bind:sub="sub" v-on:onUpdate="sub = $event"></sumidero-control-input-sub>
                                         </div>
                                     </div>
                                     <div class="field is-horizontal">
@@ -177,6 +174,7 @@ export default {
         mixinRoutes, mixinSession
     ],
     components: {
+        'sumidero-control-input-sub': sumideroControlInputSub,
         'sumidero-control-input-tags': sumideroControlInputTags
     },
     methods: {
