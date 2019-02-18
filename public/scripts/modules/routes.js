@@ -3,8 +3,7 @@ import { default as sumideroSectionSignUp } from './section-signup.js';
 import { default as sectionAPIError } from './section-api-error.js';
 import { default as sectionUpgrade } from './section-upgrade.js';
 import { default as sectionAppContainer } from './section-app-container.js';
-import { default as sectionAdd } from './section-add.js';
-import { default as sectionUpdate } from './section-update.js';
+import { default as sectionSave } from './section-save.js';
 import { default as sectionMyProfile } from './section-my-profile.js';
 import { default as sectionTimeline } from './section-timeline.js';
 
@@ -42,10 +41,10 @@ export const routes = [
                     }
                 ]
             },
-            { path: 'add-link', name: 'addLink', component: sectionAdd },
-            { path: 'add-shout', name: 'addShout', component: sectionAdd },
-            { path: 'update-post/:id', name: 'updatePost', component: sectionUpdate },
-            { path: 'update-link/:id', name: 'updateLink', component: sectionUpdate },
+            { path: 'add-link', name: 'addLink', component: sectionSave },
+            { path: 'add-shout', name: 'addShout', component: sectionSave },
+            { path: 'update-shout/:id', name: 'updateShout', component: sectionSave },
+            { path: 'update-link/:id', name: 'updateLink', component: sectionSave },
             { path: 'my-profile', name: 'myProfile', component: sectionMyProfile }
         ]
     },

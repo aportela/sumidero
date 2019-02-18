@@ -1,4 +1,3 @@
-import { bus } from './bus.js';
 import { default as sumideroAPI } from './api.js';
 import { default as validator } from './validator.js';
 import { mixinRoutes, mixinSession } from './mixins.js';
@@ -12,8 +11,10 @@ const template = `
             <div class="container">
                 <div class="columns is-vcentered">
                     <div class="column is-10 is-offset-1">
-                        <p class="title has-text-centered" v-if="isShout">Add shout</p>
-                        <p class="title has-text-centered" v-if="isLink">Add link</p>
+                        <p class="title has-text-centered" v-if="isAdd && isShout">Add shout</p>
+                        <p class="title has-text-centered" v-else-if="isAdd && isLink">Add link</p>
+                        <p class="title has-text-centered" v-else-if="isUpdate && isShout">Update shout</p>
+                        <p class="title has-text-centered" v-else-if="isUpdate && isLink">Update link</p>
                         <div class="card">
                             <div class="card-content">
                                 <form v-on:submit.prevent="">
@@ -34,7 +35,6 @@ const template = `
                                                             <span>Scrap</span>
                                                         </a>
                                                     </div>
-
                                                 </div>
                                                 <p class="help is-danger" v-show="validator.hasInvalidField('externalUrl')">{{ validator.getInvalidFieldMessage('externalUrl') }}</p>
                                             </div>
@@ -46,9 +46,11 @@ const template = `
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
-                                                <div class="control">
-                                                    <input :disabled="loading" class="input loading" v-model.trim="title" type="text" placeholder="type your new post title" maxlength="128">
+                                                <div class="control" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('title') }">
+                                                    <input :disabled="loading" class="input loading" v-model.trim="title" v-bind:class="{ 'is-danger': validator.hasInvalidField('title') }" type="text" placeholder="type your new post title" maxlength="128">
+                                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('title')"><i class="fa fa-warning"></i></span>
                                                 </div>
+                                                <p class="help is-danger" v-show="validator.hasInvalidField('title')">{{ validator.getInvalidFieldMessage('title') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -58,9 +60,11 @@ const template = `
                                         </div>
                                         <div class="field-body">
                                             <div class="field">
-                                                <div class="control">
-                                                    <textarea :disabled="loading" class="textarea" v-model.trim="body" placeholder="type a small resume/body of your post" maxlength="16384"></textarea>
+                                                <div class="control" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('body') }">
+                                                    <textarea :disabled="loading" class="textarea" v-model.trim="body" v-bind:class="{ 'is-danger': validator.hasInvalidField('body') }" placeholder="type a small resume/body of your post" maxlength="16384"></textarea>
+                                                    <span class="icon is-small is-right" v-show="validator.hasInvalidField('body')"><i class="fa fa-warning"></i></span>
                                                 </div>
+                                                <p class="help is-danger" v-show="validator.hasInvalidField('body')">{{ validator.getInvalidFieldMessage('body') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -93,7 +97,7 @@ const template = `
                                             <label class="label">Sub</label>
                                         </div>
                                         <div class="field-body">
-                                            <sumidero-control-input-sub v-bind:loading="loading" v-bind:sub="sub" v-on:onUpdate="sub = $event"></sumidero-control-input-sub>
+                                            <sumidero-control-input-sub v-bind:loading="loading" v-bind:sub="sub" v-bind:invalidValue="validator.hasInvalidField('sub')" v-bind:invalidMessage="validator.getInvalidFieldMessage('sub')" v-on:onUpdate="sub = $event"></sumidero-control-input-sub>
                                         </div>
                                     </div>
                                     <div class="field is-horizontal">
@@ -143,7 +147,7 @@ const template = `
 `;
 
 export default {
-    name: 'sumidero-section-add',
+    name: 'sumidero-section-save',
     template: template,
     data: function () {
         return ({
@@ -160,11 +164,17 @@ export default {
         });
     },
     computed: {
+        isAdd: function () {
+            return (this.$route.name == "addLink" || this.$route.name == "addShout");
+        },
+        isUpdate: function () {
+            return (this.$route.name == "updateLink" || this.$route.name == "updateShout");
+        },
         isLink: function () {
-            return (this.$route.name == "addLink");
+            return (this.$route.name == "addLink" || this.$route.name == "updateLink");
         },
         isShout: function () {
-            return (this.$route.name == "addShout");
+            return (this.$route.name == "addShout" || this.$route.name == "updateShout");
         },
         isValidUrl: function () {
             return (this.externalUrl && (this.externalUrl.indexOf("http://") == 0 || this.externalUrl.indexOf("https://")) == 0);
@@ -176,6 +186,12 @@ export default {
     components: {
         'sumidero-control-input-sub': sumideroControlInputSub,
         'sumidero-control-input-tags': sumideroControlInputTags
+    },
+    created: function () {
+        if (this.isUpdate) {
+            this.id = this.$route.params.id;
+            this.get();
+        }
     },
     methods: {
         scrap: function () {
@@ -195,11 +211,86 @@ export default {
                 self.loading = false;
             });
         },
-        onSubmit: function () {
+        get: function () {
             var self = this;
             self.validator.clear();
             self.loading = true;
-            sumideroAPI.post.add(uuid(), this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
+            sumideroAPI.post.get(self.id, function (response) {
+                if (response.ok) {
+                    self.title = response.body.post.title;
+                    self.body = response.body.post.body;
+                    self.externalUrl = response.body.post.externalUrl;
+                    self.thumbnail = response.body.post.thumbnail;
+                    self.sub = response.body.post.sub;
+                    self.tags = response.body.post.tags;
+                    self.nsfw = response.body.post.nsfw;
+                    self.loading = false;
+                } else {
+                    self.showApiError(response.getApiErrorData());
+                }
+            });
+        },
+        isValid: function () {
+            this.validator.clear();
+            if (this.isLink) {
+                if (!this.isValidUrl) {
+                    this.validator.setInvalid("externalUrl", "This field requires a valid URL");
+                }
+                if (!this.title) {
+                    this.validator.setInvalid("title", "This field value is required");
+                }
+            } else {
+                if (!this.title && !this.body) {
+                    this.validator.setInvalid("title", "The fields title or body are required (at least one)");
+                    this.validator.setInvalid("body", "The fields title or body are required (at least one)");
+                }
+            }
+            if (!this.sub) {
+                this.validator.setInvalid("sub", "This field value is required");
+            }
+            return (!this.validator.hasInvalidFields());
+        },
+        onSubmit: function () {
+            if (this.isValid()) {
+                if (this.isAdd) {
+                    this.id = uuid();
+                    this.onAdd();
+                } else {
+                    this.onUpdate();
+                }
+            } else {
+                console.log("invalid");
+            }
+        },
+        onAdd: function () {
+            var self = this;
+            self.validator.clear();
+            self.loading = true;
+            sumideroAPI.post.add(this.id, this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
+                if (response.ok) {
+                    self.$router.back();
+                } else {
+                    switch (response.status) {
+                        case 409:
+                            if (response.body.invalidParams.find(function (e) { return (e === "externalUrl"); })) {
+                                self.validator.setInvalid("externalUrl", "URL already exists");
+                            } else {
+                                self.showApiError(response.getApiErrorData());
+                            }
+                            break;
+                        default:
+                            self.showApiError(response.getApiErrorData());
+                            break;
+                    }
+                }
+                self.loading = false;
+            });
+        },
+        onUpdate: function () {
+            var self = this;
+            self.validator.clear();
+            self.loading = true;
+            sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
                     self.$router.back();
                 } else {

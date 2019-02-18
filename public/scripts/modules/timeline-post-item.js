@@ -16,10 +16,13 @@ const template = `
         </figure>
         <div class="media-content">
             <div class="post-header">
-                <div v-if="post.title">
-                <a v-bind:href="post.externalUrl" target="_new">{{ post.title }}</a> <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByDomain', { domain: post.domain })"><small>({{ post.domain }})</small></a>
-                <br >
+                <div v-if="isLink">
+                    <a v-bind:href="post.externalUrl" target="_new">{{ post.title }}</a> <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByDomain', { domain: post.domain })"><small>({{ post.domain }})</small></a>
                 </div>
+                <div else>
+                   {{ post.title }}
+                </div>
+                <br >
                 <small>by <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByUserId', { userId: post.userId })">@{{ post.userName }}</a> <span>{{ post.created | formatDateAgo }} ({{ post.created | formatDate }})</span></small>
             </div>
             <div class="post-content">
@@ -61,7 +64,7 @@ const template = `
                     <a href="#" title="click here to cancel deletion of post" v-on:click.prevent="deletedId = null"><i class="fas fa-times-circle"></i> <span class="is-hidden-mobile">cancel</span></a>
                 </div>
                 <div v-else>
-                    <a title="click here to update post" v-on:click.prevent="navigateTo('updateLink', {id: post.id })"><span class="icon is-small"><i class="fa fa-edit"></i></span> <span class="is-hidden-mobile">update</span></a>
+                    <a title="click here to update post" v-on:click.prevent="onUpdate(post.id)"><span class="icon is-small"><i class="fa fa-edit"></i></span> <span class="is-hidden-mobile">update</span></a>
                     <a title="click here to remove post" v-on:click.prevent="deletedId = post.id"><span class="icon is-small"><i class="fa fa-trash"></i></span> <span class="is-hidden-mobile">delete</span></a>
                 </div>
             </small>
@@ -82,6 +85,13 @@ export default {
         'post', 'compact', 'gallery'
     ],
     computed: {
+        isLink: function () {
+            if (this.post.externalUrl) {
+                return (true);
+            } else {
+                return (false);
+            }
+        },
         tags: function () {
             if (this.post.tags) {
                 return (this.post.tags.split(","));
@@ -103,24 +113,24 @@ export default {
                 return ("https://bulma.io/images/placeholders/96x96.png");
             }
         },
-        hasPermissions: function() {
-            return(this.post.userId == initialState.session.id);
+        hasPermissions: function () {
+            return (this.post.userId == initialState.session.id);
         }
     },
     filters: {
         formatDateAgo(timestamp) {
             return (moment.unix(timestamp).fromNow());
-          },
-          formatDate(timestamp) {
+        },
+        formatDate(timestamp) {
             return (moment.unix(timestamp).format("dddd, MMMM Do YYYY, h:mm:ss a"));
-          }
+        }
 
     },
     mixins: [
         mixinAvatar, mixinRoutes
     ],
     methods: {
-        onDelete: function(id) {
+        onDelete: function (id) {
             var self = this;
             self.loading = true;
             sumideroAPI.post.delete(id, function (response) {
@@ -132,6 +142,13 @@ export default {
                     self.showApiError(response.getApiErrorData());
                 }
             });
+        },
+        onUpdate: function (id) {
+            if (this.isLink) {
+                this.navigateTo('updateLink', { id: id })
+            } else {
+                this.navigateTo('updateShout', { id: id })
+            }
         }
     }
 }
