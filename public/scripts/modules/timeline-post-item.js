@@ -19,10 +19,9 @@ const template = `
                 <div v-if="isLink">
                     <a v-bind:href="post.externalUrl" target="_new">{{ post.title }}</a> <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByDomain', { domain: post.domain })"><small>({{ post.domain }})</small></a>
                 </div>
-                <div else>
+                <div v-else>
                    {{ post.title }}
                 </div>
-                <br >
                 <small>by <a href="#" v-on:click.prevent="navigateTo('timelineFilteredByUserId', { userId: post.userId })">@{{ post.userName }}</a> <span>{{ post.created | formatDateAgo }} ({{ post.created | formatDate }})</span></small>
             </div>
             <div class="post-content">
