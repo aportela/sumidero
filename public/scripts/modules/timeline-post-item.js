@@ -44,14 +44,14 @@ const template = `
                     <div class="tags has-addons">
                         <span class="tag is-dark"><i class="fa fa-bookmark"></i></span>
                         <span class="tag is-dark is-hidden-mobile">on</span>
-                        <a v-on:click.prevent="navigateTo('timelineFilteredBySub', { sub: post.sub })" class="tag is-info">{{ post.sub }}</a>
+                        <a v-on:click.prevent="onBrowseSub(post.sub)" class="tag is-info">{{ post.sub }}</a>
                     </div>
                 </div>
                 <div class="control" v-for="tag in tags">
                     <div class="tags has-addons">
                         <span class="tag is-dark"><i class="fa fa-tag"></i></span>
                         <span class="tag is-dark is-hidden-mobile">tag</span>
-                        <a v-on:click.prevent="navigateTo('timelineFilteredBTag', { tag: tag })" class="tag is-light">{{ tag }}</a>
+                        <a v-on:click.prevent="onBrowseTag(tag)" class="tag is-light">{{ tag }}</a>
                     </div>
                 </div>
             </div>
@@ -148,6 +148,14 @@ export default {
             } else {
                 this.navigateTo('updateShout', { id: id })
             }
+        },
+        onBrowseSub: function(sub) {
+            if (this.$route.name != "timelineFilteredBySub" && this.$route.name != "timelineFilteredBySubPaged") {
+                this.navigateTo('timelineFilteredBySub', { sub: sub, pageIndex: 1 });
+            }
+        },
+        onBrowseTag: function(tag) {
+            this.navigateTo('timelineFilteredBTag', { tag: tag, pageIndex: 1 })
         }
     }
 }
