@@ -245,7 +245,7 @@
             $data = \Sumidero\Post::search(
                 new \Sumidero\Database\DB($this),
                 intval($request->getParam("currentPage", 1)),
-                intval($request->getParam("count", 16)),
+                intval($request->getParam("resultsPage", $this->get('settings')['common']['defaultResultsPage'])),
                 array(
                     "userId" => $request->getParam("userId", ""),
                     "domain" => $request->getParam("domain", ""),
