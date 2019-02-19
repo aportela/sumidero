@@ -20,24 +20,57 @@ export const routes = [
                 component: sectionTimeline,
                 children: [
                     {
+                        path: 'page/:pageIndex',
+                        name: 'timelinePaged',
+                        component: sectionTimeline
+                    },
+                    {
                         path: 'user/:userId',
                         name: 'timelineFilteredByUserId',
-                        component: sectionTimeline
+                        component: sectionTimeline,
+                        children: [
+                            {
+                                path: 'page/:pageIndex',
+                                name: 'timelineFilteredByUserIdPaged',
+                                component: sectionTimeline,
+                            }
+                        ]
                     },
                     {
                         path: 'domain/:domain',
                         name: 'timelineFilteredByDomain',
-                        component: sectionTimeline
+                        component: sectionTimeline,
+                        children: [
+                            {
+                                path: 'page/:pageIndex',
+                                name: 'timelineFilteredByDomainPaged',
+                                component: sectionTimeline,
+                            }
+                        ]
                     },
                     {
                         path: 'sub/:sub',
                         name: 'timelineFilteredBySub',
-                        component: sectionTimeline
+                        component: sectionTimeline,
+                        children: [
+                            {
+                                path: 'page/:pageIndex',
+                                name: 'timelineFilteredBySubPaged',
+                                component: sectionTimeline,
+                            }
+                        ]
                     },
                     {
                         path: 'tag/:tag',
                         name: 'timelineFilteredBTag',
-                        component: sectionTimeline
+                        component: sectionTimeline,
+                        children: [
+                            {
+                                path: 'page/:pageIndex',
+                                name: 'timelineFilteredBTagPaged',
+                                component: sectionTimeline,
+                            }
+                        ]
                     }
                 ]
             },
