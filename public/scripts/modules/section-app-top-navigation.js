@@ -40,7 +40,7 @@ const template = `
                         </span>
                         <span class="is-hidden-mobile">sfw</span>
                     </a>
-                    <a class="button is-light" title="click here to browse the timeline" v-on:click.prevent="navigateTo('timeline')">
+                    <a class="button is-light" title="click here to browse the timeline" v-on:click.prevent="navigateTo('timeline', { pageIndex: 1 })">
                         <span class="icon">
                             <i class="fas fa-list-alt"></i>
                         </span>
