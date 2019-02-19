@@ -252,12 +252,13 @@
                     "sub" => $request->getParam("sub", ""),
                     "tag" => $request->getParam("tag", ""),
                     "title" => $request->getParam("title", ""),
+                    "body" => $request->getParam("body", ""),
                     "nsfw" => (bool) $request->getParam("nsfw", false)
                 ),
                 $request->getParam("sortBy", ""),
                 $request->getParam("sortOrder", "")
             );
-            return $response->withJson(['posts' => $data->results ], 200);
+            return $response->withJson(['data' => $data ], 200);
         });
 
         $this->get('/thumbnail', function (Request $request, Response $response, array $args) {
