@@ -6,7 +6,7 @@ import { mixinRoutes } from './mixins.js';
 
 const template = `
     <div class="container">
-        <sumidero-timeline-pagination v-bind:data="pager" v-on:change="refreshFromPager($event.currentPage, $event.resultsPage)"></sumidero-timeline-pagination>
+        <sumidero-timeline-pagination v-bind:disabled="loading" v-bind:data="pager" v-on:change="refreshFromPager($event.currentPage, $event.resultsPage)"></sumidero-timeline-pagination>
         <div v-if="! loading" class="sumidero-post" v-for="post in posts">
             <sumidero-timeline-post-item v-bind:post="post" v-on:onDelete="removeItemFromList($event)"></sumidero-timeline-post-item>
             <hr>
@@ -34,7 +34,10 @@ export default {
     },
     props: ['sub', 'tag', 'compact'],
     watch: {
-        '$route'(to, from) {
+        '$route': function (to, from) {
+            if (this.$route.params.pageIndex) {
+                this.pager.currentPage = this.$route.params.pageIndex;
+            }
             this.loadItems();
         }
     },
@@ -47,6 +50,11 @@ export default {
             self.loadItems(text);
         });
         this.imageLazyLoadObserver = lozad();
+        if (this.$route.params.pageIndex) {
+            this.pager.currentPage = this.$route.params.pageIndex;
+        } else {
+            this.pager.currentPage = 1;
+        }
         this.loadItems();
     },
     updated: function () {
@@ -87,9 +95,34 @@ export default {
             this.posts = this.posts.filter((post) => post.id !== id);
         },
         refreshFromPager: function (currentPage, resultsPage) {
-            this.pager.currentPage = currentPage;
-            this.pager.resultsPage = resultsPage;
-            this.loadItems(null);
+            if (this.pager.currentPage != currentPage) {
+                this.pager.currentPage = currentPage;
+                this.pager.resultsPage = resultsPage;
+                switch(this.$route.name) {
+                    case "timelineFilteredByUserId":
+                    case "timelineFilteredByUserIdPaged":
+                        this.navigateTo('timelineFilteredByUserIdPaged', { pageIndex: this.pager.currentPage });
+                    break;
+                    case "timelineFilteredByDomain":
+                    case "timelineFilteredByDomainPaged":
+                        this.navigateTo('timelineFilteredByDomainPaged', { pageIndex: this.pager.currentPage });
+                    break;
+                    case "timelineFilteredBySub":
+                    case "timelineFilteredBySubPaged":
+                        this.navigateTo('timelineFilteredBySubPaged', { pageIndex: this.pager.currentPage });
+                    break;
+                    case "timelineFilteredBTag":
+                    case "timelineFilteredBTagPaged":
+                        this.navigateTo('timelineFilteredBTagPaged', { pageIndex: this.pager.currentPage });
+                    break;
+                    default:
+                        this.navigateTo('timelinePaged', { pageIndex: this.pager.currentPage });
+                    break;
+                }
+            } else {
+                this.pager.resultsPage = resultsPage;
+                this.loadItems(null);
+            }
         }
     }
 }
