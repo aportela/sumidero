@@ -355,7 +355,9 @@
         }
 
         public static function search(\Sumidero\Database\DB $dbh, int $currentPage = 1, int $resultsPage = 16, array $filter = array(), string $sortBy = "creationTimestamp", string $sortOrder = "DESC") {
-            $results = array();
+            $data = new \stdClass();
+            $data->pagination = new \stdClass();
+            $data->results = array();
             $params = array();
             $whereCondition = "";
             $queryConditions = array();
@@ -400,16 +402,15 @@
                 %s
             ', $whereCondition);
             $result = $dbh->query($queryCount, $params);
-            $data = new \stdClass();
-            $data->currentPage = $currentPage;
-            $data->resultsPage = $resultsPage;
-            $data->totalResults = $result[0]->total;
-            if ($data->resultsPage > 0) {
-                $data->totalPages = ceil($data->totalResults / $resultsPage);
+            $data->pagination->currentPage = $currentPage;
+            $data->pagination->resultsPage = $resultsPage;
+            $data->pagination->totalResults = $result[0]->total;
+            if ($data->pagination->resultsPage > 0) {
+                $data->pagination->totalPages = ceil($data->pagination->totalResults / $resultsPage);
             } else {
-                $data->totalPages = $data->totalResults > 0 ? 1: 0;
+                $data->pagination->totalPages = $data->pagination->totalResults > 0 ? 1: 0;
             }
-            if ($data->totalResults > 0) {
+            if ($data->pagination->totalResults > 0) {
                 $sqlSortBy = "";
                 switch($sortBy) {
                     default:
@@ -445,11 +446,9 @@
                     $whereCondition,
                     $sqlSortBy,
                     $sortOrder == "DESC" ? "DESC": "ASC",
-                    $data->resultsPage > 0 ? sprintf("LIMIT %d OFFSET %d", $data->resultsPage, $data->resultsPage * ($data->currentPage - 1)) : null
+                    $data->pagination->resultsPage > 0 ? sprintf("LIMIT %d OFFSET %d", $data->pagination->resultsPage, $data->pagination->resultsPage * ($data->pagination->currentPage - 1)) : null
                 );
                 $data->results = $dbh->query($query, $params);
-            } else {
-                $data->results = array();
             }
             return($data);
         }
