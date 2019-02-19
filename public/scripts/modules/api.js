@@ -218,20 +218,39 @@ export default {
                 }
             );
         },
-        search: function (timestamp, userId, sub, tag, title, nsfw, domain, currentPage, resultsPage, sortBy, sortOrder, callback) {
+        search: function (currentPage, resultsPage, sortBy, sortOrder, filter, callback) {
             var params = {
-                timestamp: timestamp,
-                userId: userId,
-                sub: sub,
-                tag: tag,
-                title: title,
-                nsfw: nsfw,
-                domain: domain,
-                currentPage: currentPage,
-                resultsPage: resultsPage,
-                sortBy: sortBy,
-                sortOrder: sortOrder,
             };
+            if (filter) {
+                if (filter.timestamp) {
+                    params.timestamp = filter.timestamp;
+                }
+                if (filter.userId) {
+                    params.userId = filter.userId;
+                }
+                if (filter.sub) {
+                    params.sub = filter.sub;
+                }
+                if (filter.tag) {
+                    params.tag = filter.tag;
+                }
+                if (filter.title) {
+                    params.title = filter.title;
+                }
+                if (filter.body) {
+                    params.body = filter.body;
+                }
+                if (filter.nsfw) {
+                    params.nsfw = filter.nsfw;
+                }
+                if (filter.domain) {
+                    params.domain = domain;
+                }
+                params.currentPage = currentPage;
+                params.resultsPage = resultsPage;
+                params.sortBy = sortBy;
+                params.sortOrder = sortOrder;
+            }
             Vue.http.post("api/search", params).then(
                 response => {
                     if (callback && typeof callback === "function") {
