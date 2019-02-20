@@ -205,7 +205,13 @@
                 $post->thumbnail = $request->getParam("thumbnail", "");
                 $post->nsfw = (bool) $request->getParam("nsfw", false);
                 $post->add(new \Sumidero\Database\DB($this));
-                return $response->withJson(['success' => true ], 200);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'initialState' => \Sumidero\Utils::getInitialState($this)
+                    ]
+                    , 200
+                );
             });
 
             $this->put('/{id}', function (Request $request, Response $response, array $args) {
@@ -220,7 +226,13 @@
                 $post->thumbnail = $request->getParam("thumbnail", "");
                 $post->nsfw = (bool) $request->getParam("nsfw", false);
                 $post->update(new \Sumidero\Database\DB($this));
-                return $response->withJson(['success' => true ], 200);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'initialState' => \Sumidero\Utils::getInitialState($this)
+                    ]
+                    , 200
+                );
             });
 
             $this->get('/{id}', function (Request $request, Response $response, array $args) {
@@ -234,7 +246,13 @@
                 $post = new \Sumidero\Post();
                 $post->id = $args['id'];
                 $post->delete(new \Sumidero\Database\DB($this));
-                return $response->withJson([], 200);
+                return $response->withJson(
+                    [
+                        'success' => true,
+                        'initialState' => \Sumidero\Utils::getInitialState($this)
+                    ]
+                    , 200
+                );
             });
 
         })->add(new \Sumidero\Middleware\CheckAuth($this->getContainer()));
@@ -253,6 +271,7 @@
                     "tag" => $request->getParam("tag", ""),
                     "title" => $request->getParam("title", ""),
                     "body" => $request->getParam("body", ""),
+                    "globalTextSearch" => $request->getParam("globalTextSearch", ""),
                     "nsfw" => (bool) $request->getParam("nsfw", false)
                 ),
                 $request->getParam("sortBy", ""),
