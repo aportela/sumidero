@@ -1,17 +1,11 @@
 import { default as sumideroAPI } from './api.js';
-import { mixinRoutes, mixinAvatar } from './mixins.js';
+import { mixinRoutes, mixinAvatar, mixinThumbnail } from './mixins.js';
 
 const template = `
     <article class="media">
         <figure class="media-left">
             <p class="image is-64x64">
-                <img class="lozad" v-bind:data-src="avatarUrl">
-                <!--
-                <img class="user-avatar lozad" rel="noreferrer" v-bind:data-src="post.userAvatarUrl">
-                -->
-                <!--
-                <i class="fa-3x fas fa-user-secret"></i>
-                -->
+                <img class="lozad" rel="noreferrer" v-bind:data-src="avatarUrl">
             </p>
         </figure>
         <div class="media-content">
@@ -26,8 +20,13 @@ const template = `
             </div>
             <div class="post-content">
                 <p v-if="! compact">
-                    <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && post.thumbnail != 'self' && post.thumbnail != 'default'" v-bind:data-src="'api/thumbnail?url=' +  encodeURIComponent(post.thumbnail)">
-                    <img src="http://findicons.com/files/icons/562/glaze/64/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left lozad" v-else>
+                    <div v-if="isLink">
+                        <img class="post-thumbnail is-pulled-left lozad" rel="noreferrer" v-if="post.thumbnail && ! thumbnailLoadError" v-bind:data-src="post.thumbnail | parseThumbnailUrl" v-on:error="thumbnailLoadError = true">
+                        <img class="post-thumbnail is-pulled-left" rel="noreferer" src="/img/failed-icon-23.png" v-else-if="thumbnailLoadError">
+                    </div>
+                    <div v-else>
+                        <img src="/img/empty.png" rel="noreferrer" class="post-thumbnail is-pulled-left">
+                    </div>
                     <span v-html="formattedBody"></span>
                 </p>
                 <div class="is-clearfix"></div>
@@ -77,7 +76,8 @@ export default {
     data: function () {
         return ({
             loading: false,
-            deletedId: null
+            deletedId: null,
+            thumbnailLoadError: false
         });
     },
     props: [
@@ -126,7 +126,7 @@ export default {
 
     },
     mixins: [
-        mixinAvatar, mixinRoutes
+        mixinAvatar, mixinThumbnail, mixinRoutes
     ],
     methods: {
         onDelete: function (id) {
