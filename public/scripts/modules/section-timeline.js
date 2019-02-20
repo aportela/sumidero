@@ -43,11 +43,8 @@ export default {
     },
     created: function () {
         var self = this;
-        bus.$on("search", function (text) {
-            self.loadItems(text);
-        });
-        bus.$on("refreshTimeline", function (text) {
-            self.loadItems(text);
+        bus.$on("refreshTimeline", function (searchFilter) {
+            self.loadItems(searchFilter);
         });
         this.imageLazyLoadObserver = lozad();
         if (this.$route.params.pageIndex) {
@@ -55,7 +52,7 @@ export default {
         } else {
             this.pager.currentPage = 1;
         }
-        this.loadItems();
+        this.loadItems({});
     },
     updated: function () {
         this.imageLazyLoadObserver.observe();
@@ -68,7 +65,7 @@ export default {
         'sumidero-timeline-post-item': sumideroTimelinePostItem
     },
     methods: {
-        loadItems: function (title) {
+        loadItems: function (searchFilter) {
             var self = this;
             self.posts = [];
             self.loading = true;
@@ -78,6 +75,9 @@ export default {
                 tag: this.$route.params.tag,
                 nsfw: initialState.session.nsfw,
                 domain: this.$route.params.domain,
+            };
+            if (searchFilter && searchFilter.globalTextSearch) {
+                filter.globalTextSearch = searchFilter.globalTextSearch;
             }
             sumideroAPI.post.search(this.pager.currentPage, this.pager.resultsPage, "creationTimestamp", "DESC", filter, function (response) {
                 if (response.ok) {

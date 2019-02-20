@@ -246,6 +246,9 @@ export default {
                 if (filter.domain) {
                     params.domain = domain;
                 }
+                if (filter.globalTextSearch) {
+                    params.globalTextSearch = filter.globalTextSearch;
+                }
                 params.currentPage = currentPage;
                 params.resultsPage = resultsPage;
                 params.sortBy = sortBy;

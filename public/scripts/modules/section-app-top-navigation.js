@@ -103,12 +103,15 @@ export default {
     ],
     methods: {
         search: function () {
+            bus.$emit('refreshTimeline', { globalTextSearch: this.searchText });
+            /*
             var self = this;
             self.isSearching = true;
             setTimeout(function () {
                 self.isSearching = false;
                 self.$nextTick(() => self.$refs.search.focus());
             }, 500);
+            */
         },
         signOut: function () {
             bus.$emit('signOut');
@@ -119,7 +122,7 @@ export default {
                 if (response.ok)  {
                     initialState = response.body.initialState;
                     self.isNSFW = initialState.session.nsfw;
-                    bus.$emit('refreshTimeline', self.searchText);
+                    bus.$emit('refreshTimeline', { globalTextSearch: self.searchText });
                 } else {
                     self.showApiError(response.getApiErrorData());
                 }

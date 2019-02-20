@@ -393,6 +393,10 @@
                     $queryConditions[] = " P.body LIKE :body ";
                     $params[] = (new \Sumidero\Database\DBParam())->str(":body", "%" . $filter["body"] . "%");
                 }
+                if (isset($filter["globalTextSearch"]) && ! empty($filter["globalTextSearch"])) {
+                    $queryConditions[] = " (P.title LIKE :text OR P.body LIKE :text) ";
+                    $params[] = (new \Sumidero\Database\DBParam())->str(":text", "%" . $filter["globalTextSearch"] . "%");
+                }
                 $whereCondition = count($queryConditions) > 0 ? " WHERE " .  implode(" AND ", $queryConditions) : "";
             }
             $queryCount = sprintf('
