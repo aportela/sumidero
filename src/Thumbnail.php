@@ -45,8 +45,8 @@
                 if (! file_exists($thumbPath)) {
                     $tmpFile = self::saveTmpImage($url);
                     $thumb = ImageWorkshop::initFromPath($tmpFile);
-                    if ($thumb->getWidth() > 384) {
-                        $thumb->resizeInPixel(384, null, true);
+                    if ($thumb->getWidth() > 128) {
+                        $thumb->resizeInPixel(128, null, true);
                     }
                     $createFolders = true;
                     $backgroundColor = null;
