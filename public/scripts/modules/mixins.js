@@ -34,12 +34,25 @@ export const mixinSession = {
 export const mixinAvatar = {
     filters: {
         parseAvatarURL: function (avatar) {
-            return ("avatar/" + avatar);
+            return ("avatar/" + encodeURIComponent(avatar));
         }
     },
     methods: {
         getAvatarURL: function (avatar) {
-            return ("avatar/" + avatar);
+            return ("avatar/" + encodeURIComponent(avatar));
+        }
+    }
+}
+
+export const mixinThumbnail = {
+    filters: {
+        parseThumbnailUrl: function(url) {
+            return("api/thumbnail?url=" + encodeURIComponent(url));
+        }
+    },
+    methods: {
+        getThumbnailUrl: function(url) {
+            return("api/thumbnail?url=" + encodeURIComponent(url));
         }
     }
 }
