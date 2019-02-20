@@ -199,7 +199,6 @@ export default {
                 if (this.isAdd) {
                     this.reset();
                 } else {
-                    this.id = this.$route.params.id;
                     this.get();
                 }
             }
