@@ -53,6 +53,9 @@ export default {
                         this.selectedSub = this.matchedSubs[this.selectedMatchSubIndex];
                         this.cancelAutoComplete();
                         this.onChange();
+                    } else {
+                        this.cancelAutoComplete();
+                        this.onChange();
                     }
                     break;
                 case "Backspace":
