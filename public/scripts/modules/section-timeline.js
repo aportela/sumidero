@@ -6,10 +6,22 @@ import { mixinRoutes } from './mixins.js';
 
 const template = `
     <div class="container">
-        <sumidero-timeline-pagination v-bind:disabled="loading" v-bind:data="pager" v-on:change="refreshFromPager($event.currentPage, $event.resultsPage)"></sumidero-timeline-pagination>
-        <div v-if="! loading" class="sumidero-post" v-for="post in posts">
-            <sumidero-timeline-post-item v-bind:post="post" v-on:onDelete="removeItemFromList($event)"></sumidero-timeline-post-item>
+        <div v-if="hasResults">
+            <sumidero-timeline-pagination v-bind:disabled="loading" v-bind:data="pager" v-on:change="refreshFromPager($event.currentPage, $event.resultsPage)"></sumidero-timeline-pagination>
+            <div v-if="! loading" class="sumidero-post" v-for="post in posts">
+                <sumidero-timeline-post-item v-bind:post="post" v-on:onDelete="removeItemFromList($event)"></sumidero-timeline-post-item>
+                <hr>
+            </div>
+            <sumidero-timeline-pagination v-bind:disabled="loading" v-bind:data="pager" v-on:change="refreshFromPager($event.currentPage, $event.resultsPage)"></sumidero-timeline-pagination>
+        </div>
+        <div v-else v-show="! loading">
             <hr>
+            <h1 class="title has-text-centered"><span class="icon is-medium"><i class="fas fa-comments"></i></span> SUMIDERO <span class="icon is-medium"><i class="far fa-comments"></i></span></h1>
+            <h2 class="subtitle is-6 has-text-centered">I ASSURE YOU; WE'RE OPEN</h2>
+            <div class="notification">
+                <span v-if="filter.globalTextSearch">No results matching “<strong>{{ filter.globalTextSearch }}</strong>”</span>
+                <span v-else>No results</span>
+            </div>
         </div>
     </div>
 `;
@@ -64,12 +76,17 @@ export default {
         'sumidero-timeline-pagination': sumideroTimelinePagination,
         'sumidero-timeline-post-item': sumideroTimelinePostItem
     },
+    computed: {
+        hasResults: function() {
+            return(this.posts && this.posts.length > 0);
+        }
+    },
     methods: {
         loadItems: function (searchFilter) {
             var self = this;
             self.posts = [];
             self.loading = true;
-            const filter = {
+            this.filter = {
                 userId: this.$route.params.userId,
                 sub: this.$route.params.sub,
                 tag: this.$route.params.tag,
@@ -77,9 +94,9 @@ export default {
                 domain: this.$route.params.domain,
             };
             if (searchFilter && searchFilter.globalTextSearch) {
-                filter.globalTextSearch = searchFilter.globalTextSearch;
+                this.filter.globalTextSearch = searchFilter.globalTextSearch;
             }
-            sumideroAPI.post.search(this.pager.currentPage, this.pager.resultsPage, "creationTimestamp", "DESC", filter, function (response) {
+            sumideroAPI.post.search(this.pager.currentPage, this.pager.resultsPage, "creationTimestamp", "DESC", this.filter, function (response) {
                 if (response.ok) {
                     self.posts = response.body.data.results;
                     self.pager.currentPage = response.body.data.pagination.currentPage;
