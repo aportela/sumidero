@@ -193,7 +193,29 @@ export default {
             this.get();
         }
     },
+    watch: {
+        '$route': function (to, from) {
+            if (to.name != from.name) {
+                if (this.isAdd) {
+                    this.reset();
+                } else {
+                    this.id = this.$route.params.id;
+                    this.get();
+                }
+            }
+        }
+    },
     methods: {
+        reset: function() {
+            this.id = null;
+            this.externalUrl = null;
+            this.title = null;
+            this.body = null;
+            this.sub = null;
+            this.thumbnail = null;
+            this.tags = [];
+            this.nsfw = false;
+        },
         scrap: function () {
             var self = this;
             self.validator.clear();
