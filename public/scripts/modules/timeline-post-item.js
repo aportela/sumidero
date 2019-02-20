@@ -134,6 +134,7 @@ export default {
             self.loading = true;
             sumideroAPI.post.delete(id, function (response) {
                 if (response.ok) {
+                    initialState = response.body.initialState;
                     self.loading = false;
                     self.deletedId = null;
                     self.$emit('onDelete', id);

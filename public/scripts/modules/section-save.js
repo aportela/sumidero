@@ -266,6 +266,7 @@ export default {
             self.loading = true;
             sumideroAPI.post.add(this.id, this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
+                    initialState = response.body.initialState;
                     self.$router.back();
                 } else {
                     switch (response.status) {
@@ -290,6 +291,7 @@ export default {
             self.loading = true;
             sumideroAPI.post.update(this.id, this.externalUrl, this.title, this.body, this.sub, this.tags, this.thumbnail, this.nsfw, function (response) {
                 if (response.ok) {
+                    initialState = response.body.initialState;
                     self.$router.back();
                 } else {
                     switch (response.status) {
