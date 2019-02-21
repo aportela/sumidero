@@ -61,7 +61,7 @@ const template = `
                                         <div class="field-body">
                                             <div class="field">
                                                 <div class="control" v-bind:class="{ 'has-icons-right' : validator.hasInvalidField('body') }">
-                                                    <textarea :disabled="loading" maxlength="16384" class="textarea" v-model.trim="body" v-bind:class="{ 'is-danger': validator.hasInvalidField('body') }" placeholder="type a small resume/body of your post" maxlength="16384"></textarea>
+                                                    <textarea :disabled="loading" class="textarea" v-model.trim="body" v-bind:class="{ 'is-danger': validator.hasInvalidField('body') }" placeholder="type a small resume/body of your post" maxlength="16384"></textarea>
                                                     <span class="icon is-small is-right" v-show="validator.hasInvalidField('body')"><i class="fa fa-warning"></i></span>
                                                 </div>
                                                 <p class="help is-danger" v-show="validator.hasInvalidField('body')">{{ validator.getInvalidFieldMessage('body') }}</p>
