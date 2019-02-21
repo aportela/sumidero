@@ -101,25 +101,32 @@ export default {
     mixins: [
         mixinSession, mixinRoutes, mixinInitialState
     ],
+    created: function() {
+        this.searchText = this.$route.params.text;
+        let self = this;
+        bus.$on("globalSearchingStarted", function () {
+            self.isSearching = true;
+        });
+        bus.$on("globalSearchingFinished", function () {
+            self.isSearching = false;
+        });
+    },
+    watch: {
+        '$route': function (to, from) {
+            this.searchText = this.$route.params.text;
+        }
+    },
     methods: {
         search: function () {
-            bus.$emit('refreshTimeline', { globalTextSearch: this.searchText });
-            /*
-            var self = this;
-            self.isSearching = true;
-            setTimeout(function () {
-                self.isSearching = false;
-                self.$nextTick(() => self.$refs.search.focus());
-            }, 500);
-            */
+            this.navigateTo('timelineFilteredByGlobalSearch', { text: this.searchText });
         },
         signOut: function () {
             bus.$emit('signOut');
         },
-        toggleNSFW: function() {
+        toggleNSFW: function () {
             let self = this;
-            sumideroAPI.user.poll(! initialState.session.nsfw, function (response) {
-                if (response.ok)  {
+            sumideroAPI.user.poll(!initialState.session.nsfw, function (response) {
+                if (response.ok) {
                     initialState = response.body.initialState;
                     self.isNSFW = initialState.session.nsfw;
                     bus.$emit('refreshTimeline', { globalTextSearch: self.searchText });
@@ -127,7 +134,6 @@ export default {
                     self.showApiError(response.getApiErrorData());
                 }
             });
-
         }
     }
 }

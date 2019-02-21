@@ -25,6 +25,18 @@ export const routes = [
                         component: sectionTimeline
                     },
                     {
+                        path: 'search/:text',
+                        name: 'timelineFilteredByGlobalSearch',
+                        component: sectionTimeline,
+                        children: [
+                            {
+                                path: 'page/:pageIndex',
+                                name: 'timelineFilteredByGlobalSearchPaged',
+                                component: sectionTimeline,
+                            }
+                        ]
+                    },
+                    {
                         path: 'user/:userId',
                         name: 'timelineFilteredByUserId',
                         component: sectionTimeline,

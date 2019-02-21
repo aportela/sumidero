@@ -41,30 +41,23 @@ export default {
             },
             posts: [],
             gallery: false,
+            searchText: null,
             imageLazyLoadObserver: null
         });
     },
     props: ['sub', 'tag', 'compact'],
     watch: {
         '$route': function (to, from) {
-            if (this.$route.params.pageIndex) {
-                this.pager.currentPage = this.$route.params.pageIndex;
-            }
-            this.loadItems();
+            this.refreshFromUrlParams();
         }
     },
     created: function () {
         var self = this;
-        bus.$on("refreshTimeline", function (searchFilter) {
-            self.loadItems(searchFilter);
+        bus.$on("refreshTimeline", function () {
+            self.search();
         });
         this.imageLazyLoadObserver = lozad();
-        if (this.$route.params.pageIndex) {
-            this.pager.currentPage = this.$route.params.pageIndex;
-        } else {
-            this.pager.currentPage = 1;
-        }
-        this.loadItems({});
+        this.refreshFromUrlParams();
     },
     updated: function () {
         this.imageLazyLoadObserver.observe();
@@ -77,12 +70,62 @@ export default {
         'sumidero-timeline-post-item': sumideroTimelinePostItem
     },
     computed: {
-        hasResults: function() {
-            return(this.posts && this.posts.length > 0);
+        hasResults: function () {
+            return (this.posts && this.posts.length > 0);
         }
     },
     methods: {
-        loadItems: function (searchFilter) {
+        refreshFromUrlParams: function () {
+            if (this.$route.params.pageIndex) {
+                this.pager.currentPage = this.$route.params.pageIndex;
+            } else {
+                this.pager.currentPage = 1;
+            }
+            if (this.$route.params.text) {
+                if (this.searchText && this.searchText != this.$route.params.text) {
+                    this.pager.currentPage = 1;
+                }
+                this.searchText = this.$route.params.text;
+            } else {
+                this.searchText = null;
+            }
+            this.search();
+        },
+        refreshFromPager: function (currentPage, resultsPage) {
+            if (this.pager.currentPage != currentPage) {
+                this.pager.currentPage = currentPage;
+                this.pager.resultsPage = resultsPage;
+                switch (this.$route.name) {
+                    case "timelineFilteredByGlobalSearch":
+                    case "timelineFilteredByGlobalSearchPaged":
+                        this.navigateTo('timelineFilteredByGlobalSearchPaged', { pageIndex: this.pager.currentPage, text: this.searchText });
+                        break;
+                    case "timelineFilteredByUserId":
+                    case "timelineFilteredByUserIdPaged":
+                        this.navigateTo('timelineFilteredByUserIdPaged', { pageIndex: this.pager.currentPage });
+                        break;
+                    case "timelineFilteredByDomain":
+                    case "timelineFilteredByDomainPaged":
+                        this.navigateTo('timelineFilteredByDomainPaged', { pageIndex: this.pager.currentPage });
+                        break;
+                    case "timelineFilteredBySub":
+                    case "timelineFilteredBySubPaged":
+                        this.navigateTo('timelineFilteredBySubPaged', { pageIndex: this.pager.currentPage });
+                        break;
+                    case "timelineFilteredBTag":
+                    case "timelineFilteredBTagPaged":
+                        this.navigateTo('timelineFilteredBTagPaged', { pageIndex: this.pager.currentPage });
+                        break;
+                    default:
+                        this.navigateTo('timelinePaged', { pageIndex: this.pager.currentPage });
+                        break;
+                }
+            } else {
+                this.pager.resultsPage = resultsPage;
+                this.search();
+            }
+        },
+        search: function () {
             var self = this;
             self.posts = [];
             self.loading = true;
@@ -92,11 +135,15 @@ export default {
                 tag: this.$route.params.tag,
                 nsfw: initialState.session.nsfw,
                 domain: this.$route.params.domain,
+                globalTextSearch: this.$route.params.text
             };
-            if (searchFilter && searchFilter.globalTextSearch) {
-                this.filter.globalTextSearch = searchFilter.globalTextSearch;
+            if (this.filter.globalTextSearch) {
+                bus.$emit('globalSearchingStarted');
             }
             sumideroAPI.post.search(this.pager.currentPage, this.pager.resultsPage, "creationTimestamp", "DESC", this.filter, function (response) {
+                if (self.filter.globalTextSearch) {
+                    bus.$emit('globalSearchingFinished');
+                }
                 if (response.ok) {
                     self.posts = response.body.data.results;
                     self.pager.currentPage = response.body.data.pagination.currentPage;
@@ -110,36 +157,6 @@ export default {
         },
         removeItemFromList: function (id) {
             this.posts = this.posts.filter((post) => post.id !== id);
-        },
-        refreshFromPager: function (currentPage, resultsPage) {
-            if (this.pager.currentPage != currentPage) {
-                this.pager.currentPage = currentPage;
-                this.pager.resultsPage = resultsPage;
-                switch(this.$route.name) {
-                    case "timelineFilteredByUserId":
-                    case "timelineFilteredByUserIdPaged":
-                        this.navigateTo('timelineFilteredByUserIdPaged', { pageIndex: this.pager.currentPage });
-                    break;
-                    case "timelineFilteredByDomain":
-                    case "timelineFilteredByDomainPaged":
-                        this.navigateTo('timelineFilteredByDomainPaged', { pageIndex: this.pager.currentPage });
-                    break;
-                    case "timelineFilteredBySub":
-                    case "timelineFilteredBySubPaged":
-                        this.navigateTo('timelineFilteredBySubPaged', { pageIndex: this.pager.currentPage });
-                    break;
-                    case "timelineFilteredBTag":
-                    case "timelineFilteredBTagPaged":
-                        this.navigateTo('timelineFilteredBTagPaged', { pageIndex: this.pager.currentPage });
-                    break;
-                    default:
-                        this.navigateTo('timelinePaged', { pageIndex: this.pager.currentPage });
-                    break;
-                }
-            } else {
-                this.pager.resultsPage = resultsPage;
-                this.loadItems(null);
-            }
         }
     }
 }
