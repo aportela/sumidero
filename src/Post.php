@@ -30,11 +30,6 @@
                     throw new \Sumidero\Exception\InvalidParamsException("title");
                 }
             }
-            if (! empty($this->body)) {
-                if (mb_strlen($this->body) > 16384) {
-                    throw new \Sumidero\Exception\InvalidParamsException("body");
-                }
-            }
             if (! empty($this->externalUrl)) {
                 if (filter_var($this->externalUrl, FILTER_VALIDATE_URL)) {
                     if (mb_strlen($this->externalUrl) > 2048) {

@@ -211,6 +211,32 @@
                         );
                     '
                 ),
+                "1.10" => array(
+                    '
+                        ALTER TABLE [POST] RENAME TO [POST2]
+                    ',
+                    '
+                        CREATE TABLE [POST] (
+                            [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
+                            [op_user_id] [id] VARCHAR(36),
+                            [creation_date] INTEGER NOT NULL,
+                            [title] VARCHAR(128),
+                            [body] TEXT,
+                            [external_url] VARCHAR(2048),
+                            [domain] VARCHAR(255),
+                            [thumbnail] VARCHAR(2048),
+                            [sub] VARCHAR(32),
+                            [total_comments] INTEGER NOT NULL DEFAULT 0,
+                            [nsfw] VARCHAR(1) DEFAULT "N"
+                        );
+                    ',
+                    '
+                        INSERT INTO [POST] SELECT * FROM [POST2];
+                    ',
+                    '
+                        DROP TABLE [POST2];
+                    '
+                )
             )
         );
 
