@@ -244,7 +244,7 @@ export default {
                     params.nsfw = filter.nsfw;
                 }
                 if (filter.domain) {
-                    params.domain = domain;
+                    params.domain = filter.domain;
                 }
                 if (filter.globalTextSearch) {
                     params.globalTextSearch = filter.globalTextSearch;
