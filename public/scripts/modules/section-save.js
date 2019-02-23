@@ -266,6 +266,9 @@ export default {
                     this.validator.setInvalid("body", "The fields title or body are required (at least one)");
                 }
             }
+            if (this.body && this.body.length > 16384) {
+                this.validator.setInvalid("body", "Max length (16384) exceed");
+            }
             if (!this.sub) {
                 this.validator.setInvalid("sub", "This field value is required");
             }
