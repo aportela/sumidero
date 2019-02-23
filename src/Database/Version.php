@@ -219,7 +219,7 @@
                         CREATE TABLE [POST] (
                             [id] VARCHAR(36) UNIQUE NOT NULL PRIMARY KEY,
                             [op_user_id] [id] VARCHAR(36),
-                            [creation_date] INTEGER NOT NULL,
+                            [creation_timestamp] INTEGER NOT NULL,
                             [title] VARCHAR(128),
                             [body] TEXT,
                             [external_url] VARCHAR(2048),
