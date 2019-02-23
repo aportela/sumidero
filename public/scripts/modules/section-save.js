@@ -214,6 +214,7 @@ export default {
             this.thumbnail = null;
             this.tags = [];
             this.nsfw = false;
+            this.validator.clear();
         },
         scrap: function () {
             var self = this;
