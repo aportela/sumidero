@@ -420,7 +420,7 @@
                     SELECT
                         P.id,
                         P.title,
-                        P.body,
+                        substr(P.body, 1, 1025) AS body,
                         P.thumbnail,
                         P.creation_timestamp as created,
                         P.sub,

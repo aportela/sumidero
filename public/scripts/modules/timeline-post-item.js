@@ -100,7 +100,11 @@ export default {
         },
         formattedBody: function () {
             if (this.post.body) {
-                return (this.post.body.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                if (this.post.body.length > 1024) {
+                    return(this.post.body.substr(0, 1024).replace(/(?:\r\n|\r|\n)/g, '<br />') + "...");
+                } else {
+                    return (this.post.body.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                }
             } else {
                 return (null);
             }
@@ -117,13 +121,12 @@ export default {
         }
     },
     filters: {
-        formatDateAgo(timestamp) {
+        formatDateAgo: function(timestamp) {
             return (moment.unix(timestamp).fromNow());
         },
-        formatDate(timestamp) {
+        formatDate: function(timestamp) {
             return (moment.unix(timestamp).format("dddd, MMMM Do YYYY, h:mm:ss a"));
         }
-
     },
     mixins: [
         mixinAvatar, mixinThumbnail, mixinRoutes
