@@ -80,12 +80,7 @@ const app = new Vue({
     created: function () {
         let self = this;
         self.setInitialState(initialState);
-        bus.$on("setPollTimeout", function (milliSeconds) {
-            self.enablePollTimeout(milliSeconds);
-        });
-        bus.$on("deletePollTimeout", function () {
-            self.disablePollTimeout();
-        });
+        self.enablePollTimeout(initialState.session.timeout);
         bus.$on("signOut", function () {
             sumideroAPI.user.signOut(function (response) {
                 if (response.ok) {

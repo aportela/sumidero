@@ -78,7 +78,6 @@ export default {
             sumideroAPI.user.signIn(this.email, this.password, function (response) {
                 if (response.ok && response.body.success) {
                     self.setInitialState(response.body.initialState);
-                    bus.$emit("setPollTimeout", initialState.session.timeout);
                     // enable fixed top navbar
                     document.getElementsByTagName('html')[0].setAttribute('class', 'has-navbar-fixed-top');
                     self.navigateTo('timeline', {});
