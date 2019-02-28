@@ -116,12 +116,12 @@ const app = new Vue({
         }
     },
     methods: {
-        enablePollTimeout: function (milliSeconds) {
+        enablePollTimeout: function (seconds) {
             this.pollTimeout = setInterval(
                 function () {
                     sumideroAPI.user.poll(initialState.nsfw, function () { });
                 },
-                milliSeconds * 1000
+                (seconds - 30) * 1000
             );
         },
         disablePollTimeout: function () {
