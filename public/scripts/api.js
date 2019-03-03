@@ -5,8 +5,11 @@
  * all methods return callback with vue-resource response object
  */
 const sumideroAPI = {
-    poll: function (callback) {
-        Vue.http.get("api/user/poll").then(
+    poll: function (nsfw, callback) {
+        const params = {
+            nsfw: nsfw
+        };
+        Vue.http.post("api/user/poll", params).then(
             response => {
                 if (callback && typeof callback === "function") {
                     callback(response);
