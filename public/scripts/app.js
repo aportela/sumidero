@@ -119,9 +119,15 @@ const app = new Vue({
         enablePollTimeout: function (seconds) {
             this.pollTimeout = setInterval(
                 function () {
-                    sumideroAPI.user.poll(initialState.nsfw, function () { });
+                    sumideroAPI.user.poll(initialState.session.nsfw, function (response) {
+                        if (response.ok) {
+                            initialState = response.body.initialState;
+                        } else {
+                            // TODO
+                        }
+                    });
                 },
-                (seconds - 30) * 1000
+                (seconds * 1000)
             );
         },
         disablePollTimeout: function () {
